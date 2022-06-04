@@ -1,0 +1,125 @@
+.fackfooter{
+    height:250px;
+}
+.space{
+    width: 80%;
+    display: block;
+}
+.line{
+    border-bottom: .05rem solid #bcb8b8;
+}
+.newscontainer{
+    width: 100%;
+}
+.news{
+    margin: auto;
+    border-radius: .5rem;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    background-color: #373737;
+    color:antiquewhite;
+    width:80%;
+    min-width: 320px;
+    max-width: 700px;
+    /* text-align: center; */
+}
+.news>div{
+    padding: 0 20px;
+}
+.subtitle{
+    margin: 10px 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+}
+.context{
+    width: 50%;
+    margin: 10px auto;
+    min-width: 250px;
+    font-size: 1.1rem;
+}
+.subtitle img{
+    width: 30px;
+    line-height: 30px;
+    margin: 0 10px 0 0;
+}
+.innercontainer{
+    display: flex;
+    flex-wrap: wrap;
+    width: 95%;
+    max-width: 1200px;
+    min-width: 320px;
+    margin: auto;
+}
+.product{
+    /* background-color: aquamarine; */
+    text-align: center;
+    /* border: .2px solid #bcb8b8; */
+    /* border-radius: 5px; */
+    width:100%;
+    min-width:250px;
+    max-width: 380px;
+    margin: auto;
+    padding: 10px;
+
+}
+
+.product>img{
+    width: 100%;
+    min-width:250px;
+    max-width: 380px;
+    background-color: #bcb8b8;
+}
+.addbtn{
+    border: none;
+    background-color: #597fab6b;
+    color: #373737;
+    width: 70%;
+    height: 35px;
+    font-size: 1rem;
+    border-radius:.3rem;
+    text-align: center;
+
+}
+.unsale{
+    border: none;
+    background-color: #373737a7;
+    color: rgba(255, 255, 255, 0.532);
+    width: 70%;
+    height: 35px;
+    font-size: 1rem;
+    border-radius:.3rem;
+    text-align: center;
+}
+.productbtn{
+    position: relative;
+}
+.productbtn>img{
+    margin: 3px 0;
+    height: 29px;
+    position: absolute;
+    left:25%;
+}
+.name{
+    font-size: 1.2rem;
+    margin: 5px 0 10px 0;
+    font-weight: 500;
+    position: relative;
+}
+
+.price{
+    font-size: 1.1rem;
+    margin: 5px 0;
+}
+.ice_icon{
+    position:absolute;
+    width: 15px;
+    height: 15px;
+    left:30%;
+    top:4px;
+}
+.ice_icon>img{
+    width: 20px;
+}

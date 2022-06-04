@@ -1,0 +1,249 @@
+*{
+    margin: 0;
+    padding:0;
+    list-style: none;
+    font-family: Noto Sans TC,SF Pro TC,SF Pro Text,SF Pro Icons,PingFang TC,Helvetica Neue,Helvetica,Arial,Microsoft JhengHei,wf_SegoeUI,Segoe UI,Segoe,Segoe WP,Tahoma,Verdana,Ubuntu,Bitstream Vera Sans,DejaVu Sans,微軟正黑體,LiHei Pro,WenQuanYi Micro Hei,Droid Sans Fallback,AR PL UMing TW,Roboto,Hiragino Maru Gothic ProN,メイリオ,ヒラギノ丸ゴ ProN W4,Meiryo,Droid Sans,sans-serif;
+}
+html{
+    height: 100%;
+}
+body{
+    position: relative;
+    min-height: 100%;
+}
+.mainbtn{
+    border: none;
+    background-color: #373737;
+    color: white;
+    width: 228px;
+    height: 35px;
+    font-size: 1rem;
+    border-radius:.3rem;
+    text-align: center;
+    margin: 10px 0;
+}
+.smallmainbtn{
+    border: none;
+    background-color: #373737;
+    color: white;
+    width: 100px;
+    height: 25px;
+    font-size: 1rem;
+    border-radius:.2rem;
+    text-align: center;
+    margin: 10px 0;
+}
+.subbtn{
+    border: none;
+    background-color: transparent;
+    height:30px;
+    width: 90px;
+    font-size: 1rem;
+    text-align: center;
+    margin: 10px 0;
+    border-radius:.3rem;
+    font-size: .9rem;
+}
+.container{
+    /* overflow:auto; */
+    width: 100%;
+}
+.logo{
+    text-align: center;
+ }
+ .logo img{
+     width: 100px;
+ }
+.header{
+    padding-top: 30px;
+    width: 100%;
+    height: 100px;
+    position:fixed;
+    top:0;
+    background-color: white;  
+    z-index: 10;
+}
+.fackhead{
+    height: 150px;
+   width: 100%;
+}
+.navbar{
+    position: absolute;
+    right: 2rem;
+    top: 2rem;
+}
+.navbar a img{
+    margin: 0 5px;
+    height: 2rem;
+}
+.products_count{
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    position: absolute;
+    font-size: .7rem;
+    line-height: .8rem;
+    border-radius: .6rem;
+    width: .8rem;
+    padding: .2rem;
+    background-color: rgb(216, 216, 216);
+    color: #373737;
+    right:-.4rem;
+    top:-.4rem;
+}
+.space{
+    height: 2rem;
+    text-align: center;
+    color: red;
+    font-size: .9rem;
+}
+.fackfooter{
+    height: 150px;
+    width: 100%;
+}
+.footer{
+    position:absolute;
+    bottom:0;
+    width: 100%;
+    height: 120px;
+    background-color: #373737;
+
+}
+/* main table */
+.main{
+    flex-grow: 1;
+  
+
+}
+table{
+    border-spacing: 0;
+    border: #bcb8b8 .3px solid;
+    border-radius: 10px;
+}
+td,th{
+    padding: 2px 5px;
+    text-align: center;
+
+}
+th{
+    background-color:#f1efef;
+}
+thead tr th:first-child{
+    border-radius: 10px 0 0 0 ;
+}
+thead tr th:last-child{
+    border-radius: 0 10px 0 0 ;
+    position: relative;
+}
+
+tbody tr:last-child th:first-child{
+    border-radius: 0 0 0 10px ;
+}
+tbody tr:last-child th:last-child{
+    border-radius: 0 0 10px 0 ;
+}
+td{
+    text-overflow: ellipsis;
+    overflow: hidden;  
+    white-space: nowrap; 
+}
+
+tr td:nth-child(2n){
+    border-left: #bcb8b8 .3px solid;
+    border-right: #bcb8b8 .3px solid;
+}
+tbody tr td{
+    border-top: #bcb8b8 .3px solid;
+}
+
+
+
+
+
+tr th:nth-child(2n){
+    width: 5%;
+    min-width: 80px;
+}
+tr th:nth-child(n){
+    width: 5%;
+    min-width: 35px;
+}
+tr th:first-child{
+    width: 5%;
+    min-width: 55px;
+}
+
+
+input{
+    background-color: transparent;
+    outline:none;
+    border: .3px solid #bcb8b8;
+    border-radius: .2rem;
+    font-size: 1rem;
+}
+.minsubtitle{
+    font-weight: 700;
+    font-size: 1rem;
+    margin: 10px 0;
+    color: #373737;
+}
+.subtitle{
+    font-weight: 800;
+    font-size: 1.2rem;
+    margin: 10px 0;
+}
+.edittable th:first-child{
+    width: 10%;
+    min-width: 80px;
+}
+.edittable label{
+    display: block;
+}
+.edittable tr:first-child td {
+    border-right: none;
+    border-top: none;
+}
+.edittable tr:nth-child(n) th{
+    border-top:#bcb8b8 .3px solid;
+}
+.edittable tr:first-child th {
+    border-top: none;
+}
+.edittable tr td {
+    border-right: none;
+}
+.edittable input{
+    width: 100%;
+    border-color: transparent;
+}
+.edittable tbody tr:first-child th{
+    border-radius: 10px 0 0 0;
+}
+.edittable tbody tr:last-child th{
+    border-radius: 0 0 0 10px;
+}
+.addicon{
+    position: absolute;
+    top: 6px;
+    right: 6px;
+}
+.addicon img{
+    width: 20px;
+}
+.hide{
+    display: none;
+}
+[disabled]{
+    color:#bcb8b8;
+}
+/* .hintmsg{
+    display: none;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 200px;
+    height: 50px;
+    margin: 20px;
+    border-radius: 10px;
+    background-color: coral;
+} */

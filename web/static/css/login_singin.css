@@ -1,0 +1,68 @@
+
+.infoboard{
+    font-weight: 500;
+    font-size: .9rem;
+    color: #373737;
+    text-align: center;
+    width: 220px;
+    margin: auto;
+    padding: 20px;
+    border: .5px solid #bcb8b8;
+    border-radius: .5rem;
+}
+.password,.user,.phone{
+    display: flex;
+    width: 220px;
+    height: 30px;
+    margin: 10px 0;
+    border: none;
+    background-color: #e7e4e4;
+    border-radius:.5rem ;
+}
+.infoboard input{
+    border: none;
+    background-color: transparent;
+    outline:none;
+    line-height: 30px;
+}
+.lock_icon,.user_icon,.phone_icon{
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 10px;
+}
+.lock_icon img,.user_icon img,.phone_icon img{
+    width: 20px;
+    height: 20px;
+}
+.infoboard p{
+text-align: left;
+}
+
+/* SinginPage */
+.message{
+    line-height: 1.6rem;
+    text-align: center;
+    margin: 0 auto 20px auto;
+    background-color: antiquewhite;
+    padding: 10px;
+    border-radius: .5rem;
+    width: 220px;
+    font-size: .9rem;
+}
+.infoboard>p>span{
+    color: red;
+}
+.checkresult{
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left:-10px;
+}
+.checkresult img{
+    width: 20px;
+    height: 20px;
+}

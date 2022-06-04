@@ -1,0 +1,5 @@
+tr th:nth-child(7){
+    position: relative;
+    min-width: 65px;
+}
+

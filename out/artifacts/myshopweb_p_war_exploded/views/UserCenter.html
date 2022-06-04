@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/control.css">
+    <link rel="stylesheet" href="../static/css/tempelate.css">
+    <link rel="stylesheet" href="../static/css/editinput.css">
+    <title>Account</title>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><a href="/home"><img src="../static/icon/logo.png" alt=""></a></div>
+        <div class="navbar">
+            <nav>
+                <a myaction="my_control_center"><img myaction="my_control_center" src="../static/icon/user2.png" alt=""></a>
+                <a href="/shopcar"><div style="position:relative;display:inline-block"><img src="../static/icon/shopcar.png" alt=""><div class="products_count">0</div></div></a>
+            </nav>
+        </div>
+    </div>
+    <div class="container">
+        <div class="fackhead"></div>
+        <div class="innercontainer">
+            <div class="title">
+                <p>MY ACCOUNT</p>
+                <h1>我的帳戶</h1>
+            </div>
+            <div class="control">
+                <nav>
+                    <ul>
+                        <li >
+                            <a myaction="my_control_center" id="target">控制台</a>
+                        </li>
+                        <li>
+                            <a  myaction="my_older_list">我的訂單</a>
+                        </li>
+                        <li>
+                            <a myaction="my_address">常用地址</a>
+                        </li>
+                        <li>
+                            <a myaction="my_account" >帳戶資料</a>
+                        </li>
+                        <li>
+                            <a href="/logout">登出</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="main">
+            </div>
+        </div>
+    <div class="fackfooter"></div>
+    </div>
+    <div class="footer">
+
+    </div>
+    <script type="module" src="../static/js/UserCenterPage.js"></script>
+</body>
+</html>

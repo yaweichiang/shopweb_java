@@ -1,0 +1,101 @@
+.innercontainer{
+    /* width: 80%; */
+    display: flex;
+    align-items:flex-start;
+    flex-wrap: wrap;
+    justify-content: center; 
+    max-width: 1200px;
+    margin: auto;
+}
+/* @media screen and (max-width:550px) {
+    .innercontainer{
+        width: 100%;
+    }
+} */
+
+.title{
+    margin: 0 30px;
+    width: 100%;
+    text-align: center;
+    color:#373737;
+    padding-bottom:20px ;
+}
+@media screen and (min-width:900px) {
+    .innercontainer{
+        justify-content: center;
+    }
+}
+.title h1{
+    font-size: 2rem;
+}
+.title p{
+    color:#928f8f;
+}
+
+.control ul li:first-child a{
+    border-radius: 10px 10px 0 0;
+}
+.control ul li:first-child{
+    border-radius: 10px 10px 0 0;
+}
+a{
+    text-decoration: none;
+    color: #6787ab;
+    /* #597fab; */
+}
+#target a{
+    background-color: #373737;
+    /* #f1efef; */
+    color: #f1efef;
+    /* #37506c; */
+}
+.control{
+    margin: 10px 20px;
+    cursor: pointer;
+}
+.control li a{
+    padding: 10px 20px;
+    width: 260px;
+    display: inline-block;
+}
+.control li a:hover{
+    background-color: #a7cbf3bc;
+    transition: .3s ease-in-out;
+}
+.control li:nth-child(2n){
+    border-bottom:.05px solid #bcb8b8;
+    border-top:.05px solid #bcb8b8;
+}
+.control ul{
+    border:.05px solid #bcb8b8;
+    border-radius: 10px;
+}
+
+
+.main{
+    line-height: 2rem;
+    margin: 0 20px;
+    min-width: 350px;
+    /* padding: 0 10px; */
+    flex-grow: 1;
+}
+
+/* control頁面使用 */
+.helloword{
+    padding: 20px 20px ;
+}
+.nickname{
+    font-weight: 500;
+}
+.checkbtn{
+    border: none;
+    color: #597fab;
+    background-color: transparent;
+    height:30px;
+    /* width: 35px; */
+    font-size: 1rem;
+    text-align: center;
+    margin: auto;
+    border-radius:.3rem;
+
+}

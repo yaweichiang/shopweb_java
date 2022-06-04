@@ -1,0 +1,44 @@
+.searchbar{
+    margin-top: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+}
+.searchbar div{
+    display: inline-block;
+    line-height: 2rem;
+}
+.searchbar input{
+    border-radius: .5rem;
+    line-height: 2rem;
+    width: 250px;
+
+}
+.searchbar a{
+    width: 25px;
+    height: 25px;
+    margin: 0 5px;
+
+}
+.searchbar img{
+    height: 25px;
+    
+}
+.quicksearch a{
+    color:#7d7b7b;
+    margin: 0 5px;
+}
+.quicksearch p{
+    display: inline-block;
+    color:#7d7b7b;
+}
+
+/* adminMemberSearch */
+.memberinfo{
+    margin: 0 20px;
+}
+
+@media screen and (max-Width:634px) 
+{
+    
+}

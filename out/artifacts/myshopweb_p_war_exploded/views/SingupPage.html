@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/login_singin.css">
+    <link rel="stylesheet" href="../static/css/tempelate.css">
+    <title>Singing</title>
+</head>
+<body>
+    <div class="header">
+        <div class="logo"><a href="/home"><img src="../static/icon/logo.png" alt=""></a></div>
+        <div class="navbar">
+            <nav>
+                <a href="/usercenter"><img src="../static/icon/user2.png" alt=""></a>
+                <a href="/shopcar"><div style="position:relative;display:inline-block"><img src="../static/icon/shopcar.png" alt=""><div class="products_count">0</div></div></a>
+            </nav>
+        </div>
+    </div>
+    <div class="fackhead"></div>
+    <div class="container">
+        <div>
+            <div class="message">親愛的顧客您好!<br>
+                歡迎使用阿彬純蜂蜜官方購物平台<br>
+                請輸入以下資料進行註冊。</div>
+            <div id="checkmsg" class="space"></div>
+            <div class="infoboard">
+                <form name="singupform" action="/user" method="post">
+                    <p>姓名</p>
+                    <div class="user"><span class="user_icon"><img src="../static/icon/user2.png" ></span><input id="user" type="text" name="name"></div>
+                    <p>手機號碼<span> [ 帳號 ]</span></p>
+                    <!-- onblur="checkphone()" -->
+                    <div class="phone"><span class="phone_icon"><img src="../static/icon/phone.png" ></span><input id="phone" type="text" name="phone"><span id="telchekresult" class="checkresult"></span></div>
+                    <p>密碼 (6~12位英數至少一個英文)</p>
+                    <!-- onkeyup="checkpassword()" -->
+                    <div class ="password"><span class="lock_icon"><img src="../static/icon/lock2.png" ></span><input id="fstpw" type="password" name="password"><span id="passwordcheckresult" class="checkresult"></span></div>
+                    <p>再次輸入密碼</p>
+                    <!-- onclick="checkpassword()" onkeyup="checkpassword()" -->
+                    <div class ="password"><span class="lock_icon"><img src="../static/icon/lock2.png" ></span><input id="secpw" type="password" ><span id="password2checkresult" class="checkresult"></span></div>
+                </form>
+                <button id="singup" class="mainbtn">註冊</button>
+                <!--  onclick="singup()" -->
+                <!-- <img src="./icon/success.png" > -->
+            </div>
+            <div class="space"></div>           
+            <div class="space"></div>
+        </div>
+        <div class="fackfooter"></div>
+    </div>
+    <div class="footer">
+    </div>
+    <script type="module" src="../static/js/SingupPage.js"></script>
+</body>
+</html>

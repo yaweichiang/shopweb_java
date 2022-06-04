@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/control.css">
+    <link rel="stylesheet" href="../static/css/tempelate.css">
+    <link rel="stylesheet" href="../static/css/car.css">
+    <title>ShopCar</title>
+</head>
+<body >
+
+    <div class="header">
+        <div class="logo"><a href="/home"><img src="../static/icon/logo.png" alt=""></a></div>
+        <div class="navbar">
+            <nav>
+                <a href="/usercenter"><img src="../static/icon/user2.png" alt=""></a>
+                <a href="/shopcar"><div style="position:relative;display:inline-block"><img src="../static/icon/shopcar.png" alt=""><div class="products_count">0</div></div></a>
+            </nav>
+        </div>
+    </div>
+    <div class="container">
+        <div class="fackhead"></div>
+        <div class="newscontainer">
+            <div class="news">
+                <div class="subtitle">
+                    <img src="../static/icon/news.png"><div >運費優惠</div>
+                </div>
+                <div class="context">常溫運費<span id="normal_fare"></span>元，滿<span id="normal_th"></span>元免運費<br>冷凍運費<span id="freezing_fare"></span>元，滿<span id="freezing_th"></span>元免運費<br></div>
+            </div>
+            <div class="ps">選購商品中若有需冷凍運送運費及免運門檻依冷凍運費計算。</div>
+        </div>
+        <div class="innercontainer">
+            <div class="space line"></div>
+            <div class="subtitle"><img src="../static/icon/list.png">購物車明細</div>
+            <div class="space"></div>
+            
+            
+            <table id="cartable">
+                <thead>
+                    <tr>
+                        <th>商品名稱</th>
+                        <th>商品容量</th>
+                        <th>商品單價</th>
+                        <th>購買數量</th>
+                        <th>金額小計</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody class="myproducts" >
+                </tbody>
+            </table>
+            <div class="checkout">
+                <span class="subtotal">+ 商品小計：<span id="ptotal"></span>元</span>
+                <span class="subtotal">+ 運費：<span id="fare"></span>元</span>
+                <span class="subtotal">+ 手續費：<span id="fee"></span>元</span>
+                <span calss="total">總計金額：<span id="total"></span>元</span>
+            </div>
+            <div class="space upline"></div>
+
+            <div class="subtitle"><img src="../static/icon/pay.png">付款方式</div>
+            <div class="selectpay">
+            </div>
+            <div class="space"></div>
+            <div class="subtitle"><img src="../static/icon/trunk.png">收件人資訊<button class="checkbtn">常用收件人</button></div>
+            <div class="addressinfo">
+                <!-- 隱藏，點選才顯示 確認後再隱藏 -->
+                <div id="flaotboard" class=" hide">
+                    <div class="selectrecipient">
+                        <div class="minsubtitle">常用收件人</div>
+                     
+                        
+                    </div>
+                    <button class="smallmainbtn">確認</button>
+                </div>
+
+                <div class="fullinput"><p>收件人：</p><input type="text"></div>
+                <div class="fullinput"><p>地址：</p><input type="text"></div>
+                <div class="fullinput"><p>電話：</p><input type="tel"></div>
+
+            </div>
+            
+            <div class="space"></div>
+
+            <div class="space"><button class="mainbtn">前往結帳</button></div>
+            
+       
+
+
+        </div>
+        <div class="fackfooter"></div>
+    </div>
+    <div class="footer">
+
+    </div>
+    <script type="module" src="../static/js/ShopCarPage.js" ></script>
+</body>
+</html>
