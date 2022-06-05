@@ -7,6 +7,10 @@
         <element id="directory" name="classes">
           <element id="module-output" name="myshopweb_p" />
         </element>
+        <element id="directory" name="lib">
+          <element id="file-copy" path="$USER_HOME$/Downloads/javax.json-1.1.jar" />
+          <element id="file-copy" path="$USER_HOME$/Downloads/mysql-connector-java-8.0.29/mysql-connector-java-8.0.29.jar" />
+        </element>
       </element>
     </root>
   </artifact>

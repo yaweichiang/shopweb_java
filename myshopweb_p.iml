@@ -38,10 +38,10 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/javax.json-api-1.1.jar!/" />
+          <root url="jar://$USER_HOME$/Downloads/javax.json-1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
