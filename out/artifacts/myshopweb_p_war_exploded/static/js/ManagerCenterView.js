@@ -188,25 +188,19 @@ export class WebSetting{
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(obj)
         }).then(response=>{
-            return response.json()
-        }).then(data=>{
-            console.log(data)
-            this.freezingFare = data[0].name==='冷凍'?data[0].fare:data[1].fare;
-            this.normalFare = data[0].name==='常溫'?data[0].fare:data[1].fare;
-            this.freezingThreshold = data[0].name==='冷凍'?data[0].threshold:data[1].threshold;
-            this.normalThreshold=data[0].name==='常溫'?data[0].threshold:data[1].threshold;;
-            let main = document.querySelector(".main");
-            main.replaceChild(this.fareView(),main.children[2]);
+           if(response.status==200){
+               getFare().then(data=>{
+                   this.freezingFare = data[0].name==='冷凍'?data[0].fare:data[1].fare;
+                   this.normalFare = data[0].name==='常溫'?data[0].fare:data[1].fare;
+                   this.freezingThreshold = data[0].name==='冷凍'?data[0].threshold:data[1].threshold;
+                   this.normalThreshold=data[0].name==='常溫'?data[0].threshold:data[1].threshold;
+                   let main = document.querySelector(".main");
+                   main.replaceChild(this.fareView(),main.children[2]);
+               }).catch(err=>console.log(err))
+           }
         }).catch(err=>{
             console.log(err)
         })
-
-            //重新顯示畫面
-        // let main = document.querySelector(".main");
-        // main.replaceChild(this.fareView(),main.children[2]);
-        console.log("將網頁設定存到資料庫");
-        
-        
     }
 }
 export class ProductsEdit{
@@ -319,19 +313,29 @@ export class ProductsEdit{
                             introduction:textarea.value,//介紹
                             url:inputs[3].value//圖片url
                         }
-                        fetch('/products/',{
+                        fetch('/products',{
                             method:'post',
                             headers:{'Content-Type':'application/json'},
                             body:JSON.stringify(obj)
                         }).then(response=>{
-                            return response.json()
-                        }).then(datas=>{
-                            temp = [];
-                            datas.forEach(data=>{
-                               temp.push(new Product(data))
-                            })
-                            this.products = temp;
-                            this.show()
+                            if(response.status==200){
+                                getProducts().then(datas=>{
+                                    let temp = [];
+                                    datas.forEach(data=>{
+                                        temp.push(new Product(data))
+                                    })
+                                    this.products = temp;
+                                    this.show()
+                                })
+                            }
+                            // return response.json()
+                        // }).then(datas=>{
+                        //     temp = [];
+                        //     datas.forEach(data=>{
+                        //        temp.push(new Product(data))
+                        //     })
+                        //     this.products = temp;
+                        //     this.show()
                         }).catch(err=>console.log(err))
                         
                     })
@@ -498,32 +502,14 @@ export class OrderListSearch{
             '       </thead>'+
             '       <tbody class="orderlist">'+
             '       </tbody>';
-        // console.log(table.children[1]);
-        // console.log(this.searchResult);
         getManagerOrderList(type,date).then(datas=>{
             datas.forEach(data=>{
                 table.children[1].appendChild(new ManagerOrderList(data).createTableRowView()); 
             })
         })
-        // this.searchResult.forEach(list=>{
-        //     table.children[1].appendChild(new ManagerOrderList(list).createTableRowView());
-        // });
         return table;
     }
-    // ajaxSearchOrderList(str){
-    //     // 這邊應該要ajax向後端查詢訂單資料
-    //     let numcheck = /^[1-9]+[0-9*]$/;
-    //     if(numcheck.test(str)){
-    //         console.log("選取天數查詢:",str);
-    //         //暫時使用假資料填充
-    //         if(str == 180){
-    //             return getMemberOrderList("");
-    //         }
-    //     }else{
-    //         console.log("指定日期查詢:",str);
-    //         return [];
-    //     }
-    // }
+
 }
 export class MemberSearch{
     constructor(){
@@ -616,15 +602,6 @@ export class MemberSearch{
                 // this.tableView();
                 console.log("33",this.member.orderlists === null)
             })
-            // this.member = new Member(this.ajaxSearchMember(div.firstChild.children[1].value));
-            // let temp = document.createElement("div");
-            // temp.innerHTML=        
-            // '            <div class="name">姓名：'+this.member.name+'('+this.member.nickname+')</div>'+
-            // '            <div class="phone">電話：'+this.member.phone+'</div>'+
-            // '            <div class="mail">Mail：'+this.member.email+'</div>  ';
-            // div.children[3].replaceChild(temp,div.children[3].firstElementChild);
-            // console.log("1",this.tableView());
-            // div.replaceChild(this.tableView(),div.children[6]);
         })
         return div;
     }

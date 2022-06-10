@@ -1,8 +1,12 @@
 package com.yawei.util;
 
+import org.json.JSONObject;
+
 import javax.json.JsonObject;
 import javax.json.JsonArray;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
 
 
 public interface DatabaseConnect {
@@ -10,19 +14,19 @@ public interface DatabaseConnect {
 //    取得資料庫連線
     public abstract  Connection getConnection();
 //    取得所有商品資料
-    public abstract JsonArray getAllProducts();
+    public abstract JsonArray getAllProducts() throws SQLException;
 //    取得指定商品資料
     public abstract JsonArray getProduct(String id);
 //    新增商品
-    public abstract JsonArray createProduct(JsonObject object);
+    public abstract JsonArray createProduct(JSONObject data);
 //    變更商品資訊
-    public abstract JsonArray updateProduct(JsonObject object);
+    public abstract JsonArray updateProduct(JSONObject data);
 //    取得會員資訊
-    public abstract JsonArray getUserInfo(String userPhone);
+    public abstract JsonArray getUserInfo(String id);
 //    註冊 新建會員
-    public abstract void createUser(JsonObject object);
+    public abstract void createUser(JSONObject data);
 //    變更會員資料
-    public abstract JsonArray updateUser(JsonObject object);
+    public abstract void updateUser(JSONObject data);
 //    變更會員密碼
     public abstract JsonArray updateUserPW(JsonObject object);
 //    會員登入帳號密碼檢查
@@ -30,13 +34,13 @@ public interface DatabaseConnect {
 //    管理者登入帳號密碼檢查
     public abstract Boolean checkManagerLogin(JsonObject object);
 //    檢查電話是否已註冊過
-    public abstract boolean checkPhone(String phone);
+    public abstract int checkMail(String phone);
 //    取得所有商品容量資訊
     public abstract JsonArray getCapacity();
 //    取得所有運費資訊
     public abstract JsonArray getTote();
 //    變更運費資訊
-    public abstract JsonArray updateTote(JsonObject object);
+    public abstract void updateTote(JSONObject object);
 //    取得所有付款資訊
     public abstract JsonArray getPay();
 //    取得最新公告
@@ -44,13 +48,13 @@ public interface DatabaseConnect {
 //    取得所有公告
     public abstract JsonArray getAllAnno();
 //    變更公告
-    public abstract void updateAnno();
+    public abstract void updateAnno(JSONObject object);
 //    取得使用者常用地址資訊
-    public abstract JsonArray getUserAddress(String phone);
+    public abstract JsonArray getUserAddress(String id);
 //    新增常用地址
-    public abstract JsonArray createAddress(JsonObject object);
+    public abstract void createAddress(JSONObject object);
 //    刪除常用地址
-    public abstract JsonArray deleteAddress(JsonObject object);
+    public abstract void deleteAddress(JSONObject object);
 //    取得下筆訂單編號
     public abstract  JsonArray getNewOrderListNo();
 //    新增訂單

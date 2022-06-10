@@ -1,5 +1,7 @@
 
 //商品品物件及 購物車商品物件
+import {getProducts,getProduct} from "./util.js";
+
 export  class Product {
     constructor(obj){
         this.id = obj.id; //商品編號
@@ -155,6 +157,7 @@ export  class Product {
             
                 //向後端發出變更 取得變更後商品資訊
                 let obj={
+                    id:this.id,
                     name:inputs[1].value,
                     price:inputs[2].value,
                     inventory:inputs[3].value,
@@ -166,13 +169,14 @@ export  class Product {
                     method:'put',
                     headers:{'Content-Type':'application/json'},
                     body:JSON.stringify(obj)
-                }).then(response=>{
-                    return response.json()
-                }).then(datas=>{
-                    this.updateProductInfo(datas[0])
-                    // this.getProductEdit();
-                    history.back();
-                }).catch(err=>console.log(err)) 
+                }).then(response=> {
+                    if (response.status == 200) {
+                        getProduct(this.id).then(datas=>{
+                            this.updateProductInfo(datas[0]);
+                            history.back();
+                        })
+                    }
+                }).catch(err=>console.log(err)) ;
 
             })
     }

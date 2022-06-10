@@ -132,6 +132,25 @@ export function getProducts(){
     });
 }
 
+// ajax 取得指定商品資訊
+export function getProduct(id){
+    return new Promise((resolve,reject)=>{
+        let src_url = '/products/'+id;
+        let xhr = new XMLHttpRequest();
+        xhr.open('get',src_url,true);
+        xhr.send();
+        xhr.onload = ()=>{
+            if( xhr.status == 200 ){
+                if(xhr.responseText===""){
+                    resolve([])
+                }else{
+                    resolve(JSON.parse(xhr.responseText));
+                }
+            }
+        };
+    });
+}
+
 
 export function getMemberinfo(str){//取得會員資料 有傳入參數時取得指定會員資料 未傳入參數時取得當前會員資料 
     return new Promise((resolve,reject)=>{

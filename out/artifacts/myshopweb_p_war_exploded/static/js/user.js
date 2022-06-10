@@ -13,7 +13,7 @@ export class Member extends User{
     constructor(memberDate){
         super(memberDate)
         this.no = memberDate.no;
-        this.phone = memberDate.phone;
+        this.phone = "0"+memberDate.phone;
         this.nickname = memberDate.nickname==null?"":memberDate.nickname;
         this.email = memberDate.email==null?"":memberDate.email;
         this.orderlists = this.createOrderList();
@@ -33,7 +33,7 @@ export class Member extends User{
     }
     updateUserInfo(obj){
         this.name = obj.name;
-        this.phone = obj.phone;
+        this.phone = "0"+obj.phone;
         this.nickname = obj.nickname==null?"":obj.nickname;
         this.email = obj.email==null?"":obj.email;
 

@@ -1,6 +1,6 @@
 import { Address } from './address.js';
 import { Member } from './user.js';
-import { MYCAR,getMemberinfo } from './util.js';
+import { MYCAR,getMemberinfo,getMemberAddress } from './util.js';
 
 let USER;
    
@@ -154,7 +154,30 @@ document.querySelector(".main").innerHTML =
     document.getElementById("target").removeAttribute("id");
     document.querySelector("ul li:nth-child(3)").setAttribute("id", "target");
     USER.addresslists.forEach(list=>{
-            document.querySelector(".orderlist").appendChild(list.createTableRowView());
+            let tr = list.createTableRowView();
+            tr.querySelector(".checkbtn").addEventListener("click",(e)=>{
+                console.log(tr,e);
+                    fetch('/address',{
+                        method:'DELETE',
+                        headers:{ 'Content-Type': 'application/json' },
+                        body:JSON.stringify(list)
+                    }).then(response=> {
+                        if (response.status == 200) {
+                            e.target.parentElement.parentElement.remove();
+                            // history.back();
+                            getMemberAddress().then(data => {
+                                let temp = []
+                                data.forEach(list => {
+                                    temp.push(new Address(list));
+                                })
+                                USER.addresslists = temp;
+                                showAddressList();
+                            })
+                        }
+                    }).catch(err=>console.log(err))
+
+            })
+            document.querySelector(".orderlist").appendChild(tr);
     });
 }
 function showAddressEdit(){
@@ -188,6 +211,7 @@ function showAddressEdit(){
             console.log((name!=""&&address!=""&&phone_rg.test(phone)))
             if(name!=""&&address!=""&&phone_rg.test(phone)){
                 let obj = {
+                    "id":USER.no,
                     "name":name,
                     "address":address,
                     "phone":phone
@@ -197,17 +221,28 @@ function showAddressEdit(){
                     headers:{ 'Content-Type': 'application/json' },
                     body:JSON.stringify(obj)
                 }).then(response=>{
-                    return response.json()
-                }).then(data=>{
-                    let temp =[]
-                    data.forEach(list=>{
-                        temp.push(new Address(list));
-                    })
-                    USER.addresslists = temp;
-                    showAddressList();
-                })
+                    if(response.status == 200) {
+                        getMemberAddress().then(data => {
+                            let temp = []
+                            data.forEach(list => {
+                                temp.push(new Address(list));
+                            })
+                            USER.addresslists = temp;
+                            showAddressList();
+                        })
+                    }
+                //     return response.json()
+                // }).then(data=>{
+                //     let temp =[]
+                //     data.forEach(list=>{
+                //         temp.push(new Address(list));
+                //     })
+                //     USER.addresslists = temp;
+                //     showAddressList();
+                }).catch(err => console.log(err))
                 
             }else{
+                alert("請確認資料都有正確輸入")
             }            
         });
         document.querySelector(".main").appendChild(mainbtn);
@@ -220,15 +255,15 @@ function showAccountInfo(){
         '<div class="space"></div>'+
         '<div class="basicinfo">'+
             '<div class="helfinput"><p>名字</p><input type="text" value="'+USER.name+'"></div>'+
-            '<div class="helfinput"><p>電話[帳號]</p><input type="text" value="'+USER.phone+'" disabled></div>'+
+            '<div class="helfinput"><p>電話</p><input type="text" value="'+USER.phone+'"></div>'+
             '<div class="fullinput"><p>顯示名稱</p><input type="text" value="'+USER.nickname+'"></div>'+
-            '<div class="fullinput">電子郵件<input type="email" value="'+USER.email+'"></div>'+
-        '</div>'+
-        '<div class="changepw">'+
-            '<div class="oldpw"><p>目前密碼(不需變更請空白)</p><input type="password"></div>'+
-            '<div class="newpw"><p>新密碼</p><input type="password"></div>'+
-            '<div class="newpw2"><p>確認新密碼</p><input type="password"></div>'+
+            '<div class="fullinput">電子郵件<input type="email" value="'+USER.email+'" disabled></div>'+
         '</div>';
+        // '<div class="changepw">'+
+        //     '<div class="oldpw"><p>目前密碼(不需變更請空白)</p><input type="password"></div>'+
+        //     '<div class="newpw"><p>新密碼</p><input type="password"></div>'+
+        //     '<div class="newpw2"><p>確認新密碼</p><input type="password"></div>'+
+        // '</div>';
         let mainbtn = document.createElement("button");
         mainbtn.innerText = "儲存修改";
         mainbtn.classList.add("mainbtn");
@@ -236,20 +271,30 @@ function showAccountInfo(){
             //檢查資料欄位合法性  密碼欄位必須是"" 或符合資料 
             let inputs = document.querySelectorAll("input");
             let name = inputs[0].value;
+            let phone = inputs[1].value;
             let nickname = inputs[2].value;
-            let email = inputs[3].value;
-            let oldpassword = inputs[4].value;
-            let newpassword = inputs[5].value;
-            let password_re = inputs[6].value;
-            console.log(name,nickname,email==="",oldpassword,newpassword,USER.no,USER.phone)
+            // let email = inputs[3].value;
+            // let oldpassword = inputs[4].value;
+            // let newpassword = inputs[5].value;
+            // let password_re = inputs[6].value;
+            let phone_rg = /^09[0-9]{8}$/;
+            if(phone_rg.test(phone.value)){
+                alert("電話格式有誤")
+                return false;
+            }
+            if(name.length>=15&&nickname.length>=15){
+                alert("姓名、暱稱名字不得超過15字")
+                return false;
+            }
+            // console.log(name,nickname,email==="",oldpassword,newpassword,USER.no,USER.phone)
             let obj = {
                 "id":USER.no,
                 "name":name,
-                "phone":USER.phone,
+                "phone":phone,
                 "nickname":nickname,
-                "email":email,
-                "oldpassword":oldpassword,
-                "newpassword":newpassword
+                // "email":email,
+                // "oldpassword":oldpassword,
+                // "newpassword":newpassword
             }
             fetch('user/',{
                 method:'put',
@@ -257,16 +302,13 @@ function showAccountInfo(){
                 body:JSON.stringify(obj)
             }).then(response=>{
                 if(response.status==200){
-                    return response.json()
+                    getMemberinfo().then(data=>{
+                        USER.updateUserInfo(data[0]);
+                        showAccountInfo();
+                    })
                 }
-            }).then(datas=>{
-                if(datas[0]=="舊密碼錯誤，密碼變更失敗！"){
-                    alert(datas);
-                }
-                USER.updateUserInfo(datas[1][0]);
-                showAccountInfo();
-                
-            })
+            }).catch(err=>console.log(err))
+
         });
         document.querySelector(".main").appendChild(mainbtn);
         document.getElementById("target").removeAttribute("id");

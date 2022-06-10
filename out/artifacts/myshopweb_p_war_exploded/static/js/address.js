@@ -1,3 +1,5 @@
+import {getMemberAddress} from "./util.js";
+
 export class Address{
     constructor(obj){
         this.no = obj.no;
@@ -14,30 +16,42 @@ export class Address{
         let deleteBtn = document.createElement("button");
         deleteBtn.classList.add("checkbtn");
         deleteBtn.innerText="刪除";
-        deleteBtn.addEventListener("click",(e)=>{
-            // 點選刪除鈕！
-            fetch('/address',{
-                method:'DELETE',
-                headers:{ 'Content-Type': 'application/json' },
-                body:JSON.stringify(this)
-            }).then(response=>{
-                if(response.status==200)
-                    console.log(e.target.parentElement.parentElement);
-                    e.target.parentElement.parentElement.remove();
-                    return response.json()
-            }).then(data=>{
-                let temp =[]
-                    data.forEach(list=>{
-                        temp.push(new Address(list));
-                    })
-                    USER.addresslists = temp;
-                    showAddressList();
-            }).catch(err=>{
-                console.log(err)
-            })
-    
-
-        })
+        // deleteBtn.addEventListener("click",(e)=>{
+        //     // 點選刪除鈕！
+        //     fetch('/address',{
+        //         method:'DELETE',
+        //         headers:{ 'Content-Type': 'application/json' },
+        //         body:JSON.stringify(this)
+        //     }).then(response=>{
+        //         if(response.status == 200) {
+        //             e.target.parentElement.parentElement.remove();
+        //             // history.back();
+        //             getMemberAddress().then(data => {
+        //                 let temp = []
+        //                 data.forEach(list => {
+        //                     temp.push(new Address(list));
+        //                 })
+        //                 USER.addresslists = temp;
+        //                 showAddressList();
+        //             })
+        //         }
+        //     //     if(response.status==200)
+        //     //         console.log(e.target.parentElement.parentElement);
+        //     //         e.target.parentElement.parentElement.remove();
+        //     //         return response.json()
+        //     // }).then(data=>{
+        //     //     let temp =[]
+        //     //         data.forEach(list=>{
+        //     //             temp.push(new Address(list));
+        //     //         })
+        //     //         USER.addresslists = temp;
+        //     //         showAddressList();
+        //     }).catch(err=>{
+        //         console.log(err)
+        //     })
+        //
+        //
+        // })
         btnTD.appendChild(deleteBtn);
         tableRow.append(btnTD);
         return tableRow;
