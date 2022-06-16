@@ -1,6 +1,6 @@
-import { MemberOrderList } from '../js/orderlist.js';
-import { Address } from '../js/address.js';
-import { getMemberAddress,getMemberOrderList } from '../js/util.js';
+import { MemberOrderList } from './orderlist.js';
+import { Address } from './address.js';
+import { getMemberAddress,getMemberOrderList } from './util.js';
 
 
 class User{
@@ -23,10 +23,12 @@ export class Member extends User{
     createOrderList(){
       
         let temp =[];
-        getMemberOrderList(this.phone).then(datas=>{
+        getMemberOrderList(this.no).then(datas=>{
+            console.log(datas);
             datas.forEach(data=>{
+                console.log(data);
                 temp.push(new MemberOrderList(data));
-            })           
+            })
         }).catch(err=>{console.log(err)})
   
         return temp;

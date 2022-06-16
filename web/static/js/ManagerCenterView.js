@@ -587,7 +587,7 @@ export class MemberSearch{
                     console.log("list",this.member.orderlists)
                 }
                 // console.log("ddd",document.querySelector(".main").children[1].children[6])
-                getMemberOrderList(this.member.phone).then(datas=>{
+                getMemberOrderList(this.member.no).then(datas=>{
                     let temp = [];
                     datas.forEach(data=>{
                         console.log("管理者載入會員訂單",data)

@@ -1,5 +1,6 @@
 package com.yawei.util;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.json.*;
@@ -56,7 +57,7 @@ public class MySqlConnect implements DatabaseConnect{
             return false;
         }
         return  true;
-    }
+    } //v
 
     @Override
     public JsonArray getAllProducts(){
@@ -75,6 +76,7 @@ public class MySqlConnect implements DatabaseConnect{
                 JsonObjectBuilder obj = createObjectBuilder();
                 for (int i = 1; i <= columnCount; i++) {
                     if(this.isInt(rs.getObject(i))){
+
                         obj.add(rsmd.getColumnLabel(i),rs.getInt(i) );
                     }else{
                         obj.add(rsmd.getColumnLabel(i),rs.getString(i)==null?"null":rs.getString(i) );
@@ -500,7 +502,7 @@ public class MySqlConnect implements DatabaseConnect{
                 e.printStackTrace();
             }
         }
-    }
+    }//v
 
     @Override
     public JsonArray getUserAddress(String id) {
@@ -535,7 +537,7 @@ public class MySqlConnect implements DatabaseConnect{
             JsonArray array = result.build();
             return array;
         }
-    }
+    }//v
 
     @Override
     public void createAddress(JSONObject object) {
@@ -555,7 +557,7 @@ public class MySqlConnect implements DatabaseConnect{
                 e.printStackTrace();
             }
         }
-    }
+    }//v
 
     @Override
     public void deleteAddress(JSONObject object) {
@@ -576,55 +578,600 @@ public class MySqlConnect implements DatabaseConnect{
             }
         }
 
+    }//v
+
+    @Override
+    public int getNewOrderListNo() {
+
+        Statement sm = null;
+        String sql=String.format("select o_no from order_list order by o_no desc limit 1");
+        int id = 1;
+        try{
+            sm = this.conn.createStatement();
+            ResultSet rs = sm.executeQuery(sql);
+            while(rs.next()){
+                id = rs.getInt(1) + 1;
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return id;
     }
 
     @Override
-    public JsonArray getNewOrderListNo() {
-        return null;
+    public void createOrderList(JSONObject object,String userid) {
+        int no = MySqlConnect.getMySql().getNewOrderListNo();
+        Statement sm = null;
+        String sql = String.format("insert into order_list(o_no,m_no,pay_id,t_no,o_recipient) values(%d,%s,%s,'%s','%s')",
+                no,userid,object.getString("pay_id"),object.getString("tote_type"),object.getString("recipient"));
+        JSONObject products = object.getJSONObject("products");
+        System.out.println("新增訂單"+products);
+
+
+//        try{
+//            sm = this.conn.createStatement();
+//            sm.executeUpdate(sql);
+//
+//
+//        }catch(SQLException e){
+//            e.printStackTrace();
+//        }finally {
+//            try{
+//                sm.close();
+//            }catch (SQLException e){
+//                e.printStackTrace();
+//            }
+//        }
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println(MySqlConnect.getMySql().getOrderListByMemberId("1"));
+        System.out.println(MySqlConnect.getMySql().getOrderListByMemberIdforManager("1"));
+        System.out.println(MySqlConnect.getMySql().getOrderListByDays("180"));
+        System.out.println(MySqlConnect.getMySql().getOrderListByDate("2022-06-02"));
+        System.out.println(MySqlConnect.getMySql().getOrderListByNo("1","1"));
+        System.out.println(MySqlConnect.getMySql().getOrderListByNoForManager("1"));
     }
 
     @Override
-    public void createOrderList(JsonObject object) {
+    public JSONArray getOrderListByMemberId(String id) {
+        Statement sm = null;
+        String sql = String.format("select * from" +
+                "(select o_no as no," +
+                "m_no as id," +
+                "m_phone as phone," +
+                "pay_name as payType," +
+                "o_orderdate as orderDate," +
+                "o_sendno as sendNo," +
+                "o_senddate as sendDate," +
+                "o_type as type," +
+                "o_recipient as recipient," +
+                "o_total as total from" +
+                "(select * from order_list inner join members using(m_no) inner join pay_type using(pay_id) ) as temp )as temp2" +
+                "inner join" +
+                "(select o_no as no," +
+                "p_no," +
+                "p_name,c_size ," +
+                "p_price ," +
+                "b_num  from" +
+                "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
+                ") as temp4 using(no) where id = %s order by orderDate;",id);
+        JSONArray lists =null;
+        try{
+            sm = this.conn.createStatement();
+            ResultSet rs = sm.executeQuery(sql);
+            HashMap<String,HashMap> result  = new HashMap();
+            ResultSetMetaData rsmd =  rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+            while(rs.next()){
+                String no = rs.getString("no");
+                if(!result.containsKey(no)){//訂單編號 key 不存在
+                    HashMap<String,Object> temp = new HashMap();
+                    temp.put("no",rs.getInt("no"));
+                    temp.put("phone",rs.getInt("phone"));
+                    temp.put("id",rs.getInt("id"));
+                    temp.put("payType",rs.getString("payType"));
+                    temp.put("orderDate",rs.getDate("orderDate"));
+                    temp.put("sendNo",rs.getString("sendNo")==null?"":rs.getString("sendNo"));
+                    temp.put("sendDate",rs.getString("sendDate")==null?"":rs.getString("sendDate"));
+                    temp.put("type",rs.getString("type"));
+                    temp.put("recipient",rs.getString("recipient"));
+                    temp.put("total",rs.getInt("total"));
+                    HashMap<String,Object> list = new HashMap();
+                    HashMap<String,String> product = new HashMap();
+                    product.put("p_no",rs.getString("p_no"));
+                    product.put("p_name",rs.getString("p_name"));
+                    product.put("c_size",rs.getString("c_size"));
+                    product.put("p_price",rs.getString("p_price"));
+                    product.put("b_num",rs.getString("b_num"));
+                    list.put(rs.getString("p_no"),product);
+                    temp.put("productsList",list);
+                    result.put(no,temp);
+                }else{// 訂單編號 key已存在 插入新品項資料即可
+                    HashMap<String,Object> list = (HashMap<String, Object>) result.get(no).get("productsList");
+                    HashMap<String,String> product = new HashMap();
+                    product.put("p_no",rs.getString("p_no"));
+                    product.put("p_name",rs.getString("p_name"));
+                    product.put("c_size",rs.getString("c_size"));
+                    product.put("p_price",rs.getString("p_price"));
+                    product.put("b_num",rs.getString("b_num"));
+                    list.put(rs.getString("p_no"),product);
+                }
+            }
+            lists = new JSONArray();
+            for(String key : result.keySet()){
+                lists.put(result.get(key));
+            }
+            System.out.print("lists="+lists);
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                sm.close();
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+            return lists;
+        }
+    }//v
+    @Override
+    public JSONArray getOrderListByMemberIdforManager(String id) {
+        Statement sm = null;
+        String sql = String.format("select * from" +
+                "(select o_no as no," +
+                "m_no as id," +
+                "m_phone as phone," +
+                "m_name as name," +
+                "pay_no as payNo," +
+                "o_remark as remark," +
+                "pay_name as payType," +
+                "o_orderdate as orderDate," +
+                "o_sendno as sendNo," +
+                "o_senddate as sendDate," +
+                "o_type as type," +
+                "o_recipient as recipient," +
+                "o_total as total from" +
+                "(select * from order_list inner join members using(m_no) inner join pay_type using(pay_id) ) as temp )as temp2" +
+                "inner join" +
+                "(select o_no as no," +
+                "p_no," +
+                "p_name,c_size ," +
+                "p_price ," +
+                "b_num  from" +
+                "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
+                ") as temp4 using(no) where id = %s order by orderDate;",id);
+        JSONArray lists = null;
+        try{
+            sm = this.conn.createStatement();
+            ResultSet rs = sm.executeQuery(sql);
+            HashMap<String,HashMap> result  = new HashMap();
+            ResultSetMetaData rsmd =  rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+            while(rs.next()){
+                String no = rs.getString("no");
+                if(!result.containsKey(no)){//訂單編號 key 不存在
+                    HashMap<String,Object> temp = new HashMap();
+                    temp.put("no",rs.getInt("no"));
+                    temp.put("phone",rs.getInt("phone"));
+                    temp.put("id",rs.getInt("id"));
+                    temp.put("payType",rs.getString("payType"));
+                    temp.put("orderDate",rs.getDate("orderDate"));
+                    temp.put("sendNo",rs.getString("sendNo")==null?"":rs.getString("sendNo"));
+                    temp.put("sendDate",rs.getString("sendDate")==null?"":rs.getString("sendDate"));
+                    temp.put("type",rs.getString("type"));
+                    temp.put("recipient",rs.getString("recipient"));
+                    temp.put("total",rs.getInt("total"));
+                    temp.put("name",rs.getString("name"));
+                    temp.put("payNo",rs.getString("payNo")==null?"":rs.getString("payNo"));
+                    temp.put("remark",rs.getString("remark")==null?"":rs.getString("remark"));
+                    HashMap<String,Object> list = new HashMap();
+                    HashMap<String,String> product = new HashMap();
+                    product.put("p_no",rs.getString("p_no"));
+                    product.put("p_name",rs.getString("p_name"));
+                    product.put("c_size",rs.getString("c_size"));
+                    product.put("p_price",rs.getString("p_price"));
+                    product.put("b_num",rs.getString("b_num"));
+                    list.put(rs.getString("p_no"),product);
+                    temp.put("productsList",list);
+                    result.put(no,temp);
+                }else{// 訂單編號 key已存在 插入新品項資料即可
+                    HashMap<String,Object> list = (HashMap<String, Object>) result.get(no).get("productsList");
+                    HashMap<String,String> product = new HashMap();
+                    product.put("p_no",rs.getString("p_no"));
+                    product.put("p_name",rs.getString("p_name"));
+                    product.put("c_size",rs.getString("c_size"));
+                    product.put("p_price",rs.getString("p_price"));
+                    product.put("b_num",rs.getString("b_num"));
+                    list.put(rs.getString("p_no"),product);
+                }
+            }
+            lists = new JSONArray();
+            for(String key : result.keySet()){
+                lists.put(result.get(key));
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                sm.close();
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+            return lists;
+        }
+    }//v
 
+    @Override
+    public JSONArray getOrderListByDate(String date) {
+        Statement sm = null;
+        String sql = String.format("select * from" +
+                "(select o_no as no," +
+                "m_no as id," +
+                "m_phone as phone," +
+                "m_name as name," +
+                "pay_no as payNo," +
+                "o_remark as remark," +
+                "pay_name as payType," +
+                "o_orderdate as orderDate," +
+                "o_sendno as sendNo," +
+                "o_senddate as sendDate," +
+                "o_type as type," +
+                "o_recipient as recipient," +
+                "o_total as total from" +
+                "(select * from order_list inner join members using(m_no) inner join pay_type using(pay_id) ) as temp )as temp2" +
+                "inner join" +
+                "(select o_no as no," +
+                "p_no," +
+                "p_name,c_size ," +
+                "p_price ," +
+                "b_num  from" +
+                "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
+                ") as temp4 using(no) where orderDate like '%s %s' order by orderDate",date,'%');
+        JSONArray lists = null;
+        try{
+            sm = this.conn.createStatement();
+            ResultSet rs = sm.executeQuery(sql);
+            HashMap<String,HashMap> result  = new HashMap();
+            ResultSetMetaData rsmd =  rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+            while(rs.next()){
+                String no = rs.getString("no");
+                if(!result.containsKey(no)){//訂單編號 key 不存在
+                    HashMap<String,Object> temp = new HashMap();
+                    temp.put("no",rs.getInt("no"));
+                    temp.put("phone",rs.getInt("phone"));
+                    temp.put("id",rs.getInt("id"));
+                    temp.put("payType",rs.getString("payType"));
+                    temp.put("orderDate",rs.getDate("orderDate"));
+                    temp.put("sendNo",rs.getString("sendNo")==null?"":rs.getString("sendNo"));
+                    temp.put("sendDate",rs.getString("sendDate")==null?"":rs.getString("sendDate"));
+                    temp.put("type",rs.getString("type"));
+                    temp.put("recipient",rs.getString("recipient"));
+                    temp.put("total",rs.getInt("total"));
+                    temp.put("name",rs.getString("name"));
+                    temp.put("payNo",rs.getString("payNo")==null?"":rs.getString("payNo"));
+                    temp.put("remark",rs.getString("remark")==null?"":rs.getString("remark"));
+                    HashMap<String,Object> list = new HashMap();
+                    HashMap<String,String> product = new HashMap();
+                    product.put("p_no",rs.getString("p_no"));
+                    product.put("p_name",rs.getString("p_name"));
+                    product.put("c_size",rs.getString("c_size"));
+                    product.put("p_price",rs.getString("p_price"));
+                    product.put("b_num",rs.getString("b_num"));
+                    list.put(rs.getString("p_no"),product);
+                    temp.put("productsList",list);
+                    result.put(no,temp);
+                }else{// 訂單編號 key已存在 插入新品項資料即可
+                    HashMap<String,Object> list = (HashMap<String, Object>) result.get(no).get("productsList");
+                    HashMap<String,String> product = new HashMap();
+                    product.put("p_no",rs.getString("p_no"));
+                    product.put("p_name",rs.getString("p_name"));
+                    product.put("c_size",rs.getString("c_size"));
+                    product.put("p_price",rs.getString("p_price"));
+                    product.put("b_num",rs.getString("b_num"));
+                    list.put(rs.getString("p_no"),product);
+                }
+            }
+            lists = new JSONArray();
+            for(String key : result.keySet()){
+                lists.put(result.get(key));
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                sm.close();
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+            return lists;
+        }
+    } //v
+
+    @Override
+    public JSONArray getOrderListByDays(String days) {
+        Statement sm = null;
+        String sql = String.format("select * from" +
+                "(select o_no as no," +
+                "m_no as id," +
+                "m_phone as phone," +
+                "m_name as name," +
+                "pay_no as payNo," +
+                "o_remark as remark," +
+                "pay_name as payType," +
+                "o_orderdate as orderDate," +
+                "o_sendno as sendNo," +
+                "o_senddate as sendDate," +
+                "o_type as type," +
+                "o_recipient as recipient," +
+                "o_total as total from" +
+                "(select * from order_list inner join members using(m_no) inner join pay_type using(pay_id) ) as temp )as temp2" +
+                "inner join" +
+                "(select o_no as no," +
+                "p_no," +
+                "p_name,c_size ," +
+                "p_price ," +
+                "b_num  from" +
+                "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
+                ") as temp4 using(no) where orderDate >= current_date-%s order by orderDate;",days);
+        JSONArray lists = null;
+        try{
+            sm = this.conn.createStatement();
+            ResultSet rs = sm.executeQuery(sql);
+            HashMap<String,HashMap> result  = new HashMap();
+            ResultSetMetaData rsmd =  rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+            while(rs.next()){
+                String no = rs.getString("no");
+                if(!result.containsKey(no)){//訂單編號 key 不存在
+                    HashMap<String,Object> temp = new HashMap();
+                    temp.put("no",rs.getInt("no"));
+                    temp.put("phone",rs.getInt("phone"));
+                    temp.put("id",rs.getInt("id"));
+                    temp.put("payType",rs.getString("payType"));
+                    temp.put("orderDate",rs.getDate("orderDate"));
+                    temp.put("sendNo",rs.getString("sendNo")==null?"":rs.getString("sendNo"));
+                    temp.put("sendDate",rs.getString("sendDate")==null?"":rs.getString("sendDate"));
+                    temp.put("type",rs.getString("type"));
+                    temp.put("recipient",rs.getString("recipient"));
+                    temp.put("total",rs.getInt("total"));
+                    temp.put("name",rs.getString("name"));
+                    temp.put("payNo",rs.getString("payNo")==null?"":rs.getString("payNo"));
+                    temp.put("remark",rs.getString("remark")==null?"":rs.getString("remark"));
+                    HashMap<String,Object> list = new HashMap();
+                    HashMap<String,String> product = new HashMap();
+                    product.put("p_no",rs.getString("p_no"));
+                    product.put("p_name",rs.getString("p_name"));
+                    product.put("c_size",rs.getString("c_size"));
+                    product.put("p_price",rs.getString("p_price"));
+                    product.put("b_num",rs.getString("b_num"));
+                    list.put(rs.getString("p_no"),product);
+                    temp.put("productsList",list);
+                    result.put(no,temp);
+                }else{// 訂單編號 key已存在 插入新品項資料即可
+                    HashMap<String,Object> list = (HashMap<String, Object>) result.get(no).get("productsList");
+                    HashMap<String,String> product = new HashMap();
+                    product.put("p_no",rs.getString("p_no"));
+                    product.put("p_name",rs.getString("p_name"));
+                    product.put("c_size",rs.getString("c_size"));
+                    product.put("p_price",rs.getString("p_price"));
+                    product.put("b_num",rs.getString("b_num"));
+                    list.put(rs.getString("p_no"),product);
+                }
+            }
+            lists = new JSONArray();
+            for(String key : result.keySet()){
+                lists.put(result.get(key));
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                sm.close();
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+            return lists;
+        }
+    } //v
+
+    @Override
+    public JSONArray getOrderListByNo(String o_no,String m_id) {
+        Statement sm = null;
+        String sql = String.format("select * from" +
+                "(select o_no as no," +
+                "m_no as id," +
+                "m_phone as phone," +
+                "pay_name as payType," +
+                "o_orderdate as orderDate," +
+                "o_sendno as sendNo," +
+                "o_senddate as sendDate," +
+                "o_type as type," +
+                "o_recipient as recipient," +
+                "o_total as total from" +
+                "(select * from order_list inner join members using(m_no) inner join pay_type using(pay_id) ) as temp )as temp2" +
+                "inner join" +
+                "(select o_no as no," +
+                "p_no," +
+                "p_name,c_size ," +
+                "p_price ," +
+                "b_num  from" +
+                "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
+                ") as temp4 using(no) where no = %s and id = %s order by orderDate;",o_no,m_id);
+        JSONArray lists =null;
+        try{
+            sm = this.conn.createStatement();
+            ResultSet rs = sm.executeQuery(sql);
+            HashMap<String,HashMap> result  = new HashMap();
+            ResultSetMetaData rsmd =  rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+            while(rs.next()){
+                String no = rs.getString("no");
+                if(!result.containsKey(no)){//訂單編號 key 不存在
+                    HashMap<String,Object> temp = new HashMap();
+                    temp.put("no",rs.getInt("no"));
+                    temp.put("phone",rs.getInt("phone"));
+                    temp.put("id",rs.getInt("id"));
+                    temp.put("payType",rs.getString("payType"));
+                    temp.put("orderDate",rs.getDate("orderDate"));
+                    temp.put("sendNo",rs.getString("sendNo")==null?"":rs.getString("sendNo"));
+                    temp.put("sendDate",rs.getString("sendDate")==null?"":rs.getString("sendDate"));
+                    temp.put("type",rs.getString("type"));
+                    temp.put("recipient",rs.getString("recipient"));
+                    temp.put("total",rs.getInt("total"));
+                    HashMap<String,Object> list = new HashMap();
+                    HashMap<String,String> product = new HashMap();
+                    product.put("p_no",rs.getString("p_no"));
+                    product.put("p_name",rs.getString("p_name"));
+                    product.put("c_size",rs.getString("c_size"));
+                    product.put("p_price",rs.getString("p_price"));
+                    product.put("b_num",rs.getString("b_num"));
+                    list.put(rs.getString("p_no"),product);
+                    temp.put("productsList",list);
+                    result.put(no,temp);
+                }else{// 訂單編號 key已存在 插入新品項資料即可
+                    HashMap<String,Object> list = (HashMap<String, Object>) result.get(no).get("productsList");
+                    HashMap<String,String> product = new HashMap();
+                    product.put("p_no",rs.getString("p_no"));
+                    product.put("p_name",rs.getString("p_name"));
+                    product.put("c_size",rs.getString("c_size"));
+                    product.put("p_price",rs.getString("p_price"));
+                    product.put("b_num",rs.getString("b_num"));
+                    list.put(rs.getString("p_no"),product);
+                }
+            }
+            lists = new JSONArray();
+            for(String key : result.keySet()){
+                lists.put(result.get(key));
+            }
+            System.out.print("lists="+lists);
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                sm.close();
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+            return lists;
+        }
+    } //v
+
+    @Override
+    public JSONArray getOrderListByNoForManager(String o_no) {
+        Statement sm = null;
+        String sql = String.format("select * from" +
+                "(select o_no as no," +
+                "m_no as id," +
+                "m_phone as phone," +
+                "m_name as name," +
+                "pay_no as payNo," +
+                "o_remark as remark," +
+                "pay_name as payType," +
+                "o_orderdate as orderDate," +
+                "o_sendno as sendNo," +
+                "o_senddate as sendDate," +
+                "o_type as type," +
+                "o_recipient as recipient," +
+                "o_total as total from" +
+                "(select * from order_list inner join members using(m_no) inner join pay_type using(pay_id) ) as temp )as temp2" +
+                "inner join" +
+                "(select o_no as no," +
+                "p_no," +
+                "p_name,c_size ," +
+                "p_price ," +
+                "b_num  from" +
+                "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
+                ") as temp4 using(no) where no = %s order by orderDate;",o_no);
+        JSONArray lists = null;
+        try{
+            sm = this.conn.createStatement();
+            ResultSet rs = sm.executeQuery(sql);
+            HashMap<String,HashMap> result  = new HashMap();
+            ResultSetMetaData rsmd =  rs.getMetaData();
+            int columnCount = rsmd.getColumnCount();
+            while(rs.next()){
+                String no = rs.getString("no");
+                if(!result.containsKey(no)){//訂單編號 key 不存在
+                    HashMap<String,Object> temp = new HashMap();
+                    temp.put("no",rs.getInt("no"));
+                    temp.put("phone",rs.getInt("phone"));
+                    temp.put("id",rs.getInt("id"));
+                    temp.put("payType",rs.getString("payType"));
+                    temp.put("orderDate",rs.getDate("orderDate"));
+                    temp.put("sendNo",rs.getString("sendNo")==null?"":rs.getString("sendNo"));
+                    temp.put("sendDate",rs.getString("sendDate")==null?"":rs.getString("sendDate"));
+                    temp.put("type",rs.getString("type"));
+                    temp.put("recipient",rs.getString("recipient"));
+                    temp.put("total",rs.getInt("total"));
+                    temp.put("name",rs.getString("name"));
+                    temp.put("payNo",rs.getString("payNo")==null?"":rs.getString("payNo"));
+                    temp.put("remark",rs.getString("remark")==null?"":rs.getString("remark"));
+                    HashMap<String,Object> list = new HashMap();
+                    HashMap<String,String> product = new HashMap();
+                    product.put("p_no",rs.getString("p_no"));
+                    product.put("p_name",rs.getString("p_name"));
+                    product.put("c_size",rs.getString("c_size"));
+                    product.put("p_price",rs.getString("p_price"));
+                    product.put("b_num",rs.getString("b_num"));
+                    list.put(rs.getString("p_no"),product);
+                    temp.put("productsList",list);
+                    result.put(no,temp);
+                }else{// 訂單編號 key已存在 插入新品項資料即可
+                    HashMap<String,Object> list = (HashMap<String, Object>) result.get(no).get("productsList");
+                    HashMap<String,String> product = new HashMap();
+                    product.put("p_no",rs.getString("p_no"));
+                    product.put("p_name",rs.getString("p_name"));
+                    product.put("c_size",rs.getString("c_size"));
+                    product.put("p_price",rs.getString("p_price"));
+                    product.put("b_num",rs.getString("b_num"));
+                    list.put(rs.getString("p_no"),product);
+                }
+            }
+            lists = new JSONArray();
+            for(String key : result.keySet()){
+                lists.put(result.get(key));
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                sm.close();
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+            return lists;
+        }
+    } //v
+
+    @Override
+    public void cancelOrder(String no,String id ) {
+        Statement sm = null;
+        String sql = String.format("update order_list set o_type = 'cancel' where o_no = %s and m_no = %s",no,id);
+        try {
+            sm = this.conn.createStatement();
+            sm.executeUpdate(sql);
+        }catch (SQLException e){
+            e.printStackTrace();
+        }finally {
+            try {
+                sm.close();
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
-    public JsonArray getOrderListByPhone(String phone) {
-        return null;
-    }
-
-    @Override
-    public JsonArray getOrderListByPhoneforManager(String phone) {
-        return null;
-    }
-
-    @Override
-    public JsonArray getOrderLsitByDate(String date) {
-        return null;
-    }
-
-    @Override
-    public JsonArray getOrderListByDays(String days) {
-        return null;
-    }
-
-    @Override
-    public JsonArray getOrderListByNo(String no) {
-        return null;
-    }
-
-    @Override
-    public JsonArray getOrderListByNoforManager(String no) {
-        return null;
-    }
-
-    @Override
-    public JsonArray cancelOrder(JsonObject object) {
-        return null;
-    }
-
-    @Override
-    public JsonArray updateOrder(JsonObject object) {
-        return null;
+    public void updateOrder(JSONObject object) {
+        Statement sm = null;
+        if(object.get("send_no").equals("")) {
+            String sql = String.format("update order_list set o_remark = '%s' where o_no=%s", object.get("remark"), object.get("order_no"));
+        }else if(object.get("send_date").equals("尚未出貨")){
+            String sql = String.format("update order_list set o_senddate=current_date ,o_type = 'send' ,o_sendno = '{data['send_no']}',o_remark = '{data['remark']}' where o_no={data['order_no']}", object.get("remark"), object.get("order_no"));
+        }else{
+            String sql = String.format("update order_list set o_remark = '%s' where o_no=%s", object.get("remark"), object.get("order_no"));
+        }
     }
 }

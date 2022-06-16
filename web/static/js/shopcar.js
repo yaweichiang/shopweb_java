@@ -1,10 +1,10 @@
-import BuyProduct from './product.js'; 
 import { getCarProducts,setProducts, }from './util.js';
+import { BuyProduct } from './product.js';
+
 
 export default class ShopCar{
     constructor(){
-        this.inCarProducts = this.createProducts();// 購物車的商品資訊
-        this.listTarget = document.querySelector(".myproducts"); //購物車明細父節點
+        this.inCarProducts = getCarProducts().map(product=> new BuyProduct(product));//this.createProducts();// 購物車的商品資訊
         this.fare ;//運費金額
         this.toteNo; // 運送類型編號  ＊
         this.pay = {id:null,name:null,fee:0}; //付款資訊
@@ -22,18 +22,39 @@ export default class ShopCar{
                 "Threshold":null
             }
         };
+        console.log("car init" , this);
+        this.showproductsTypes();
+
     }
+
     createProducts(){//創建購物車 建立購物車商品物件
         //從localStorage 取得過物車商品資訊
         let products = getCarProducts();
         let temp = [];
+        // let temp2 = getCarProducts().map(product=> new BuyProduct(product));
         // 根據localStorage 購物車商品資訊建立購物車商品物件
+
+        // console.log(products);
+        // let obj = {
+        //     amount: 1,
+        //     capacity: 800,
+        //     id: 2,
+        //     intr: "商品簡介內容說明，簡易說明特性口感。XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+        //     inventory: 40,
+        //     isFreezing: "false",
+        //     name: "荔枝蜜",
+        //     price: 500,
+        //     sum: null,
+        //     type: "true",
+        //     url: "../static/products/product1.jpg",
+        // }
         products.forEach(product=>{
-            temp.push(new BuyProduct(product));
+            console.log(product);
+             temp.push(new BuyProduct(product));
         })
+        console.log("xxxxxx",temp);
         return temp;
     }
-    
 
     // 在商品頁面選購商品加入購物車 變動購物車商品資訊
     addProduct(product){ //新增商品先比對 購物車中是否有相同商品 有的話該商品購買數量＋1 
@@ -68,9 +89,10 @@ export default class ShopCar{
     }
     // 購物車頁面購物明細表格建立
     showProducts(){ //將購物車購買商品tr物件建構到頁面上
+        let listTarget = document.querySelector(".myproducts"); //購物車明細父節點
         this.inCarProducts.forEach(product=>{
             let productTr = this.setBtnEvent(product);
-            this.listTarget.appendChild(productTr);
+            listTarget.appendChild(productTr);
         })
     }
     // 將選購商品種類顯示到右上角購物車
@@ -131,8 +153,9 @@ export default class ShopCar{
             if(product.amount>1){
                 product.setAmount(-1);
                 //建立新tr物件替換掉舊的
+                let listTarget = document.querySelector(".myproducts"); //購物車明細父節點
                 let thisone = e.target.parentElement.parentElement;
-                this.listTarget.replaceChild(this.setBtnEvent(product),thisone);
+                listTarget.replaceChild(this.setBtnEvent(product),thisone);
                 this.updateProducts(); // 更新localStorage購買商品資料
                 }
 
@@ -142,8 +165,9 @@ export default class ShopCar{
                 if(product.amount<99){
                     product.setAmount(1);
                     //建立新tr物件替換掉舊的
+                    let listTarget = document.querySelector(".myproducts"); //購物車明細父節點
                     let thisone = e.target.parentElement.parentElement;
-                    this.listTarget.replaceChild(this.setBtnEvent(product),thisone);
+                    listTarget.replaceChild(this.setBtnEvent(product),thisone);
                     this.updateProducts(); // 更新localStorage購買商品資料
                     }
                 })

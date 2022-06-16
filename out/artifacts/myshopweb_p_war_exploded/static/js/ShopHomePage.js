@@ -1,17 +1,19 @@
-import { Product } from "./product.js";
-import { MYCAR ,getProducts,getAnnouncement } from './util.js'; 
+import {MYCAR, getProducts, getAnnouncement} from './util.js';
+import { Product,BuyProduct } from './product.js';
 
-MYCAR.showproductsTypes();//建立右上角購物車icon數字
-getAnnouncement("new").then(data=>{ //取得最新的公告
-    document.querySelector(".context").innerText = data[0].content;
-})
+ // MYCAR.showproductsTypes();//建立右上角購物車icon數字
+ getAnnouncement("new").then(data=>{ //取得最新的公告
+     document.querySelector(".context").innerText = data[0].content;
+ })
 
 
 let parent = document.querySelector(".innercontainer");
 // 向後端取得商品資訊
 getProducts().then(data=>{
+
     data.map((product)=>{
-        parent.appendChild(createProductsDom(new Product(product)));
+        let item = new Product(product);
+        parent.appendChild(createProductsDom(item));
     })
 })
 

@@ -1,7 +1,7 @@
 class OrderList{
     constructor(obj){
         this.no = obj.no;  //訂單編號
-        this.orderDate = obj.orderDate.substring(0,10);//訂購日期
+        this.orderDate = obj.orderDate;//訂購日期
         this.sendDate = obj.sendDate===null?"尚未出貨":obj.sendDate;//出貨日期
         this.type = obj.type==="order"?"訂購":(obj.type==="send"?"已寄送":"訂單取消");//訂單狀態
         this.payType = obj.payType;//付款方式
@@ -10,7 +10,7 @@ class OrderList{
         this.payNo = obj.payNo===null?"":obj.payNo;//金流編號
         this.sendNo = obj.sendNo===null?"":obj.sendNo;//物流單號
         this.remark = obj.remark===null?"":obj.remark;//訂單備註
-        this.productsList = JSON.parse(obj.productsList);
+        this.productsList = obj.productsList;//JSON.parse(obj.productsList);
         this.recipient = obj.recipient;
         this.total = obj.total,//this.getTotal();//總金額
         console.log(this)
@@ -36,6 +36,9 @@ class OrderList{
         this.remark = obj.remark===null?"":obj.remark;//訂單備註
         this.productsList = JSON.parse(obj.productsList);
         this.total =  obj.total;//總金額
+    }
+    getFresh(){
+
     }
     
 }
@@ -78,7 +81,6 @@ export class MemberOrderList extends OrderList{
                     let oldrow = e.target.parentElement.parentElement;
                     this.type = datas[0].type==="order"?"訂購":(obj.type==="send"?"已寄送":"訂單取消")
                     oldrow.parentElement.replaceChild((this.createTableRowView()),oldrow)
-            
                 }
             }).catch(err=>{
                 console.log(err)

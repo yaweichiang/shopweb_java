@@ -1,6 +1,7 @@
 import  ShopCar  from './shopcar.js';
 import {WebSetting} from './ManagerCenterView.js';
 
+
 // 讀取資料庫運費資料
 export function getFare(){
     return new Promise((resolve,reject)=>{
@@ -72,6 +73,7 @@ export function getCarProducts() {
             return response.json();
         }).then(data=>{
             //將請求到的資訊存到storage
+            console.log("存");
             localStorage.setItem("products",JSON.stringify(data));
         })
         .catch(err => {
@@ -85,6 +87,7 @@ export function getCarProducts() {
         let products = JSON.parse(data);
         for(let i = 0 ; i<carProducts.length;i++){
             products.forEach(item=>{
+                // console.log(item);
                 // 以新載入的資料更新商品資訊
                 if(item.id===carProducts[i].id){
                     carProducts[i].name = item.name;
@@ -101,9 +104,12 @@ export function getCarProducts() {
                     }
                 }
             })
+            console.log("forend");
         }
+        console.log(carProducts);
         return carProducts;
     }else{
+        console.log("else!!!")
         return [];
     };
 };
@@ -204,14 +210,15 @@ export function getMemberAddress(str){//取得會員常用地址資料
         }
     })
 }
-export function getMemberOrderList(str){//取得會員訂單記錄資料 根據會員電話  
+export function getMemberOrderList(str){//取得會員訂單記錄資料 根據會員電話
     return new Promise((resolve,reject)=>{
-        let src_url = '/order'+(str?'/'+str:'');
+        let src_url = '/orders/id'+(str?'/'+str:'');
         let xhr = new XMLHttpRequest();
         xhr.open('get',src_url,true);
         xhr.send();
         xhr.onload=()=>{
             if(xhr.status==200){
+                // resolve(JSON.parse(xhr.responseText));
                 if(xhr.responseText===""){
                     resolve([])
                 }else{
@@ -239,12 +246,6 @@ export function getManagerOrderList(type,data){//根據要搜尋的訂單建立�
     })
 }
 
-
-export const FEE=100; //貨到付款手續費  付款頁面的付款方式應該也要動態產生選項
-/////
-
-
-
-export const PRODUCTS = [];
+// export const PRODUCTS = [];
 export const MYCAR= new ShopCar(); //依照localStorage建立購物車物件 提供給其他頁面存取
 export const  SETTING = new WebSetting(); //連線系統取得網站設定資訊 建立網站設定資訊物件供各頁面存取

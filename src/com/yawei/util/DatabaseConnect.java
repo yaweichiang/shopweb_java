@@ -1,5 +1,6 @@
 package com.yawei.util;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.json.JsonObject;
@@ -56,25 +57,25 @@ public interface DatabaseConnect {
 //    刪除常用地址
     public abstract void deleteAddress(JSONObject object);
 //    取得下筆訂單編號
-    public abstract  JsonArray getNewOrderListNo();
+    public abstract  int getNewOrderListNo();
 //    新增訂單
-    public abstract  void createOrderList(JsonObject object);
+    public abstract  void createOrderList(JSONObject object,String userid);
 //    取得指定會員訂單資料  會員專用
-    public abstract  JsonArray getOrderListByPhone(String phone);
+    public abstract JSONArray getOrderListByMemberId(String id);
 //    取得指定會員訂單資料  管理者專用
-    public abstract  JsonArray getOrderListByPhoneforManager(String phone);
+    public abstract  JSONArray getOrderListByMemberIdforManager(String id);
 //    取得指定日期訂單資料
-    public abstract  JsonArray getOrderLsitByDate(String date);
+    public abstract  JSONArray getOrderListByDate(String date);
 //    取得指定天數內的訂單資料
-    public abstract  JsonArray getOrderListByDays(String days);
+    public abstract  JSONArray getOrderListByDays(String days);
 //    取得指定編號訂單資料  會員專用
-    public abstract  JsonArray getOrderListByNo(String no);
+    public abstract  JSONArray getOrderListByNo(String no,String id);
 //    取得指定編號訂單資料  管理者專用
-    public abstract  JsonArray getOrderListByNoforManager(String no);
+    public abstract  JSONArray getOrderListByNoForManager(String no);
 //    取消訂單  會員專用
-    public abstract  JsonArray cancelOrder(JsonObject object);
+    public abstract  void cancelOrder(String no,String id);
 //    更新訂單資訊  管理者專用
-    public abstract JsonArray updateOrder(JsonObject object);
+    public abstract void updateOrder(JSONObject object);
 
 
 
