@@ -5,7 +5,7 @@ export class Address{
         this.no = obj.no;
         this.name = obj.name;
         this.address = obj.address;
-        this.phone = obj.phone;
+        this.phone = '0'+obj.phone;
     }
     createTableRowView(){// 建立顯示在會員中心的地址列表
         let tableRow = document.createElement("tr");

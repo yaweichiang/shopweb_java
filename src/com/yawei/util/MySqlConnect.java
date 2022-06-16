@@ -8,8 +8,11 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.*;
 
+import java.lang.reflect.Array;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static javax.json.Json.createArrayBuilder;
 import static javax.json.Json.createObjectBuilder;
@@ -598,42 +601,41 @@ public class MySqlConnect implements DatabaseConnect{
         return id;
     }
 
+    public static void main(String[] args) {
+        String json = "{\"payID\":3,\"toteNo\":1,\"products\":[{\"id\":1,\"name\":\"龍眼蜜\",\"inventory\":20,\"type\":true,\"capacity\":800,\"price\":500,\"isFreezing\":false,\"url\":\"../static/products/product1.jpg\",\"intr\":\"商品簡介內容說明，簡易說明特性口感。XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\",\"amount\":1,\"sum\":500},{\"id\":2,\"name\":\"荔枝蜜\",\"inventory\":40,\"type\":true,\"capacity\":800,\"price\":500,\"isFreezing\":false,\"url\":\"../static/products/product1.jpg\",\"intr\":\"商品簡介內容說明，簡易說明特性口感。XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\",\"amount\":4,\"sum\":2000},{\"id\":4,\"name\":\"咸豐草\",\"inventory\":66,\"type\":true,\"capacity\":800,\"price\":500,\"isFreezing\":false,\"url\":\"../static/products/product1.jpg\",\"intr\":\"商品簡介內容說明，簡易說明特性口感。XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\",\"amount\":3,\"sum\":1500},{\"id\":10,\"name\":\"蜂王乳\",\"inventory\":40,\"type\":true,\"capacity\":100,\"price\":1600,\"isFreezing\":true,\"url\":\"../static/products/product1.jpg\",\"intr\":\"測試\",\"amount\":1,\"sum\":1600}],\"name\":\"江雅崴\",\"phone\":\"0937513541\",\"address\":\"新竹市中華路一段256號\",\"total\":5700}";
+        JSONObject obj = new JSONObject(json);
+        System.out.println("obj="+obj);
+        MySqlConnect.getMySql().createOrderList(obj,"8");
+
+    }
     @Override
     public void createOrderList(JSONObject object,String userid) {
         int no = MySqlConnect.getMySql().getNewOrderListNo();
         Statement sm = null;
-        String sql = String.format("insert into order_list(o_no,m_no,pay_id,t_no,o_recipient) values(%d,%s,%s,'%s','%s')",
-                no,userid,object.getString("pay_id"),object.getString("tote_type"),object.getString("recipient"));
-        JSONObject products = object.getJSONObject("products");
-        System.out.println("新增訂單"+products);
+        String sql = String.format("insert into order_list(o_no,m_no,pay_id,t_no,o_recipient,o_total) values(%d,%s,%d,'%d','%s',%d)",
+                no,userid,object.getInt("payID"),object.getInt("toteNo"),(object.getString("name")+"/"+object.getString("address")+"/"+object.getString("phone")),object.getInt("total"));
+        try{
+            sm = this.conn.createStatement();
+            sm.executeUpdate(sql);
+            Object json = object.get("products");
+            JSONArray products = new JSONArray(json.toString());
+            for(Object obj :products){
+                JSONObject product = new JSONObject(obj.toString());
+                sql = String.format("insert into order_products values(%d,%d,%d)",no,product.getInt("id"),product.getInt("amount"));
+                sm.executeUpdate(sql);
+            }
 
-
-//        try{
-//            sm = this.conn.createStatement();
-//            sm.executeUpdate(sql);
-//
-//
-//        }catch(SQLException e){
-//            e.printStackTrace();
-//        }finally {
-//            try{
-//                sm.close();
-//            }catch (SQLException e){
-//                e.printStackTrace();
-//            }
-//        }
+            System.out.println("新增完成");
+        }catch (SQLException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                sm.close();
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
     }
-
-
-    public static void main(String[] args) {
-        System.out.println(MySqlConnect.getMySql().getOrderListByMemberId("1"));
-        System.out.println(MySqlConnect.getMySql().getOrderListByMemberIdforManager("1"));
-        System.out.println(MySqlConnect.getMySql().getOrderListByDays("180"));
-        System.out.println(MySqlConnect.getMySql().getOrderListByDate("2022-06-02"));
-        System.out.println(MySqlConnect.getMySql().getOrderListByNo("1","1"));
-        System.out.println(MySqlConnect.getMySql().getOrderListByNoForManager("1"));
-    }
-
     @Override
     public JSONArray getOrderListByMemberId(String id) {
         Statement sm = null;
@@ -1173,5 +1175,30 @@ public class MySqlConnect implements DatabaseConnect{
         }else{
             String sql = String.format("update order_list set o_remark = '%s' where o_no=%s", object.get("remark"), object.get("order_no"));
         }
+    }
+
+    @Override
+    public boolean checkPhone(String id){
+        boolean result = false;
+        Statement sm = null;
+        String sql = String.format("select m_phone from members where m_no = %s",id);
+        try{
+            sm = this.conn.createStatement();
+            ResultSet rs = sm.executeQuery(sql);
+            while(rs.next()){
+                result = rs.getString(1)==null?false:true;
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                sm.close();
+
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+
+        }
+        return result;
     }
 }

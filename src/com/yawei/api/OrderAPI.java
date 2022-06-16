@@ -77,6 +77,8 @@ public class OrderAPI extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
+        resp.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = resp.getWriter();
         String json = "";
         if(req.getSession().getAttribute("userid")!=null) {
             String id = req.getSession().getAttribute("userid").toString();
@@ -85,9 +87,11 @@ public class OrderAPI extends HttpServlet {
                 json = br.readLine();
             }
             JSONObject obj = new JSONObject(json);
-            System.out.print(obj);
             MySqlConnect.getMySql().createOrderList(obj,id);
+            out.print("ok");
 
+        }else{
+            out.print("fail");
         }
     }
 }

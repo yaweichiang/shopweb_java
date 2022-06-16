@@ -76,8 +76,8 @@ public interface DatabaseConnect {
     public abstract  void cancelOrder(String no,String id);
 //    更新訂單資訊  管理者專用
     public abstract void updateOrder(JSONObject object);
-
-
+//    確認會員是否有登記電話
+    public boolean checkPhone(String id);
 
 
 

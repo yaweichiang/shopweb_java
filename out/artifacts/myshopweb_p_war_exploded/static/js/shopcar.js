@@ -34,20 +34,6 @@ export default class ShopCar{
         // let temp2 = getCarProducts().map(product=> new BuyProduct(product));
         // 根據localStorage 購物車商品資訊建立購物車商品物件
 
-        // console.log(products);
-        // let obj = {
-        //     amount: 1,
-        //     capacity: 800,
-        //     id: 2,
-        //     intr: "商品簡介內容說明，簡易說明特性口感。XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
-        //     inventory: 40,
-        //     isFreezing: "false",
-        //     name: "荔枝蜜",
-        //     price: 500,
-        //     sum: null,
-        //     type: "true",
-        //     url: "../static/products/product1.jpg",
-        // }
         products.forEach(product=>{
             console.log(product);
              temp.push(new BuyProduct(product));
@@ -227,16 +213,19 @@ export default class ShopCar{
                 headers:{"Content-Type":"Application/json"},
                 body:JSON.stringify(data)
             }).then(response=>{
-                return response.json()
+                if(response.status==200){
+                  return response.text();
+                }
             }).then(datas=>{
                 if(datas==="ok"){
                     alert("完成訂購");
                     localStorage.removeItem('car_products');
                     window.location.href='/usercenter';
+                }else{
+                    console.log("訂購失敗")
                 }
-               
             })
         })
     }
- 
+
 }

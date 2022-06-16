@@ -85,8 +85,12 @@ document.querySelector(".mainbtn").addEventListener("click",()=>{
                     MYCAR.showFinalList(obj);
                 }
                 
+            }else if(datas==="nophone"){
+                alert("結帳前請將會員資料中的電話號碼補齊！");
+                window.location.href='/usercenter';
             }else{
                 // 未登入 轉到會員中心進行登入
+                alert("請先登入會員,並確認會員電話資料已填寫！");
                 window.location.href='/usercenter';
             }
         })     
