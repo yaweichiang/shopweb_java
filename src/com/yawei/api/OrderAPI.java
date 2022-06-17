@@ -46,6 +46,7 @@ public class OrderAPI extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
+        resp.setContentType("application/json;charset=UTF-8");
         PrintWriter out = resp.getWriter();
         String subPath = req.getPathInfo().substring(1);
         String json = "";

@@ -1,7 +1,7 @@
 import {MYCAR, getProducts, getAnnouncement} from './util.js';
 import { Product,BuyProduct } from './product.js';
 
- // MYCAR.showproductsTypes();//建立右上角購物車icon數字
+ MYCAR.showproductsTypes();//建立右上角購物車icon數字
  getAnnouncement("new").then(data=>{ //取得最新的公告
      document.querySelector(".context").innerText = data[0].content;
  })

@@ -43,6 +43,7 @@ export class WebSetting{
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(this.targetAannouncement)
         }).then(response=>{
+            console.log(response);
             this.announcementView()
         }).catch(err=>{
             console.log(err)

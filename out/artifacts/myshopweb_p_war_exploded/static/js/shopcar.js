@@ -23,7 +23,6 @@ export default class ShopCar{
             }
         };
         console.log("car init" , this);
-        this.showproductsTypes();
 
     }
 

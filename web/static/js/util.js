@@ -131,6 +131,7 @@ export function getProducts(){
                 if(xhr.responseText===""){
                     resolve([])
                 }else{
+                    localStorage.setItem("products",xhr.responseText);
                     resolve(JSON.parse(xhr.responseText));
                 }
             }
@@ -244,6 +245,23 @@ export function getManagerOrderList(type,data){//根據要搜尋的訂單建立�
             }
         }
     })
+}
+export function getOrderListByNo(str){//取得網站公告資料 有傳入參數new時取得最新公告 未傳入參數時取得最近6筆
+    return new Promise((resolve,reject)=>{
+        let src_url='/order/'+str;
+        let xhr = new XMLHttpRequest();
+        xhr.open('get',src_url,true);
+        xhr.send();
+        xhr.onload=()=>{
+            if(xhr.status == 200){
+                if(xhr.responseText===""){
+                    resolve([])
+                }else{
+                    resolve(JSON.parse(xhr.responseText));
+                }
+            }
+        }
+    });
 }
 
 // export const PRODUCTS = [];

@@ -3,7 +3,6 @@ import {Address} from './address.js'
 import PayType from './pay.js'
 
 //購物車頁面 
-MYCAR.showProducts(); // 建立購物車商品明細的dom物件
 MYCAR.showproductsTypes();//建立右上角購物車icon數字
 getFare().then(data=>{
     MYCAR.FareInfo.normal.id=data[0].name==='常溫'?data[0].id:data[1].id;
@@ -23,6 +22,7 @@ getPay().then(datas=>{
         document.querySelector(".selectpay").appendChild(new PayType(data).showInShopCar())
     })
 })
+MYCAR.showProducts(); // 建立購物車商品明細的dom物件
 
 // 這邊要直接跟後端請求address
 getMemberAddress().then(datas=>{

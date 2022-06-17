@@ -1,3 +1,5 @@
+import {getOrderListByNo} from './util.js';
+
 class OrderList{
     constructor(obj){
         this.no = obj.no;  //訂單編號
@@ -75,13 +77,14 @@ export class MemberOrderList extends OrderList{
                 headers:{'Content-Type':'application/json'},
                 body:JSON.stringify(obj)
             }).then(response=>{
-                return response.json()
-            }).then(datas=>{
-                if(datas.length!=0){
-                    let oldrow = e.target.parentElement.parentElement;
+                console.log(response)
+                let oldrow = e.target.parentElement.parentElement;
+                getOrderListByNo(this.no).then(datas=>{
+                    console.log(datas);
                     this.type = datas[0].type==="order"?"訂購":(obj.type==="send"?"已寄送":"訂單取消")
                     oldrow.parentElement.replaceChild((this.createTableRowView()),oldrow)
-                }
+
+                })
             }).catch(err=>{
                 console.log(err)
             })
