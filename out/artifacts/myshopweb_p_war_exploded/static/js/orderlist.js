@@ -85,14 +85,6 @@ export class MemberOrderList extends OrderList{
                     oldrow.parentElement.replaceChild((this.createTableRowView()),oldrow)
 
                 })
-            //     return response.json()
-            // }).then(datas=>{
-            //     console.log(datas);
-            //     if(datas.length!=0){
-            //         let oldrow = e.target.parentElement.parentElement;
-            //         this.type = datas[0].type==="order"?"訂購":(obj.type==="send"?"已寄送":"訂單取消")
-            //         oldrow.parentElement.replaceChild((this.createTableRowView()),oldrow)
-            //     }
             }).catch(err=>{
                 console.log(err)
             })

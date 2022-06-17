@@ -23,10 +23,12 @@ public class AddressAPI extends HttpServlet {
         PrintWriter out = resp.getWriter();
         String subPath = req.getPathInfo();
         JsonArray result = null;
+        System.out.println("address subpath"+subPath);
         if(req.getSession().getAttribute("userid")!=null){
             String id = req.getSession().getAttribute("userid").toString();
             result = MySqlConnect.getMySql().getUserAddress(id);
-        }else if(req.getSession().getAttribute("managerid")!=null) {
+        }else if(req.getSession().getAttribute("managerid")!=null && subPath!=null) {
+
             String idString = "^/[1-9]+[0-9]*$";
             if (Pattern.matches(idString, subPath)) {
                 result = MySqlConnect.getMySql().getUserAddress(subPath.substring(1));
