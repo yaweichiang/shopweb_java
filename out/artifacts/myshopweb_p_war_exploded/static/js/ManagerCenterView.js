@@ -516,7 +516,6 @@ export class MemberSearch{
     constructor(){
         this.member;
     }
-
     searchBar(arr){
         let div = document.createElement("div");
         div.innerHTML = 

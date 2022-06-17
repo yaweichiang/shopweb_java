@@ -36,7 +36,7 @@ class OrderList{
         this.payNo = obj.payNo===null?"":obj.payNo;//金流編號
         this.sendNo = obj.sendNo===null?"":obj.sendNo;//物流單號
         this.remark = obj.remark===null?"":obj.remark;//訂單備註
-        this.productsList = JSON.parse(obj.productsList);
+        this.productsList = obj.productsList;//JSON.parse(obj.productsList);
         this.total =  obj.total;//總金額
     }
     getFresh(){
@@ -197,7 +197,10 @@ export class ManagerOrderList extends MemberOrderList{
 
     createDitalView(){
         let temp="";
+        console.log(this);
+        // console.log(JSON.parse(this.productsList));
         this.productsList.forEach(product=>{
+            console.log("商品細節",product);
             temp +='<p>'+product.name+"(單價:"+product.price+"元)"+"數量:"+product.amount+'</p>';
         })
         let main = document.querySelector(".main");

@@ -6,13 +6,10 @@ import org.json.JSONObject;
 import javax.json.*;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
-import javax.json.*;
-
-import java.lang.reflect.Array;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+
 
 import static javax.json.Json.createArrayBuilder;
 import static javax.json.Json.createObjectBuilder;
@@ -54,6 +51,10 @@ public class MySqlConnect implements DatabaseConnect{
     }
 
     private boolean isInt(Object object){
+
+        String num = object.toString();
+        if(num.substring(0,1).equals("0"))
+            return false;
         try {
             int i = Integer.parseInt(object.toString());
         }catch (Exception e){
@@ -621,7 +622,7 @@ public class MySqlConnect implements DatabaseConnect{
             JSONArray products = new JSONArray(json.toString());
             for(Object obj :products){
                 JSONObject product = new JSONObject(obj.toString());
-                sql = String.format("insert into order_products values(%d,%d,%d)",no,product.getInt("id"),product.getInt("amount"));
+                sql = String.format("insert into order_products values(%d,%d,%d,%d)",no,product.getInt("id"),product.getInt("amount"),product.getInt("price"));
                 sm.executeUpdate(sql);
             }
 
@@ -655,10 +656,10 @@ public class MySqlConnect implements DatabaseConnect{
                 "(select o_no as no," +
                 "p_no," +
                 "p_name,c_size ," +
-                "p_price ," +
+                "b_price ," +
                 "b_num  from" +
                 "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
-                ") as temp4 using(no) where id = %s order by orderDate;",id);
+                ") as temp4 using(no) where id = %s order by no;",id);
         JSONArray lists =null;
         try{
             sm = this.conn.createStatement();
@@ -671,7 +672,7 @@ public class MySqlConnect implements DatabaseConnect{
                 if(!result.containsKey(no)){//訂單編號 key 不存在
                     HashMap<String,Object> temp = new HashMap();
                     temp.put("no",rs.getInt("no"));
-                    temp.put("phone",rs.getInt("phone"));
+                    temp.put("phone",rs.getString("phone"));
                     temp.put("id",rs.getInt("id"));
                     temp.put("payType",rs.getString("payType"));
                     temp.put("orderDate",rs.getDate("orderDate"));
@@ -680,25 +681,25 @@ public class MySqlConnect implements DatabaseConnect{
                     temp.put("type",rs.getString("type"));
                     temp.put("recipient",rs.getString("recipient"));
                     temp.put("total",rs.getInt("total"));
-                    HashMap<String,Object> list = new HashMap();
-                    HashMap<String,String> product = new HashMap();
-                    product.put("p_no",rs.getString("p_no"));
-                    product.put("p_name",rs.getString("p_name"));
-                    product.put("c_size",rs.getString("c_size"));
-                    product.put("p_price",rs.getString("p_price"));
-                    product.put("b_num",rs.getString("b_num"));
-                    list.put(rs.getString("p_no"),product);
+                    ArrayList<HashMap<String,Object>> list = new ArrayList<>();
+                    HashMap<String,Object> product = new HashMap();
+                    product.put("id",rs.getInt("p_no"));
+                    product.put("name",rs.getString("p_name"));
+                    product.put("capacity",rs.getInt("c_size"));
+                    product.put("price",rs.getInt("b_price"));
+                    product.put("amount",rs.getInt("b_num"));
+                    list.add(product);
                     temp.put("productsList",list);
                     result.put(no,temp);
                 }else{// 訂單編號 key已存在 插入新品項資料即可
-                    HashMap<String,Object> list = (HashMap<String, Object>) result.get(no).get("productsList");
+                    ArrayList<HashMap<String,String>> list = (ArrayList<HashMap<String,String>>) result.get(no).get("productsList");
                     HashMap<String,String> product = new HashMap();
-                    product.put("p_no",rs.getString("p_no"));
-                    product.put("p_name",rs.getString("p_name"));
-                    product.put("c_size",rs.getString("c_size"));
-                    product.put("p_price",rs.getString("p_price"));
-                    product.put("b_num",rs.getString("b_num"));
-                    list.put(rs.getString("p_no"),product);
+                    product.put("id",rs.getString("p_no"));
+                    product.put("name",rs.getString("p_name"));
+                    product.put("capacity",rs.getString("c_size"));
+                    product.put("price",rs.getString("b_price"));
+                    product.put("amount",rs.getString("b_num"));
+                    list.add(product);
                 }
             }
             lists = new JSONArray();
@@ -739,7 +740,7 @@ public class MySqlConnect implements DatabaseConnect{
                 "(select o_no as no," +
                 "p_no," +
                 "p_name,c_size ," +
-                "p_price ," +
+                "b_price ," +
                 "b_num  from" +
                 "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
                 ") as temp4 using(no) where id = %s order by orderDate;",id);
@@ -755,7 +756,7 @@ public class MySqlConnect implements DatabaseConnect{
                 if(!result.containsKey(no)){//訂單編號 key 不存在
                     HashMap<String,Object> temp = new HashMap();
                     temp.put("no",rs.getInt("no"));
-                    temp.put("phone",rs.getInt("phone"));
+                    temp.put("phone",rs.getString("phone"));
                     temp.put("id",rs.getInt("id"));
                     temp.put("payType",rs.getString("payType"));
                     temp.put("orderDate",rs.getDate("orderDate"));
@@ -767,25 +768,25 @@ public class MySqlConnect implements DatabaseConnect{
                     temp.put("name",rs.getString("name"));
                     temp.put("payNo",rs.getString("payNo")==null?"":rs.getString("payNo"));
                     temp.put("remark",rs.getString("remark")==null?"":rs.getString("remark"));
-                    HashMap<String,Object> list = new HashMap();
-                    HashMap<String,String> product = new HashMap();
-                    product.put("p_no",rs.getString("p_no"));
-                    product.put("p_name",rs.getString("p_name"));
-                    product.put("c_size",rs.getString("c_size"));
-                    product.put("p_price",rs.getString("p_price"));
-                    product.put("b_num",rs.getString("b_num"));
-                    list.put(rs.getString("p_no"),product);
+                    ArrayList<HashMap<String,Object>> list = new ArrayList<>();
+                    HashMap<String,Object> product = new HashMap();
+                    product.put("id",rs.getInt("p_no"));
+                    product.put("name",rs.getString("p_name"));
+                    product.put("capacity",rs.getInt("c_size"));
+                    product.put("price",rs.getInt("b_price"));
+                    product.put("amount",rs.getInt("b_num"));
+                    list.add(product);
                     temp.put("productsList",list);
                     result.put(no,temp);
                 }else{// 訂單編號 key已存在 插入新品項資料即可
-                    HashMap<String,Object> list = (HashMap<String, Object>) result.get(no).get("productsList");
+                    ArrayList<HashMap<String,String>> list = (ArrayList<HashMap<String,String>>) result.get(no).get("productsList");
                     HashMap<String,String> product = new HashMap();
-                    product.put("p_no",rs.getString("p_no"));
-                    product.put("p_name",rs.getString("p_name"));
-                    product.put("c_size",rs.getString("c_size"));
-                    product.put("p_price",rs.getString("p_price"));
-                    product.put("b_num",rs.getString("b_num"));
-                    list.put(rs.getString("p_no"),product);
+                    product.put("id",rs.getString("p_no"));
+                    product.put("name",rs.getString("p_name"));
+                    product.put("capacity",rs.getString("c_size"));
+                    product.put("price",rs.getString("b_price"));
+                    product.put("amount",rs.getString("b_num"));
+                    list.add(product);
                 }
             }
             lists = new JSONArray();
@@ -826,7 +827,7 @@ public class MySqlConnect implements DatabaseConnect{
                 "(select o_no as no," +
                 "p_no," +
                 "p_name,c_size ," +
-                "p_price ," +
+                "b_price ," +
                 "b_num  from" +
                 "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
                 ") as temp4 using(no) where orderDate like '%s %s' order by orderDate",date,'%');
@@ -842,7 +843,7 @@ public class MySqlConnect implements DatabaseConnect{
                 if(!result.containsKey(no)){//訂單編號 key 不存在
                     HashMap<String,Object> temp = new HashMap();
                     temp.put("no",rs.getInt("no"));
-                    temp.put("phone",rs.getInt("phone"));
+                    temp.put("phone",rs.getString("phone"));
                     temp.put("id",rs.getInt("id"));
                     temp.put("payType",rs.getString("payType"));
                     temp.put("orderDate",rs.getDate("orderDate"));
@@ -854,25 +855,25 @@ public class MySqlConnect implements DatabaseConnect{
                     temp.put("name",rs.getString("name"));
                     temp.put("payNo",rs.getString("payNo")==null?"":rs.getString("payNo"));
                     temp.put("remark",rs.getString("remark")==null?"":rs.getString("remark"));
-                    HashMap<String,Object> list = new HashMap();
-                    HashMap<String,String> product = new HashMap();
-                    product.put("p_no",rs.getString("p_no"));
-                    product.put("p_name",rs.getString("p_name"));
-                    product.put("c_size",rs.getString("c_size"));
-                    product.put("p_price",rs.getString("p_price"));
-                    product.put("b_num",rs.getString("b_num"));
-                    list.put(rs.getString("p_no"),product);
+                    ArrayList<HashMap<String,Object>> list = new ArrayList<>();
+                    HashMap<String,Object> product = new HashMap();
+                    product.put("id",rs.getInt("p_no"));
+                    product.put("name",rs.getString("p_name"));
+                    product.put("capacity",rs.getInt("c_size"));
+                    product.put("price",rs.getInt("b_price"));
+                    product.put("amount",rs.getInt("b_num"));
+                    list.add(product);
                     temp.put("productsList",list);
                     result.put(no,temp);
                 }else{// 訂單編號 key已存在 插入新品項資料即可
-                    HashMap<String,Object> list = (HashMap<String, Object>) result.get(no).get("productsList");
+                    ArrayList<HashMap<String,String>> list = (ArrayList<HashMap<String,String>>) result.get(no).get("productsList");
                     HashMap<String,String> product = new HashMap();
-                    product.put("p_no",rs.getString("p_no"));
-                    product.put("p_name",rs.getString("p_name"));
-                    product.put("c_size",rs.getString("c_size"));
-                    product.put("p_price",rs.getString("p_price"));
-                    product.put("b_num",rs.getString("b_num"));
-                    list.put(rs.getString("p_no"),product);
+                    product.put("id",rs.getString("p_no"));
+                    product.put("name",rs.getString("p_name"));
+                    product.put("capacity",rs.getString("c_size"));
+                    product.put("price",rs.getString("b_price"));
+                    product.put("amount",rs.getString("b_num"));
+                    list.add(product);
                 }
             }
             lists = new JSONArray();
@@ -913,7 +914,7 @@ public class MySqlConnect implements DatabaseConnect{
                 "(select o_no as no," +
                 "p_no," +
                 "p_name,c_size ," +
-                "p_price ," +
+                "b_price ," +
                 "b_num  from" +
                 "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
                 ") as temp4 using(no) where orderDate >= current_date-%s order by orderDate;",days);
@@ -929,7 +930,7 @@ public class MySqlConnect implements DatabaseConnect{
                 if(!result.containsKey(no)){//訂單編號 key 不存在
                     HashMap<String,Object> temp = new HashMap();
                     temp.put("no",rs.getInt("no"));
-                    temp.put("phone",rs.getInt("phone"));
+                    temp.put("phone",rs.getString("phone"));
                     temp.put("id",rs.getInt("id"));
                     temp.put("payType",rs.getString("payType"));
                     temp.put("orderDate",rs.getDate("orderDate"));
@@ -941,25 +942,25 @@ public class MySqlConnect implements DatabaseConnect{
                     temp.put("name",rs.getString("name"));
                     temp.put("payNo",rs.getString("payNo")==null?"":rs.getString("payNo"));
                     temp.put("remark",rs.getString("remark")==null?"":rs.getString("remark"));
-                    HashMap<String,Object> list = new HashMap();
-                    HashMap<String,String> product = new HashMap();
-                    product.put("p_no",rs.getString("p_no"));
-                    product.put("p_name",rs.getString("p_name"));
-                    product.put("c_size",rs.getString("c_size"));
-                    product.put("p_price",rs.getString("p_price"));
-                    product.put("b_num",rs.getString("b_num"));
-                    list.put(rs.getString("p_no"),product);
+                    ArrayList<HashMap<String,Object>> list = new ArrayList<>();
+                    HashMap<String,Object> product = new HashMap();
+                    product.put("id",rs.getInt("p_no"));
+                    product.put("name",rs.getString("p_name"));
+                    product.put("capacity",rs.getInt("c_size"));
+                    product.put("price",rs.getInt("b_price"));
+                    product.put("amount",rs.getInt("b_num"));
+                    list.add(product);
                     temp.put("productsList",list);
                     result.put(no,temp);
                 }else{// 訂單編號 key已存在 插入新品項資料即可
-                    HashMap<String,Object> list = (HashMap<String, Object>) result.get(no).get("productsList");
+                    ArrayList<HashMap<String,String>> list = (ArrayList<HashMap<String,String>>) result.get(no).get("productsList");
                     HashMap<String,String> product = new HashMap();
-                    product.put("p_no",rs.getString("p_no"));
-                    product.put("p_name",rs.getString("p_name"));
-                    product.put("c_size",rs.getString("c_size"));
-                    product.put("p_price",rs.getString("p_price"));
-                    product.put("b_num",rs.getString("b_num"));
-                    list.put(rs.getString("p_no"),product);
+                    product.put("id",rs.getString("p_no"));
+                    product.put("name",rs.getString("p_name"));
+                    product.put("capacity",rs.getString("c_size"));
+                    product.put("price",rs.getString("b_price"));
+                    product.put("amount",rs.getString("b_num"));
+                    list.add(product);
                 }
             }
             lists = new JSONArray();
@@ -997,7 +998,7 @@ public class MySqlConnect implements DatabaseConnect{
                 "(select o_no as no," +
                 "p_no," +
                 "p_name,c_size ," +
-                "p_price ," +
+                "b_price ," +
                 "b_num  from" +
                 "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
                 ") as temp4 using(no) where no = %s and id = %s order by orderDate;",o_no,m_id);
@@ -1013,7 +1014,7 @@ public class MySqlConnect implements DatabaseConnect{
                 if(!result.containsKey(no)){//訂單編號 key 不存在
                     HashMap<String,Object> temp = new HashMap();
                     temp.put("no",rs.getInt("no"));
-                    temp.put("phone",rs.getInt("phone"));
+                    temp.put("phone",rs.getString("phone"));
                     temp.put("id",rs.getInt("id"));
                     temp.put("payType",rs.getString("payType"));
                     temp.put("orderDate",rs.getDate("orderDate"));
@@ -1022,25 +1023,25 @@ public class MySqlConnect implements DatabaseConnect{
                     temp.put("type",rs.getString("type"));
                     temp.put("recipient",rs.getString("recipient"));
                     temp.put("total",rs.getInt("total"));
-                    HashMap<String,Object> list = new HashMap();
-                    HashMap<String,String> product = new HashMap();
-                    product.put("p_no",rs.getString("p_no"));
-                    product.put("p_name",rs.getString("p_name"));
-                    product.put("c_size",rs.getString("c_size"));
-                    product.put("p_price",rs.getString("p_price"));
-                    product.put("b_num",rs.getString("b_num"));
-                    list.put(rs.getString("p_no"),product);
+                    ArrayList<HashMap<String,Object>> list = new ArrayList<>();
+                    HashMap<String,Object> product = new HashMap();
+                    product.put("id",rs.getInt("p_no"));
+                    product.put("name",rs.getString("p_name"));
+                    product.put("capacity",rs.getInt("c_size"));
+                    product.put("price",rs.getInt("b_price"));
+                    product.put("amount",rs.getInt("b_num"));
+                    list.add(product);
                     temp.put("productsList",list);
                     result.put(no,temp);
                 }else{// 訂單編號 key已存在 插入新品項資料即可
-                    HashMap<String,Object> list = (HashMap<String, Object>) result.get(no).get("productsList");
+                    ArrayList<HashMap<String,String>> list = (ArrayList<HashMap<String,String>>) result.get(no).get("productsList");
                     HashMap<String,String> product = new HashMap();
-                    product.put("p_no",rs.getString("p_no"));
-                    product.put("p_name",rs.getString("p_name"));
-                    product.put("c_size",rs.getString("c_size"));
-                    product.put("p_price",rs.getString("p_price"));
-                    product.put("b_num",rs.getString("b_num"));
-                    list.put(rs.getString("p_no"),product);
+                    product.put("id",rs.getString("p_no"));
+                    product.put("name",rs.getString("p_name"));
+                    product.put("capacity",rs.getString("c_size"));
+                    product.put("price",rs.getString("b_price"));
+                    product.put("amount",rs.getString("b_num"));
+                    list.add(product);
                 }
             }
             lists = new JSONArray();
@@ -1082,7 +1083,7 @@ public class MySqlConnect implements DatabaseConnect{
                 "(select o_no as no," +
                 "p_no," +
                 "p_name,c_size ," +
-                "p_price ," +
+                "b_price ," +
                 "b_num  from" +
                 "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
                 ") as temp4 using(no) where no = %s order by orderDate;",o_no);
@@ -1098,7 +1099,7 @@ public class MySqlConnect implements DatabaseConnect{
                 if(!result.containsKey(no)){//訂單編號 key 不存在
                     HashMap<String,Object> temp = new HashMap();
                     temp.put("no",rs.getInt("no"));
-                    temp.put("phone",rs.getInt("phone"));
+                    temp.put("phone",rs.getString("phone"));
                     temp.put("id",rs.getInt("id"));
                     temp.put("payType",rs.getString("payType"));
                     temp.put("orderDate",rs.getDate("orderDate"));
@@ -1110,25 +1111,25 @@ public class MySqlConnect implements DatabaseConnect{
                     temp.put("name",rs.getString("name"));
                     temp.put("payNo",rs.getString("payNo")==null?"":rs.getString("payNo"));
                     temp.put("remark",rs.getString("remark")==null?"":rs.getString("remark"));
-                    HashMap<String,Object> list = new HashMap();
-                    HashMap<String,String> product = new HashMap();
-                    product.put("p_no",rs.getString("p_no"));
-                    product.put("p_name",rs.getString("p_name"));
-                    product.put("c_size",rs.getString("c_size"));
-                    product.put("p_price",rs.getString("p_price"));
-                    product.put("b_num",rs.getString("b_num"));
-                    list.put(rs.getString("p_no"),product);
+                    ArrayList<HashMap<String,Object>> list = new ArrayList<>();
+                    HashMap<String,Object> product = new HashMap();
+                    product.put("id",rs.getInt("p_no"));
+                    product.put("name",rs.getString("p_name"));
+                    product.put("capacity",rs.getInt("c_size"));
+                    product.put("price",rs.getInt("b_price"));
+                    product.put("amount",rs.getInt("b_num"));
+                    list.add(product);
                     temp.put("productsList",list);
                     result.put(no,temp);
                 }else{// 訂單編號 key已存在 插入新品項資料即可
-                    HashMap<String,Object> list = (HashMap<String, Object>) result.get(no).get("productsList");
+                    ArrayList<HashMap<String,String>> list = (ArrayList<HashMap<String,String>>) result.get(no).get("productsList");
                     HashMap<String,String> product = new HashMap();
-                    product.put("p_no",rs.getString("p_no"));
-                    product.put("p_name",rs.getString("p_name"));
-                    product.put("c_size",rs.getString("c_size"));
-                    product.put("p_price",rs.getString("p_price"));
-                    product.put("b_num",rs.getString("b_num"));
-                    list.put(rs.getString("p_no"),product);
+                    product.put("id",rs.getString("p_no"));
+                    product.put("name",rs.getString("p_name"));
+                    product.put("capacity",rs.getString("c_size"));
+                    product.put("price",rs.getString("b_price"));
+                    product.put("amount",rs.getString("b_num"));
+                    list.add(product);
                 }
             }
             lists = new JSONArray();
