@@ -40,7 +40,7 @@ public class OrderListAPI extends HttpServlet {
                 }
             }else if(req.getSession().getAttribute("managerid")!=null){
                 //管理者查詢會員訂單
-                System.out.println("管理者查詢會員訂單user=>"+subPath[1]);
+                System.out.println("管理者查詢會員訂單user=>"+subPath[2]);
                 result = MySqlConnect.getMySql().getOrderListByMemberIdforManager(subPath[2]);
                 System.out.println(result);
                 out.print(result.toString());

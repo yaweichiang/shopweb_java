@@ -1,5 +1,6 @@
 package com.yawei.api;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -22,7 +23,8 @@ public class SearchAPI extends HttpServlet {
                 String subPath = req.getPathInfo();
                 //查詢會員名單
                 //假資料
-                out.print(new JSONObject("{\"id\":8,\"name\":\"fff\",\"phone\":\"0936485932\",\"mail\":\"ddd@dddd\",url:\"https://lh3.googleusercontent.com/a-/AOh14Gj_FmeO8F1BsZEGbkQD-Rovv1rWcBkzM_KBHzCg=s96-c\"}"));
+                out.print(new JSONArray("[{\"no\":8,\"name\":\"fff\",\"phone\":\"0936485932\",\"email\":\"ddd@dddd\",url:\"https://lh3.googleusercontent.com/a-/AOh14Gj_FmeO8F1BsZEGbkQD-Rovv1rWcBkzM_KBHzCg=s96-c\"},{\"no\":2,\"name\":\"dddf\",\"phone\":\"0939985932\",\"email\":\"rewd@dddd\",url:\"https://lh3.googleusercontent.com/a-/AOh14Gj_FmeO8F1BsZEGbkQD-Rovv1rWcBkzM_KBHzCg=s96-c\"}]"));
+//                out.print(new JSONObject("{\"id\":8,\"name\":\"fff\",\"phone\":\"0936485932\",\"mail\":\"ddd@dddd\",url:\"https://lh3.googleusercontent.com/a-/AOh14Gj_FmeO8F1BsZEGbkQD-Rovv1rWcBkzM_KBHzCg=s96-c\"}"));
             }else{
                 out.print("null");
             }

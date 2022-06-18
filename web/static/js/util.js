@@ -264,6 +264,23 @@ export function getOrderListByNo(str){//取得網站公告資料 有傳入參數
     });
 }
 
+export function getMemberSearch(str){//取得網站公告資料 有傳入參數new時取得最新公告 未傳入參數時取得最近6筆
+    return new Promise((resolve,reject)=>{
+        let src_url='/search/'+str;
+        let xhr = new XMLHttpRequest();
+        xhr.open('get',src_url,true);
+        xhr.send();
+        xhr.onload=()=>{
+            if(xhr.status == 200){
+                if(xhr.responseText===""){
+                    resolve([])
+                }else{
+                    resolve(JSON.parse(xhr.responseText));
+                }
+            }
+        }
+    });
+}
 // export const PRODUCTS = [];
 export const MYCAR= new ShopCar(); //依照localStorage建立購物車物件 提供給其他頁面存取
 export const  SETTING = new WebSetting(); //連線系統取得網站設定資訊 建立網站設定資訊物件供各頁面存取
