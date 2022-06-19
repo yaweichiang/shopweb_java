@@ -526,18 +526,6 @@ export class MemberSearch{
         '</div>'+
         '    <div class="space"></div>'+
         '<div class="memberinfo">'+
-        '<table>'+
-        '    <thead>'+
-        '        <tr>'+
-        '            <th>會員編號</th>'+
-        '            <th>姓名</th>'+
-        '            <th>電話</th>'+
-        '            <th>電子信箱</th>'+
-        '        </tr>'+
-        '    </thead>'+
-        '    <tbody class="memberlist">'+
-        '    </tbody>'+
-        '</table>'+
         '</div>';
 
         // if(arr!=null){
@@ -548,6 +536,21 @@ export class MemberSearch{
         div.firstChild.lastChild.addEventListener("click",(e)=>{
             console.log("點擊搜尋 進行會員搜尋  顯示多位會員供點選 點選後才進行訂單查詢");
             console.log(div.firstChild.children[1].value);
+            document.querySelector(".memberinfo").innerHTML = "";
+            let memberTable = document.createElement("table");
+            memberTable.innerHTML =
+                        '    <thead>'+
+                        '        <tr>'+
+                        '            <th>會員編號</th>'+
+                        '            <th>姓名</th>'+
+                        '            <th>電話</th>'+
+                        '            <th>電子信箱</th>'+
+                        '        </tr>'+
+                        '    </thead>'+
+                        '    <tbody class="memberlist">'+
+                        '    </tbody>';
+            document.querySelector(".memberinfo").appendChild(memberTable);
+            let subroot = memberTable.lastChild;
             let keyWord = div.firstChild.children[1].value;
             if(keyWord!=""||keyWord!=null) {
                 getMemberSearch(keyWord).then(datas=>{
@@ -559,12 +562,40 @@ export class MemberSearch{
                             console.log(e.target);
                             console.log("向後端查詢"+user.no+"會員訂單");
                             getMemberOrderList(user.no).then(datas=>{
-                                datas.forEach(data=>{
-                                    console.log(data);
-                                })
+                                subroot.innerHTML = "";
+                                subroot.appendChild(userTR);
+                                let root = document.querySelector(".memberinfo");
+                                let space = document.createElement("div");
+                                space.classList.add("space");
+                                root.appendChild(space);
+                                let orderListTable= document.createElement("table");
+                                orderListTable.innerHTML =
+                                        '       <thead>'+
+                                        '        <tr>'+
+                                        '            <th>訂單</th>'+
+                                        '            <th>訂購日期</th>'+
+                                        '            <th>狀態</th>'+
+                                        '            <th>總計</th> '+
+                                        '            <th>出貨日期</th>'+
+                                        '            <th>付款方式</th>'+
+                                        '            <th>動作</th>'+
+                                        '        </tr>'+
+                                        '       </thead>'+
+                                        '    <tbody class="orderlists">'+
+                                        '    </tbody>';
+                                root.appendChild(orderListTable);
+                                if(datas.length === 0){
+                                    alert("無訂單資料");
+                                }else {
+                                    datas.forEach(data => {
+                                        let orderList = new ManagerOrderList(data)
+                                        orderListTable.lastChild.appendChild(orderList.createTableRowViewForMemberSearch());
+
+                                    })
+                                }
                             })
                         })
-                        div.lastChild.lastChild.lastChild.appendChild(userTR);
+                        subroot.appendChild(userTR);
                     })
                 })
             }else{
