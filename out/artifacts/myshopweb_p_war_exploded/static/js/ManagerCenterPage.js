@@ -127,16 +127,13 @@ function searchOrderLists(arr){
     main.appendChild(arr!=null?search.searchBar(arr):search.searchBar());
     document.getElementById("target").removeAttribute("id");
     document.querySelector("ul li:nth-child(2)").setAttribute("id", "target"); 
-} 
-
-
+}
 function searchMember(memberArr,orderlistArr){
     let search = new MemberSearch();
     let main = document.querySelector(".main");
     main.innerHTML = '<div class="subtitle">會員查詢</div>';
     main.appendChild(search.searchBar());
     if(memberArr!=null && orderlistArr!=null ){
-        // main.appendChild(search.searchBar(memberArr,orderlistArr));
         console.log("會員訂單 m",memberArr,"o",orderlistArr)
        search.memberSearchTableView(memberArr);
        search.orderListTableView(orderlistArr);
@@ -175,4 +172,3 @@ function othersetting(){
     document.querySelector("ul li:nth-child(5)").setAttribute("id", "target");
 
 }
-

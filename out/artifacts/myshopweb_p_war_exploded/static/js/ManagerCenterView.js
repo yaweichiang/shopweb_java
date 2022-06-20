@@ -4,6 +4,7 @@ import Announcement from './announcement.js';
 import { ManagerOrderList } from './orderlist.js';
 import { Member,User } from './user.js';
 import { Product } from './product.js';
+// import {myfile} from './ManagerCenterPage.js';
 
 
 //網頁設定頁面主畫面
@@ -209,6 +210,7 @@ export class ProductsEdit{
         this.products = []; 
         // ajax 取得商品資訊
         this.flashData();
+        this.filereader = new FileReader();
     }
     flashData(){
         getProducts().then(data=>{
@@ -254,7 +256,16 @@ export class ProductsEdit{
                         temp+="<option value="+data.c_no+">"+data.c_package+"</option>"
                     })
                     main.innerHTML = this.createNewProduct(temp);
-
+                    //  監聽上傳圖片 異動時透過filereader取得圖片的dataurl
+                    main.querySelector("#file-uploader").addEventListener("change",(e)=>{
+                        let file = e.target.files[0];
+                        this.filereader.readAsDataURL(file);
+                    });
+                    //監聽filereader讀取 將讀取到的dataurl 顯示
+                    this.filereader.addEventListener("load",(e)=>{
+                        let dataURL = this.filereader.result;
+                        document.getElementById("preview_pic").src = dataURL;
+                    })
                     main.lastChild.addEventListener("click",()=>{
                         //儲存建立紐監聽
     
@@ -303,7 +314,12 @@ export class ProductsEdit{
                             alert("請選取應選資料");
                             return false;
                         }
-                      
+                        // if(this.newpic.length===0){
+                        //     console.log(this.newpic);
+                        //     alert("請選取商品照片");
+                        //     return false;
+                        // }
+                        console.log(this.newpic);
                         let obj = {
                             name:inputs[0].value, //名稱
                             price:inputs[1].value,//價格
@@ -312,38 +328,32 @@ export class ProductsEdit{
                             capacity:temp[2],//容量
                             tote_type:temp[0]==="freezing"?1:2,//運送狀態
                             introduction:textarea.value,//介紹
-                            url:inputs[3].value//圖片url
+                            // url:inputs[3].value,//圖片url
+                            url:this.filereader.result
+
                         }
-                        fetch('/products',{
-                            method:'post',
-                            headers:{'Content-Type':'application/json'},
-                            body:JSON.stringify(obj)
-                        }).then(response=>{
-                            if(response.status==200){
-                                getProducts().then(datas=>{
-                                    let temp = [];
-                                    datas.forEach(data=>{
-                                        temp.push(new Product(data))
-                                    })
-                                    this.products = temp;
-                                    this.show()
-                                })
-                            }
-                            // return response.json()
-                        // }).then(datas=>{
-                        //     temp = [];
-                        //     datas.forEach(data=>{
-                        //        temp.push(new Product(data))
-                        //     })
-                        //     this.products = temp;
-                        //     this.show()
-                        }).catch(err=>console.log(err))
+                        console.log(obj)
+                        // fetch('/products',{
+                        //     method:'post',
+                        //     headers:{'Content-Type':'application/json'},
+                        //     body:JSON.stringify(obj)
+                        // }).then(response=>{
+                        //     if(response.status==200){
+                        //         getProducts().then(datas=>{
+                        //             let temp = [];
+                        //             datas.forEach(data=>{
+                        //                 temp.push(new Product(data))
+                        //             })
+                        //             this.products = temp;
+                        //             this.show()
+                        //         })
+                        //     }
+                        // }).catch(err=>console.log(err))
                         
                     })
                     
                 }).catch(err=>{console.log(err)})
 
-                // })
             })
 
             
@@ -400,9 +410,11 @@ export class ProductsEdit{
                 '    </div>'+
                 '    <div class="helfinput">'+
                 '        <p>照片上傳</p>'+
-                '        <input type="text" value="../static/products/product1.jpg" disabled>'+
+                '        <input type="file" id="file-uploader" data-target="file-uploader" accept=".png, .jpg, .jpeg" width="110px" />' +
+                // '        <input type="text" value="../static/products/product1.jpg" disabled>'+
                 '    </div>'+
                 '    <div class="helfinput">'+
+                '    <img src="" id="preview_pic">'+
                 '    </div>'+
                 '</div>'+
                 '<div class="fullinput">'+
@@ -411,6 +423,7 @@ export class ProductsEdit{
                 '</div>'+
                 '<button class="mainbtn">儲存建立</button>';
     }
+
 }
 export class OrderListSearch{
     constructor(){
@@ -558,49 +571,6 @@ export class MemberSearch{
                     history.pushState({action:"domembersearch",searchKey:datas}, null, "");
                     console.log(datas);
                     this.memberSearchTableView(datas);
-                    // datas.forEach(data=>{
-                    //     let user = new User(data);
-                    //     let userTR = user.createSearchResultTR();
-                    //     userTR.firstChild.firstChild.addEventListener("click",e=>{
-                    //         console.log(e.target);
-                    //         console.log("向後端查詢"+user.no+"會員訂單");
-                    //         getMemberOrderList(user.no).then(datas=>{
-                    //             history.pushState({action:"domemberorderlistsearch",member:data,list:datas}, null, "");
-                    //             subroot.innerHTML = "";
-                    //             subroot.appendChild(userTR);
-                    //             let root = document.querySelector(".memberinfo");
-                    //             let space = document.createElement("div");
-                    //             space.classList.add("space");
-                    //             root.appendChild(space);
-                    //             let orderListTable= document.createElement("table");
-                    //             orderListTable.innerHTML =
-                    //                     '       <thead>'+
-                    //                     '        <tr>'+
-                    //                     '            <th>訂單</th>'+
-                    //                     '            <th>訂購日期</th>'+
-                    //                     '            <th>狀態</th>'+
-                    //                     '            <th>總計</th> '+
-                    //                     '            <th>出貨日期</th>'+
-                    //                     '            <th>付款方式</th>'+
-                    //                     '            <th>動作</th>'+
-                    //                     '        </tr>'+
-                    //                     '       </thead>'+
-                    //                     '    <tbody class="orderlists">'+
-                    //                     '    </tbody>';
-                    //             root.appendChild(orderListTable);
-                    //             if(datas.length === 0){
-                    //                 alert("無訂單資料");
-                    //             }else {
-                    //                 datas.forEach(data => {
-                    //                     let orderList = new ManagerOrderList(data)
-                    //                     orderListTable.lastChild.appendChild(orderList.createTableRowViewForMemberSearch());
-                    //
-                    //                 })
-                    //             }
-                    //         })
-                    //     })
-                    //     subroot.appendChild(userTR);
-                    // })
                 })
             }else{
                 alert("請輸入要查詢的關鍵字(電話姓名或mail)");
@@ -610,8 +580,6 @@ export class MemberSearch{
     }
 
     memberSearchTableView(arr){
-        // history.pushState({action:"domembersearch",searchKey:arr}, null, "");
-        // document.querySelector(".memberinfo").innerHTML = "";
         let memberTable = document.createElement("table");
         memberTable.innerHTML =
             '    <thead>'+
@@ -634,39 +602,6 @@ export class MemberSearch{
                 console.log("向後端查詢"+user.no+"會員訂單");
                 document.querySelector(".memberinfo").innerHTML = "";
                 getMemberOrderList(user.no).then(datas=>{
-                    // history.pushState({action:"domemberorderlistsearch",member:data,list:datas}, null, "");
-                    // let subroot = document.createElement("table").lastChild;
-                    // subroot.innerHTML = "";
-                    // subroot.appendChild(userTR);
-                    // let root = document.querySelector(".memberinfo");
-                    // let space = document.createElement("div");
-                    // space.classList.add("space");
-                    // root.appendChild(space);
-                    // let orderListTable= document.createElement("table");
-                    // orderListTable.innerHTML =
-                    //     '       <thead>'+
-                    //     '        <tr>'+
-                    //     '            <th>訂單</th>'+
-                    //     '            <th>訂購日期</th>'+
-                    //     '            <th>狀態</th>'+
-                    //     '            <th>總計</th> '+
-                    //     '            <th>出貨日期</th>'+
-                    //     '            <th>付款方式</th>'+
-                    //     '            <th>動作</th>'+
-                    //     '        </tr>'+
-                    //     '       </thead>'+
-                    //     '    <tbody class="orderlists">'+
-                    //     '    </tbody>';
-                    // root.appendChild(orderListTable);
-                    // if(datas.length === 0){
-                    //     alert("無訂單資料");
-                    // }else {
-                    //     datas.forEach(data => {
-                    //         let orderList = new ManagerOrderList(data)
-                    //         orderListTable.lastChild.appendChild(orderList.createTableRowViewForMemberSearch());
-                    //
-                    //     })
-                    // }//
                     history.pushState({action:"domemberorderlistsearch",member:[data],list:datas}, null, "");
                     this.memberSearchTableView([data]);
                     this.orderListTableView(datas);
@@ -678,12 +613,6 @@ export class MemberSearch{
 
     }
     orderListTableView(datas){
-        // history.pushState({action:"domemberorderlistsearch",member:data,list:datas}, null, "");
-        // let user = new User(data);
-        // let userTR = user.createSearchResultTR();
-        // let subroot = document.querySelector(".memberlist");
-        // subroot.innerHTML = "";
-        // subroot.appendChild(userTR);
         let root = document.querySelector(".memberinfo");
         let space = document.createElement("div");
         space.classList.add("space");
@@ -716,3 +645,11 @@ export class MemberSearch{
 
     }
 }
+
+// function handleFileUpload(e){
+//     console.log("eee取得上傳圖片");
+//     console.log(e.target.files);
+//     console.log(e.target.files[0]);
+//     // export const myfile = e.target.files[0];
+//
+// }

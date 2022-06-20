@@ -57,9 +57,9 @@ public class ProductsAPI extends HttpServlet {
             }
             JSONObject obj = new JSONObject(json);
             System.out.print(obj);
-            JsonArray result = MySqlConnect.getMySql().createProduct(obj);
-            System.out.print(result);
-            out.print(result);
+//            JsonArray result = MySqlConnect.getMySql().createProduct(obj);
+//            System.out.print(result);
+//            out.print(result);
         }else{
             out.print("error");
         }
