@@ -68,15 +68,18 @@ window.addEventListener("popstate",(e)=>{
     }
     if(e.state.action==="doordersearch"){
         searchOrderLists(e.state.searchKey);
-        console.log("doordersearch");
+        console.log("doordersearch",e.state.searchKey);
     }
     if(e.state.action==="domembersearch"){
-        searchMember(e.state.searchKey);
-        
-        console.log("domembersearch");
-        console.log(e.state.searchKey);
-    }
+        console.log("ss domembersearch",e.state.searchKey);
 
+        searchMember(e.state.searchKey,null);
+    }
+    if(e.state.action==="domemberorderlistsearch"){
+        console.log("ss domemberorderlistsearch",e.state.member,e.state.list);
+
+        searchMember(e.state.member,e.state.list);
+    }
 
     
 })
@@ -127,12 +130,20 @@ function searchOrderLists(arr){
 } 
 
 
-function searchMember(arr){
+function searchMember(memberArr,orderlistArr){
     let search = new MemberSearch();
     let main = document.querySelector(".main");
     main.innerHTML = '<div class="subtitle">會員查詢</div>';
-    main.appendChild(arr!=null?search.searchBar(arr):search.searchBar());
-      
+    main.appendChild(search.searchBar());
+    if(memberArr!=null && orderlistArr!=null ){
+        // main.appendChild(search.searchBar(memberArr,orderlistArr));
+        console.log("會員訂單 m",memberArr,"o",orderlistArr)
+       search.memberSearchTableView(memberArr);
+       search.orderListTableView(orderlistArr);
+    }else if(memberArr!=null){
+        console.log( "會員 m",memberArr,"o",orderlistArr)
+        search.memberSearchTableView(memberArr);
+    }
     document.getElementById("target").removeAttribute("id");
     document.querySelector("ul li:nth-child(3)").setAttribute("id", "target");
 }

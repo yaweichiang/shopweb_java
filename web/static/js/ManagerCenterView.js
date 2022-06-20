@@ -415,7 +415,6 @@ export class ProductsEdit{
 export class OrderListSearch{
     constructor(){
         this.str;
-        this.searchResult;
     }
 
     searchBar(arr){
@@ -460,8 +459,6 @@ export class OrderListSearch{
         div.firstChild.lastChild.addEventListener("click",(e)=>{
             let date = div.firstChild.children[1].value;
             console.log("data",date);
-            
-            // this.searchResult = date==""?this.ajaxSearchOrderList("180"):this.ajaxSearchOrderList(date);
             div.replaceChild(this.tableView("date",date),div.lastChild);
         })
         div.children[1].addEventListener("click",(e)=>{
@@ -485,7 +482,6 @@ export class OrderListSearch{
         return div;
     }
     tableView(type,date){
-        history.pushState({action:"doordersearch",searchKey:this.searchResult}, null, "");
         let table = document.createElement("table");
         table.innerHTML=
             '       <thead>'+
@@ -504,6 +500,7 @@ export class OrderListSearch{
             '       <tbody class="orderlist">'+
             '       </tbody>';
         getManagerOrderList(type,date).then(datas=>{
+            history.pushState({action:"doordersearch",searchKey:datas}, null, "");
             datas.forEach(data=>{
                 table.children[1].appendChild(new ManagerOrderList(data).createTableRowView()); 
             })
@@ -514,9 +511,9 @@ export class OrderListSearch{
 }
 export class MemberSearch{
     constructor(){
-        this.member;
+        // this.member;
     }
-    searchBar(arr){
+    searchBar(memberArr,orderlistArr){
         let div = document.createElement("div");
         div.innerHTML = 
         '<div class="searchbar">'+
@@ -527,132 +524,172 @@ export class MemberSearch{
         '    <div class="space"></div>'+
         '<div class="memberinfo">'+
         '</div>';
-
-        // if(arr!=null){
-        //     arr.orderlists.forEach(list=>{
-        //         div.children[6].lastChild.appendChild(new ManagerOrderList(list).createTableRowViewForMemberSearch());
-        //     })
-        // }
+        if(orderlistArr!=null && memberArr!=null){
+            console.log("指定會員 訂單明細查詢 重建",orderlistArr,memberArr)
+            this.memberSearchTableView(memberArr);
+            this.orderListTableView(orderlistArr);
+        }else if(memberArr!=null && orderlistArr == null){
+            console.log("會員查詢結果 重建",orderlistArr,memberArr)
+            this.memberSearchTableView(memberArr);
+        }
         div.firstChild.lastChild.addEventListener("click",(e)=>{
             console.log("點擊搜尋 進行會員搜尋  顯示多位會員供點選 點選後才進行訂單查詢");
             console.log(div.firstChild.children[1].value);
+            // document.querySelector(".memberinfo").innerHTML = "";
+            //
+            // let memberTable = document.createElement("table");
+            // memberTable.innerHTML =
+            //             '    <thead>'+
+            //             '        <tr>'+
+            //             '            <th>會員編號</th>'+
+            //             '            <th>姓名</th>'+
+            //             '            <th>電話</th>'+
+            //             '            <th>電子信箱</th>'+
+            //             '        </tr>'+
+            //             '    </thead>'+
+            //             '    <tbody class="memberlist">'+
+            //             '    </tbody>';
+            // document.querySelector(".memberinfo").appendChild(memberTable);
+            // let subroot = memberTable.lastChild;
             document.querySelector(".memberinfo").innerHTML = "";
-            let memberTable = document.createElement("table");
-            memberTable.innerHTML =
-                        '    <thead>'+
-                        '        <tr>'+
-                        '            <th>會員編號</th>'+
-                        '            <th>姓名</th>'+
-                        '            <th>電話</th>'+
-                        '            <th>電子信箱</th>'+
-                        '        </tr>'+
-                        '    </thead>'+
-                        '    <tbody class="memberlist">'+
-                        '    </tbody>';
-            document.querySelector(".memberinfo").appendChild(memberTable);
-            let subroot = memberTable.lastChild;
             let keyWord = div.firstChild.children[1].value;
             if(keyWord!=""||keyWord!=null) {
                 getMemberSearch(keyWord).then(datas=>{
+                    history.pushState({action:"domembersearch",searchKey:datas}, null, "");
                     console.log(datas);
-                    datas.forEach(data=>{
-                        let user = new User(data);
-                        let userTR = user.createSearchResultTR();
-                        userTR.firstChild.firstChild.addEventListener("click",e=>{
-                            console.log(e.target);
-                            console.log("向後端查詢"+user.no+"會員訂單");
-                            getMemberOrderList(user.no).then(datas=>{
-                                subroot.innerHTML = "";
-                                subroot.appendChild(userTR);
-                                let root = document.querySelector(".memberinfo");
-                                let space = document.createElement("div");
-                                space.classList.add("space");
-                                root.appendChild(space);
-                                let orderListTable= document.createElement("table");
-                                orderListTable.innerHTML =
-                                        '       <thead>'+
-                                        '        <tr>'+
-                                        '            <th>訂單</th>'+
-                                        '            <th>訂購日期</th>'+
-                                        '            <th>狀態</th>'+
-                                        '            <th>總計</th> '+
-                                        '            <th>出貨日期</th>'+
-                                        '            <th>付款方式</th>'+
-                                        '            <th>動作</th>'+
-                                        '        </tr>'+
-                                        '       </thead>'+
-                                        '    <tbody class="orderlists">'+
-                                        '    </tbody>';
-                                root.appendChild(orderListTable);
-                                if(datas.length === 0){
-                                    alert("無訂單資料");
-                                }else {
-                                    datas.forEach(data => {
-                                        let orderList = new ManagerOrderList(data)
-                                        orderListTable.lastChild.appendChild(orderList.createTableRowViewForMemberSearch());
-
-                                    })
-                                }
-                            })
-                        })
-                        subroot.appendChild(userTR);
-                    })
+                    this.memberSearchTableView(datas);
+                    // datas.forEach(data=>{
+                    //     let user = new User(data);
+                    //     let userTR = user.createSearchResultTR();
+                    //     userTR.firstChild.firstChild.addEventListener("click",e=>{
+                    //         console.log(e.target);
+                    //         console.log("向後端查詢"+user.no+"會員訂單");
+                    //         getMemberOrderList(user.no).then(datas=>{
+                    //             history.pushState({action:"domemberorderlistsearch",member:data,list:datas}, null, "");
+                    //             subroot.innerHTML = "";
+                    //             subroot.appendChild(userTR);
+                    //             let root = document.querySelector(".memberinfo");
+                    //             let space = document.createElement("div");
+                    //             space.classList.add("space");
+                    //             root.appendChild(space);
+                    //             let orderListTable= document.createElement("table");
+                    //             orderListTable.innerHTML =
+                    //                     '       <thead>'+
+                    //                     '        <tr>'+
+                    //                     '            <th>訂單</th>'+
+                    //                     '            <th>訂購日期</th>'+
+                    //                     '            <th>狀態</th>'+
+                    //                     '            <th>總計</th> '+
+                    //                     '            <th>出貨日期</th>'+
+                    //                     '            <th>付款方式</th>'+
+                    //                     '            <th>動作</th>'+
+                    //                     '        </tr>'+
+                    //                     '       </thead>'+
+                    //                     '    <tbody class="orderlists">'+
+                    //                     '    </tbody>';
+                    //             root.appendChild(orderListTable);
+                    //             if(datas.length === 0){
+                    //                 alert("無訂單資料");
+                    //             }else {
+                    //                 datas.forEach(data => {
+                    //                     let orderList = new ManagerOrderList(data)
+                    //                     orderListTable.lastChild.appendChild(orderList.createTableRowViewForMemberSearch());
+                    //
+                    //                 })
+                    //             }
+                    //         })
+                    //     })
+                    //     subroot.appendChild(userTR);
+                    // })
                 })
             }else{
                 alert("請輸入要查詢的關鍵字(電話姓名或mail)");
             }
-            // getMemberinfo(div.firstChild.children[1].value).then(info=>{
-            //     console.log("info=>",info.length)
-            //     if(info.length === 0){
-            //         this.member = new Member([]);
-            //         let temp = document.createElement("div");
-            //         temp.innerHTML=
-            //         '<div class="name">姓名：</div>'+
-            //         '<div class="phone">電話：</div>'+
-            //         '<div class="mail">Mail：</div>  ';
-            //
-            //         div.children[3].replaceChild(temp,div.children[3].firstElementChild);
-            //         console.log("list",this.member.orderlists[0])
-            //         console.log("list",this.member.orderlists)
-            //     }else{
-            //         this.member = new Member(info[0]);
-            //         // console.log(typeof(this.member.orderlists) === undefined)
-            //         // console.log(this.member)
-            //         let temp = document.createElement("div");
-            //         temp.innerHTML=
-            //         '<div class="name">姓名：'+this.member.name+'('+this.member.nickname+')</div>'+
-            //         '<div class="phone">電話：'+this.member.phone+'</div>'+
-            //         '<div class="mail">Mail：'+this.member.email+'</div>  ';
-            //
-            //         div.children[3].replaceChild(temp,div.children[3].firstElementChild);
-            //         console.log("list",this.member.orderlists[0])
-            //         console.log("list",this.member.orderlists)
-            //     }
-            //     // console.log("ddd",document.querySelector(".main").children[1].children[6])
-            //     getMemberOrderList(this.member.no).then(datas=>{
-            //         let temp = [];
-            //         datas.forEach(data=>{
-            //             console.log("管理者載入會員訂單",data)
-            //             temp.push(new ManagerOrderList(data))
-            //         })
-            //         this.member.orderlists = temp;
-            //         document.querySelector(".main").children[1].replaceChild(this.tableView(), document.querySelector(".main").children[1].children[6])
-            //
-            //     })
-            //     console.log(this.member.orderlists[0])
-            //     document.querySelector(".main").children[1].replaceChild(this.tableView(), document.querySelector(".main").children[1].children[6])
-            //     // this.tableView();
-            //     console.log("33",this.member.orderlists === null)
-            // })
         })
         return div;
     }
-    
 
-    tableView(){
-        history.pushState({action:"domembersearch",searchKey:this.member}, null, "");//
-        let table = document.createElement("table");
-        table.innerHTML=
+    memberSearchTableView(arr){
+        // history.pushState({action:"domembersearch",searchKey:arr}, null, "");
+        // document.querySelector(".memberinfo").innerHTML = "";
+        let memberTable = document.createElement("table");
+        memberTable.innerHTML =
+            '    <thead>'+
+            '        <tr>'+
+            '            <th>會員編號</th>'+
+            '            <th>姓名</th>'+
+            '            <th>電話</th>'+
+            '            <th>電子信箱</th>'+
+            '        </tr>'+
+            '    </thead>'+
+            '    <tbody class="memberlist">'+
+            '    </tbody>';
+        document.querySelector(".memberinfo").appendChild(memberTable);
+        let subroot = memberTable.lastChild;
+        arr.forEach(data=>{
+            let user = new User(data);
+            let userTR = user.createSearchResultTR();
+            userTR.firstChild.firstChild.addEventListener("click",e=>{
+                console.log(e.target);
+                console.log("向後端查詢"+user.no+"會員訂單");
+                document.querySelector(".memberinfo").innerHTML = "";
+                getMemberOrderList(user.no).then(datas=>{
+                    // history.pushState({action:"domemberorderlistsearch",member:data,list:datas}, null, "");
+                    // let subroot = document.createElement("table").lastChild;
+                    // subroot.innerHTML = "";
+                    // subroot.appendChild(userTR);
+                    // let root = document.querySelector(".memberinfo");
+                    // let space = document.createElement("div");
+                    // space.classList.add("space");
+                    // root.appendChild(space);
+                    // let orderListTable= document.createElement("table");
+                    // orderListTable.innerHTML =
+                    //     '       <thead>'+
+                    //     '        <tr>'+
+                    //     '            <th>訂單</th>'+
+                    //     '            <th>訂購日期</th>'+
+                    //     '            <th>狀態</th>'+
+                    //     '            <th>總計</th> '+
+                    //     '            <th>出貨日期</th>'+
+                    //     '            <th>付款方式</th>'+
+                    //     '            <th>動作</th>'+
+                    //     '        </tr>'+
+                    //     '       </thead>'+
+                    //     '    <tbody class="orderlists">'+
+                    //     '    </tbody>';
+                    // root.appendChild(orderListTable);
+                    // if(datas.length === 0){
+                    //     alert("無訂單資料");
+                    // }else {
+                    //     datas.forEach(data => {
+                    //         let orderList = new ManagerOrderList(data)
+                    //         orderListTable.lastChild.appendChild(orderList.createTableRowViewForMemberSearch());
+                    //
+                    //     })
+                    // }//
+                    history.pushState({action:"domemberorderlistsearch",member:[data],list:datas}, null, "");
+                    this.memberSearchTableView([data]);
+                    this.orderListTableView(datas);
+                })
+            })
+            subroot.appendChild(userTR);
+        })
+
+
+    }
+    orderListTableView(datas){
+        // history.pushState({action:"domemberorderlistsearch",member:data,list:datas}, null, "");
+        // let user = new User(data);
+        // let userTR = user.createSearchResultTR();
+        // let subroot = document.querySelector(".memberlist");
+        // subroot.innerHTML = "";
+        // subroot.appendChild(userTR);
+        let root = document.querySelector(".memberinfo");
+        let space = document.createElement("div");
+        space.classList.add("space");
+        root.appendChild(space);
+        let orderListTable= document.createElement("table");
+        orderListTable.innerHTML =
             '       <thead>'+
             '        <tr>'+
             '            <th>訂單</th>'+
@@ -664,30 +701,18 @@ export class MemberSearch{
             '            <th>動作</th>'+
             '        </tr>'+
             '       </thead>'+
-            '       <tbody class="memberlist">'+
-            '       </tbody>';
-        console.log(this.member.orderlists)
-        this.member.orderlists.forEach(list=>{
-            console.log("fe",list);
-            table.children[1].appendChild(list.createTableRowViewForMemberSearch());
-        });
-        console.log("table",table);
-        return table;
+            '    <tbody class="orderlists">'+
+            '    </tbody>';
+        root.appendChild(orderListTable);
+        if(datas.length === 0){
+            alert("無訂單資料");
+        }else {
+            datas.forEach(data => {
+                let orderList = new ManagerOrderList(data)
+                orderListTable.lastChild.appendChild(orderList.createTableRowViewForMemberSearch());
 
-    
-    }
-    ajaxSearchMember(str){
-        // 這邊應該要ajax向後端查詢訂單資料
-        let numcheck = /^09[0-9]{8}$/;
-        if(numcheck.test(str)){
-            console.log("查詢會員:",str);
-            if(str ==180){
-                return getMemberinfo("");
-            }
-        }else{
-            console.log("輸入電話格式異常",str);
-                        //暫時使用假資料填充
-            return getMemberinfo();
-        }
+            })
+        }//
+
     }
 }

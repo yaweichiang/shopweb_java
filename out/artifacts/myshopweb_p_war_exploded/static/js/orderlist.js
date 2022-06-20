@@ -14,8 +14,8 @@ class OrderList{
         this.remark = obj.remark===null?"":obj.remark;//訂單備註
         this.productsList = obj.productsList;//JSON.parse(obj.productsList);
         this.recipient = obj.recipient;
-        this.total = obj.total,//this.getTotal();//總金額
-        console.log(this)
+        this.total = obj.total;//this.getTotal();//總金額
+        // console.log(this)
         
     }
     // getTotal(){
