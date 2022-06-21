@@ -156,7 +156,6 @@ document.querySelector(".main").innerHTML =
     USER.addresslists.forEach(list=>{
             let tr = list.createTableRowView();
             tr.querySelector(".checkbtn").addEventListener("click",(e)=>{
-                console.log(tr,e);
                     fetch('/address',{
                         method:'DELETE',
                         headers:{ 'Content-Type': 'application/json' },
@@ -207,8 +206,6 @@ function showAddressEdit(){
             let name = inputs[0].value;
             let address = inputs[1].value;
             let phone = inputs[2].value;
-            console.log(name,phone,address)
-            console.log((name!=""&&address!=""&&phone_rg.test(phone)))
             if(name!=""&&address!=""&&phone_rg.test(phone)){
                 let obj = {
                     "id":USER.no,
@@ -231,14 +228,6 @@ function showAddressEdit(){
                             showAddressList();
                         })
                     }
-                //     return response.json()
-                // }).then(data=>{
-                //     let temp =[]
-                //     data.forEach(list=>{
-                //         temp.push(new Address(list));
-                //     })
-                //     USER.addresslists = temp;
-                //     showAddressList();
                 }).catch(err => console.log(err))
                 
             }else{
@@ -259,11 +248,6 @@ function showAccountInfo(){
             '<div class="fullinput"><p>顯示名稱</p><input type="text" value="'+USER.nickname+'"></div>'+
             '<div class="fullinput">電子郵件<input type="email" value="'+USER.email+'" disabled></div>'+
         '</div>';
-        // '<div class="changepw">'+
-        //     '<div class="oldpw"><p>目前密碼(不需變更請空白)</p><input type="password"></div>'+
-        //     '<div class="newpw"><p>新密碼</p><input type="password"></div>'+
-        //     '<div class="newpw2"><p>確認新密碼</p><input type="password"></div>'+
-        // '</div>';
         let mainbtn = document.createElement("button");
         mainbtn.innerText = "儲存修改";
         mainbtn.classList.add("mainbtn");
@@ -273,10 +257,6 @@ function showAccountInfo(){
             let name = inputs[0].value;
             let phone = inputs[1].value;
             let nickname = inputs[2].value;
-            // let email = inputs[3].value;
-            // let oldpassword = inputs[4].value;
-            // let newpassword = inputs[5].value;
-            // let password_re = inputs[6].value;
             let phone_rg = /^09[0-9]{8}$/;
             if(phone_rg.test(phone.value)){
                 alert("電話格式有誤")
@@ -286,15 +266,11 @@ function showAccountInfo(){
                 alert("姓名、暱稱名字不得超過15字")
                 return false;
             }
-            // console.log(name,nickname,email==="",oldpassword,newpassword,USER.no,USER.phone)
             let obj = {
                 "id":USER.no,
                 "name":name,
                 "phone":phone,
                 "nickname":nickname,
-                // "email":email,
-                // "oldpassword":oldpassword,
-                // "newpassword":newpassword
             }
             fetch('user/',{
                 method:'put',

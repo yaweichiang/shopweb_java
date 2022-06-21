@@ -14,7 +14,6 @@ document.getElementById("secpw").addEventListener("keyup",()=>{
 })
 document.getElementById("singup").addEventListener("click",()=>{
     singup();
-    console.log("click")
 })
 // 註冊頁面
 function checkphone(){ //使用者填完號碼後 確認電話號碼是否有重複註冊

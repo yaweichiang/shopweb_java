@@ -22,7 +22,6 @@ export default class ShopCar{
                 "Threshold":null
             }
         };
-        console.log("car init" , this);
 
     }
 
@@ -30,14 +29,11 @@ export default class ShopCar{
         //從localStorage 取得過物車商品資訊
         let products = getCarProducts();
         let temp = [];
-        // let temp2 = getCarProducts().map(product=> new BuyProduct(product));
         // 根據localStorage 購物車商品資訊建立購物車商品物件
 
         products.forEach(product=>{
-            console.log(product);
              temp.push(new BuyProduct(product));
         })
-        console.log("xxxxxx",temp);
         return temp;
     }
 

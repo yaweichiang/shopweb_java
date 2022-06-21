@@ -2,39 +2,32 @@ package com.yawei.util;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import javax.json.*;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-
 import static javax.json.Json.createArrayBuilder;
 import static javax.json.Json.createObjectBuilder;
 
 
 public class MySqlConnect implements DatabaseConnect{
-
     private static String databaseUrl = "//localhost:3306/";
     private static String user = "root";
     private static String password = "0937513541";
     private static String database = "yawei_shopweb";
     private Connection conn;
     private static MySqlConnect mysql;
-
     public MySqlConnect(){
         this.conn = this.getConnection();
     }
-
     public static MySqlConnect getMySql(){
         if(mysql==null){
             mysql = new MySqlConnect();
         }
         return mysql;
     }
-
     @Override
     public Connection getConnection() {
         Connection conn = null;
@@ -49,7 +42,6 @@ public class MySqlConnect implements DatabaseConnect{
             return conn;
         }
     }
-
     private boolean isInt(Object object){
 
         String num = object.toString();
@@ -62,7 +54,6 @@ public class MySqlConnect implements DatabaseConnect{
         }
         return  true;
     } //v
-
     @Override
     public JsonArray getAllProducts(){
         JsonArrayBuilder result =createArrayBuilder();
@@ -132,7 +123,6 @@ public class MySqlConnect implements DatabaseConnect{
             return array;
         }
     }//v
-
     @Override
     public int getNewProductNo() {
 
@@ -235,7 +225,43 @@ public class MySqlConnect implements DatabaseConnect{
         }
 
     }//v
+    @Override
+    public JsonArray searchUsers(String keyword) {
+        JsonArrayBuilder result = createArrayBuilder();
+        Statement sm = null;
+        String sql = String.format("select m_no as no,m_name as name,m_phone as phone,m_mail as email,url as url from members where m_name like '%s' or m_phone like '%s' or m_mail like '%s'","%"+keyword+"%","%"+keyword+"%","%"+keyword+"%");
+        System.out.println("sql"+sql);
+        try {
+            sm = this.conn.createStatement();
+            ResultSet rs = sm.executeQuery(sql);
+            ResultSetMetaData rsmd = rs.getMetaData();
+            int columnCount = rs.getMetaData().getColumnCount();
+            while(rs.next()) {
+                JsonObjectBuilder obj = createObjectBuilder();
+                for (int i = 1; i <= columnCount; i++) {
+                    if(this.isInt(rs.getObject(i))){
+                        obj.add(rsmd.getColumnLabel(i),rs.getInt(i) );
+                    }else{
+                        obj.add(rsmd.getColumnLabel(i),rs.getString(i)==null?"null":rs.getString(i) );
+                    }
+                }
+                result.add(obj);
+            }
+            System.out.println("result:"+result);
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }finally {
+            try{
+                sm.close();
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+            JsonArray array = result.build();
+            System.out.println("array"+array);
+            return array;
+        }
 
+    }
     @Override
     public void createUser(JSONObject data) {
         Statement sm = null;
@@ -255,7 +281,6 @@ public class MySqlConnect implements DatabaseConnect{
             return;
         }
     }//v
-
     @Override
     public void updateUser(JSONObject data) {
         Statement sm =null;
@@ -276,23 +301,18 @@ public class MySqlConnect implements DatabaseConnect{
             return;
         }
     }//v
-
     @Override
     public JsonArray updateUserPW(JsonObject object) {
         return null;
     }//x
-
     @Override
     public boolean checkUserLogin(JsonObject object) {
         return false;
     }//x
-
     @Override
     public Boolean checkManagerLogin(JsonObject object) {
         return null;
     }
-
-
     @Override
     public int checkMail(String mail) {
         String sql = String.format("select m_no from members where m_mail = '%s'",mail);
@@ -308,8 +328,6 @@ public class MySqlConnect implements DatabaseConnect{
         }
         return 0;
     }//v
-
-
     @Override
     public JsonArray getCapacity() {
         JsonArrayBuilder result = createArrayBuilder();
@@ -344,7 +362,6 @@ public class MySqlConnect implements DatabaseConnect{
             return array;
         }
     }//v
-
     @Override
     public JsonArray getTote() {
         JsonArrayBuilder result = createArrayBuilder();
@@ -378,7 +395,6 @@ public class MySqlConnect implements DatabaseConnect{
             System.out.println(array);
             return array;
         }    }//v
-
     @Override
     public void updateTote(JSONObject object) {
         Statement sm = null;
@@ -401,7 +417,6 @@ public class MySqlConnect implements DatabaseConnect{
             }
         }
     }//v
-
     @Override
     public JsonArray getPay() {
         JsonArrayBuilder result = createArrayBuilder();
@@ -436,7 +451,6 @@ public class MySqlConnect implements DatabaseConnect{
             return array;
         }
     }//v
-
     @Override
     public JsonArray getNewAnno() {
         JsonArrayBuilder result = createArrayBuilder();
@@ -471,7 +485,6 @@ public class MySqlConnect implements DatabaseConnect{
             return array;
         }
     }//v
-
     @Override
     public JsonArray getAllAnno() {
         JsonArrayBuilder result = createArrayBuilder();
@@ -505,7 +518,6 @@ public class MySqlConnect implements DatabaseConnect{
             return array;
         }
     }//v
-
     @Override
     public void updateAnno(JSONObject object) {
         Statement sm = null;
@@ -525,7 +537,6 @@ public class MySqlConnect implements DatabaseConnect{
             }
         }
     }//v
-
     @Override
     public JsonArray getUserAddress(String id) {
         JsonArrayBuilder result = createArrayBuilder();
@@ -560,7 +571,6 @@ public class MySqlConnect implements DatabaseConnect{
             return array;
         }
     }//v
-
     @Override
     public void createAddress(JSONObject object) {
         Statement sm = null;
@@ -580,7 +590,6 @@ public class MySqlConnect implements DatabaseConnect{
             }
         }
     }//v
-
     @Override
     public void deleteAddress(JSONObject object) {
         Statement sm = null;
@@ -601,7 +610,6 @@ public class MySqlConnect implements DatabaseConnect{
         }
 
     }//v
-
     @Override
     public int getNewOrderListNo() {
 
@@ -618,14 +626,6 @@ public class MySqlConnect implements DatabaseConnect{
             e.printStackTrace();
         }
         return id;
-    }
-
-    public static void main(String[] args) {
-        String json = "{\"payID\":3,\"toteNo\":1,\"products\":[{\"id\":1,\"name\":\"龍眼蜜\",\"inventory\":20,\"type\":true,\"capacity\":800,\"price\":500,\"isFreezing\":false,\"url\":\"../static/products/product1.jpg\",\"intr\":\"商品簡介內容說明，簡易說明特性口感。XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\",\"amount\":1,\"sum\":500},{\"id\":2,\"name\":\"荔枝蜜\",\"inventory\":40,\"type\":true,\"capacity\":800,\"price\":500,\"isFreezing\":false,\"url\":\"../static/products/product1.jpg\",\"intr\":\"商品簡介內容說明，簡易說明特性口感。XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\",\"amount\":4,\"sum\":2000},{\"id\":4,\"name\":\"咸豐草\",\"inventory\":66,\"type\":true,\"capacity\":800,\"price\":500,\"isFreezing\":false,\"url\":\"../static/products/product1.jpg\",\"intr\":\"商品簡介內容說明，簡易說明特性口感。XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\",\"amount\":3,\"sum\":1500},{\"id\":10,\"name\":\"蜂王乳\",\"inventory\":40,\"type\":true,\"capacity\":100,\"price\":1600,\"isFreezing\":true,\"url\":\"../static/products/product1.jpg\",\"intr\":\"測試\",\"amount\":1,\"sum\":1600}],\"name\":\"江雅崴\",\"phone\":\"0937513541\",\"address\":\"新竹市中華路一段256號\",\"total\":5700}";
-        JSONObject obj = new JSONObject(json);
-        System.out.println("obj="+obj);
-        MySqlConnect.getMySql().createOrderList(obj,"8");
-
     }
     @Override
     public void createOrderList(JSONObject object,String userid) {
@@ -822,7 +822,6 @@ public class MySqlConnect implements DatabaseConnect{
             return lists;
         }
     }//v
-
     @Override
     public JSONArray getOrderListByDate(String date) {
         Statement sm = null;
@@ -909,7 +908,6 @@ public class MySqlConnect implements DatabaseConnect{
             return lists;
         }
     } //v
-
     @Override
     public JSONArray getOrderListByDays(String days) {
         Statement sm = null;
@@ -996,7 +994,6 @@ public class MySqlConnect implements DatabaseConnect{
             return lists;
         }
     } //v
-
     @Override
     public JSONArray getOrderListByNo(String o_no,String m_id) {
         Statement sm = null;
@@ -1078,7 +1075,6 @@ public class MySqlConnect implements DatabaseConnect{
             return lists;
         }
     } //v
-
     @Override
     public JSONArray getOrderListByNoForManager(String o_no) {
         Statement sm = null;
@@ -1165,7 +1161,6 @@ public class MySqlConnect implements DatabaseConnect{
             return lists;
         }
     } //v
-
     @Override
     public void cancelOrder(String no,String id ) {
         Statement sm = null;
@@ -1183,7 +1178,6 @@ public class MySqlConnect implements DatabaseConnect{
             }
         }
     }
-
     @Override
     public void updateOrder(JSONObject object) {
         Statement sm = null;
@@ -1195,7 +1189,6 @@ public class MySqlConnect implements DatabaseConnect{
             String sql = String.format("update order_list set o_remark = '%s' where o_no=%s", object.get("remark"), object.get("order_no"));
         }
     }
-
     @Override
     public boolean checkPhone(String id){
         boolean result = false;

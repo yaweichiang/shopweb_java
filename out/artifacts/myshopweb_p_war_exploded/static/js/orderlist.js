@@ -15,16 +15,8 @@ class OrderList{
         this.productsList = obj.productsList;//JSON.parse(obj.productsList);
         this.recipient = obj.recipient;
         this.total = obj.total;//this.getTotal();//總金額
-        // console.log(this)
-        
+
     }
-    // getTotal(){
-    //     let result = 0;
-    //     this.productsList.forEach(product=>{
-    //        result += (product.price*product.amount);
-    //     })
-    //     return result
-    // }
     updateData(obj){ //
         this.no = obj.no;  //訂單編號
         this.orderDate = obj.orderDate.substring(0,10);//訂購日期
@@ -77,10 +69,8 @@ export class MemberOrderList extends OrderList{
                 headers:{'Content-Type':'application/json'},
                 body:JSON.stringify(obj)
             }).then(response=>{
-                console.log(response)
                 let oldrow = e.target.parentElement.parentElement;
                 getOrderListByNo(this.no).then(datas=>{
-                    console.log(datas);
                     this.type = datas[0].type==="order"?"訂購":(obj.type==="send"?"已寄送":"訂單取消")
                     oldrow.parentElement.replaceChild((this.createTableRowView()),oldrow)
 
@@ -197,10 +187,7 @@ export class ManagerOrderList extends MemberOrderList{
 
     createDitalView(){
         let temp="";
-        console.log(this);
-        // console.log(JSON.parse(this.productsList));
         this.productsList.forEach(product=>{
-            console.log("商品細節",product);
             temp +='<p>'+product.name+"(單價:"+product.price+"元)"+"數量:"+product.amount+'</p>';
         })
         let main = document.querySelector(".main");

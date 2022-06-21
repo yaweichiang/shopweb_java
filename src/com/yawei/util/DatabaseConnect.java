@@ -25,6 +25,8 @@ public interface DatabaseConnect {
     public abstract JsonArray updateProduct(JSONObject data);
 //    取得會員資訊
     public abstract JsonArray getUserInfo(String id);
+//    查詢會員
+    public abstract JsonArray searchUsers(String keyword);
 //    註冊 新建會員
     public abstract void createUser(JSONObject data);
 //    變更會員資料

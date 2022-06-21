@@ -533,22 +533,6 @@ export class MemberSearch{
         div.firstChild.lastChild.addEventListener("click",(e)=>{
             console.log("點擊搜尋 進行會員搜尋  顯示多位會員供點選 點選後才進行訂單查詢");
             console.log(div.firstChild.children[1].value);
-            // document.querySelector(".memberinfo").innerHTML = "";
-            //
-            // let memberTable = document.createElement("table");
-            // memberTable.innerHTML =
-            //             '    <thead>'+
-            //             '        <tr>'+
-            //             '            <th>會員編號</th>'+
-            //             '            <th>姓名</th>'+
-            //             '            <th>電話</th>'+
-            //             '            <th>電子信箱</th>'+
-            //             '        </tr>'+
-            //             '    </thead>'+
-            //             '    <tbody class="memberlist">'+
-            //             '    </tbody>';
-            // document.querySelector(".memberinfo").appendChild(memberTable);
-            // let subroot = memberTable.lastChild;
             document.querySelector(".memberinfo").innerHTML = "";
             let keyWord = div.firstChild.children[1].value;
             if(keyWord!=""||keyWord!=null) {
