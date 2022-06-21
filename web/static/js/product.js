@@ -119,8 +119,8 @@ export class Product {
             '    <div class="helfinput">'+
             '    </div>'+
             '    <div class="helfinput">'+
-            '        <p>照片</p>'+
-            '        <input type="text" value="這邊要改成上傳照片" disabled>'+
+            // '        <p>照片</p>'+
+            // '        <input type="text" value="這邊要改成上傳照片" disabled>'+
             '    </div>'+
             '</div>'+
             '<div class="fullinput">'+
