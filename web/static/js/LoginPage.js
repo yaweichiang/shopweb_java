@@ -23,9 +23,12 @@ MYCAR.showproductsTypes();
 //     }
 // });
 
+
+//改串接google 登入api
 function handleCredentialResponse(response) {
 
     const responsePayload = jwtDecode(response.credential);
+        // 將取得資料作為會員資料傳回後端
     let data = {
         id:responsePayload.sub,
         name:responsePayload.name,
@@ -33,8 +36,6 @@ function handleCredentialResponse(response) {
         email:responsePayload.email,
         url:responsePayload.picture
     }
-    console.log(typeof(responsePayload.sub));
-    console.log(data);
 
     fetch('/user/',{
         method:'post',
@@ -53,8 +54,8 @@ window.onload = function () {
     });
     google.accounts.id.renderButton(
         document.getElementById("buttonDiv"),
-        { theme: "outline", size: "large" }  // customization attributes
+        { theme: "outline", size: "large" }
     );
-    google.accounts.id.prompt(); // also display the One Tap dialog
+    google.accounts.id.prompt();
 }
 

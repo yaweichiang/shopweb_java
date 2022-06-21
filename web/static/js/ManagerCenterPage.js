@@ -39,45 +39,34 @@ document.querySelector(".control").addEventListener("click",(e)=>{
 window.addEventListener("popstate",(e)=>{
     //管理中心主頁 當日訂單列表
     if(e.state.action==="todayorder"){
-        showIndex(); 
-        console.log("控制台");
+        showIndex();
     }
     //訂單查詢頁面
     if(e.state.action==="ordersearch"){
         searchOrderLists();
-        console.log("查詢");
     }
     //會員查詢頁面
     if(e.state.action==="membersearch"){
         searchMember();
-        console.log("會員查詢");
     }
     //商品編輯頁面
     if(e.state.action==="productedit"){
         productEdit();
-        console.log("編輯商品");
     }
     //網站設定頁面
     if(e.state.action==="othersetting"){
         othersetting();
-        console.log("網站設定");
     }
     if(e.state.action==="test"){
        
-        console.log("test");
     }
     if(e.state.action==="doordersearch"){
         searchOrderLists(e.state.searchKey);
-        console.log("doordersearch",e.state.searchKey);
     }
     if(e.state.action==="domembersearch"){
-        console.log("ss domembersearch",e.state.searchKey);
-
         searchMember(e.state.searchKey,null);
     }
     if(e.state.action==="domemberorderlistsearch"){
-        console.log("ss domemberorderlistsearch",e.state.member,e.state.list);
-
         searchMember(e.state.member,e.state.list);
     }
 
@@ -134,11 +123,9 @@ function searchMember(memberArr,orderlistArr){
     main.innerHTML = '<div class="subtitle">會員查詢</div>';
     main.appendChild(search.searchBar());
     if(memberArr!=null && orderlistArr!=null ){
-        console.log("會員訂單 m",memberArr,"o",orderlistArr)
        search.memberSearchTableView(memberArr);
        search.orderListTableView(orderlistArr);
     }else if(memberArr!=null){
-        console.log( "會員 m",memberArr,"o",orderlistArr)
         search.memberSearchTableView(memberArr);
     }
     document.getElementById("target").removeAttribute("id");
@@ -163,11 +150,7 @@ function othersetting(){
 
     })
     main.appendChild(mainBtn);
- 
-    
-    document.querySelector(".announcementselect").addEventListener("selecte",(e)=>{
-        console.log(e);
-    })
+
     document.getElementById("target").removeAttribute("id");
     document.querySelector("ul li:nth-child(5)").setAttribute("id", "target");
 

@@ -2,10 +2,8 @@ package com.yawei.api;
 
 import com.yawei.util.MySqlConnect;
 
-import javax.json.Json;
 import javax.json.JsonArray;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,8 +12,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
 import  org.json.JSONObject;
 
 

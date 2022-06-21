@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 
 @WebServlet("/managers/*")
@@ -15,8 +14,6 @@ public class ManagerAPI extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html;charset=UTF-8");
         String subPath = req.getPathInfo();
-//        PrintWriter out = resp.getWriter();
-//        out.print(subPath);
         if(subPath == null){
             resp.sendError(404,"此頁面不存在");
         }else if(subPath.equals("/login")){

@@ -7,7 +7,6 @@ import javax.json.JsonObject;
 import javax.json.JsonArray;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
 
 
 public interface DatabaseConnect {

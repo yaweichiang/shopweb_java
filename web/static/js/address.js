@@ -26,7 +26,6 @@ export class Address{
             '</label>';
         label.addEventListener("click",()=>{
             let info = document.querySelectorAll(".addressinfo input[type='text']");
-            console.log(info);
             info[0].value = this.name;
             info[1].value = this.address;
             document.querySelector(".addressinfo input[type='tel']").value = this.phone;

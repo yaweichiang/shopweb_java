@@ -29,7 +29,6 @@ getMemberAddress().then(datas=>{
     if(typeof(datas.length)!="undefined"){
         datas.forEach(data=>{
             document.querySelector(".selectrecipient").appendChild(new Address(data).createShopCarItem());
-            console.log(data);
         })
     }
 }).catch(err=>{console.log(err);})

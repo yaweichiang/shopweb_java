@@ -34,9 +34,7 @@ export class Member extends User{
       
         let temp =[];
         getMemberOrderList(this.no).then(datas=>{
-            console.log(datas);
             datas.forEach(data=>{
-                console.log(data);
                 temp.push(new MemberOrderList(data));
             })
         }).catch(err=>{console.log(err)})

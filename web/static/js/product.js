@@ -4,7 +4,6 @@ import {getProduct} from "./util.js";
 
 export class Product {
     constructor(obj){
-        // console.log("product c = ",obj)
         this.id = obj.id; //商品編號
         this.name = obj.name; //商品名稱
         this.inventory = obj.inventory; //商品庫存
@@ -188,7 +187,6 @@ export class BuyProduct extends Product{
     amount;
     sum;
     constructor(obj){
-        // console.log("buyproduct construtor =",obj);
         super(obj);
         this.amount = obj.amount?obj.amount:1;
         this.sum = obj.price*obj.amount;

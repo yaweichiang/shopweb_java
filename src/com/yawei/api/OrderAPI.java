@@ -4,8 +4,6 @@ import com.yawei.util.MySqlConnect;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;

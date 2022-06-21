@@ -4,7 +4,6 @@ import Announcement from './announcement.js';
 import { ManagerOrderList } from './orderlist.js';
 import { Member,User } from './user.js';
 import { Product } from './product.js';
-// import {myfile} from './ManagerCenterPage.js';
 
 
 //網頁設定頁面主畫面
@@ -44,7 +43,6 @@ export class WebSetting{
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(this.targetAannouncement)
         }).then(response=>{
-            console.log(response);
             this.announcementView()
         }).catch(err=>{
             console.log(err)
@@ -53,7 +51,6 @@ export class WebSetting{
     }
     listIndex(str){//查找選取的公告在陣列中的index
         let length = this.announcementList.length;
-        console.log(str);
         for(let i = 0 ; i < length ; i++){
             if(this.announcementList[i].title===str){
                 return i;
@@ -73,10 +70,8 @@ export class WebSetting{
         //監控 編輯按鈕 點選編輯按鈕才可以異動input格中的數字
         basicDiv.addEventListener("click",(e)=>{
             let target = e.target;
-            console.log(target.tagName);
             if(target.tagName==="IMG"){
                 target.parentElement.classList.add("hide");
-                console.log("a",target.parentElement.nextElementSibling.attributes);
                 target.parentElement.nextElementSibling.attributes.removeNamedItem("disabled");
             }
         })
@@ -104,13 +99,11 @@ export class WebSetting{
         '    </div>';
         //將公告物件的option物件加到div物件中顯示在畫面上
         getAnnouncement().then(datas=>{
-            console.log(datas)
-            let list = [] 
+            let list = []
             // datas.forEach(data=>{
             for(let i = 0 ; i< datas.length;i++){
                 let temp = new Announcement(datas[i]);
                 list.push(temp)
-                console.log("tt",temp)
                 annoDiv.children[3].firstElementChild.append(temp.getSelectOption());
                 if(temp.target){
                     // 同步確認哪一個公告是正在公告的選項 將公告的內容顯示在公告內文的欄位中
@@ -123,7 +116,6 @@ export class WebSetting{
 
         // 監控選取框，如果選取有變化的時候將選取到的公告內容填入公告內文欄位中，待後續按下儲存時存入資料庫中
         annoDiv.children[3].firstElementChild.addEventListener("change",(e)=>{
-            console.log(e.target.value);
             let index = this.listIndex(e.target.value);
             if(index!=-1){
                 document.getElementById("announcement").innerText = this.announcementList[index].content;
@@ -143,7 +135,6 @@ export class WebSetting{
         })
         //監控 公告編輯框
         annoDiv.children[2].addEventListener("click",(e)=>{
-            console.log(e.target.tagName);
             let target = e.target;
             // 如果點擊的是按鈕
             if(target.tagName==="BUTTON"){
@@ -315,12 +306,6 @@ export class ProductsEdit{
                             alert("請選取應選資料");
                             return false;
                         }
-                        // if(this.newpic.length===0){
-                        //     console.log(this.newpic);
-                        //     alert("請選取商品照片");
-                        //     return false;
-                        // }
-                        console.log(this.newpic);
                         let obj = {
                             name:inputs[0].value, //名稱
                             price:inputs[1].value,//價格
@@ -333,7 +318,6 @@ export class ProductsEdit{
                             url:this.filereader.result
 
                         }
-                        console.log(obj)
                         fetch('/products',{
                             method:'post',
                             headers:{'Content-Type':'application/json'},
@@ -647,10 +631,3 @@ export class MemberSearch{
     }
 }
 
-// function handleFileUpload(e){
-//     console.log("eee取得上傳圖片");
-//     console.log(e.target.files);
-//     console.log(e.target.files[0]);
-//     // export const myfile = e.target.files[0];
-//
-// }
