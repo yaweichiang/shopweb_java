@@ -132,12 +132,30 @@ public class MySqlConnect implements DatabaseConnect{
             return array;
         }
     }//v
+
     @Override
-    public JsonArray createProduct(JSONObject data) {
+    public int getNewProductNo() {
+
+        Statement sm = null;
+        String sql=String.format("select p_no from products order by p_no desc limit 1");
+        int id = 1;
+        try{
+            sm = this.conn.createStatement();
+            ResultSet rs = sm.executeQuery(sql);
+            while(rs.next()){
+                id = rs.getInt(1) + 1;
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return id;
+    }
+    @Override
+    public JsonArray createProduct(JSONObject data,String path) {
         Statement sm = null;
         String sql = String.format("insert into products values(null,'%s',%s,%s,%s,%s,'%s','%s','%s')",
                 data.get("name"),data.get("inventory"),data.get("capacity"),
-                data.get("tote_type"),data.get("price"),data.get("url"),
+                data.get("tote_type"),data.get("price"),path,
                 data.get("introduction"),data.get("type"));
         System.out.println(sql);
         try {

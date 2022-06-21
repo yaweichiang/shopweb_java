@@ -264,6 +264,7 @@ export class ProductsEdit{
                     //監聽filereader讀取 將讀取到的dataurl 顯示
                     this.filereader.addEventListener("load",(e)=>{
                         let dataURL = this.filereader.result;
+                        console.log(dataURL);
                         document.getElementById("preview_pic").src = dataURL;
                     })
                     main.lastChild.addEventListener("click",()=>{
@@ -333,22 +334,22 @@ export class ProductsEdit{
 
                         }
                         console.log(obj)
-                        // fetch('/products',{
-                        //     method:'post',
-                        //     headers:{'Content-Type':'application/json'},
-                        //     body:JSON.stringify(obj)
-                        // }).then(response=>{
-                        //     if(response.status==200){
-                        //         getProducts().then(datas=>{
-                        //             let temp = [];
-                        //             datas.forEach(data=>{
-                        //                 temp.push(new Product(data))
-                        //             })
-                        //             this.products = temp;
-                        //             this.show()
-                        //         })
-                        //     }
-                        // }).catch(err=>console.log(err))
+                        fetch('/products',{
+                            method:'post',
+                            headers:{'Content-Type':'application/json'},
+                            body:JSON.stringify(obj)
+                        }).then(response=>{
+                            if(response.status==200){
+                                getProducts().then(datas=>{
+                                    let temp = [];
+                                    datas.forEach(data=>{
+                                        temp.push(new Product(data))
+                                    })
+                                    this.products = temp;
+                                    this.show()
+                                })
+                            }
+                        }).catch(err=>console.log(err))
                         
                     })
                     
@@ -410,11 +411,11 @@ export class ProductsEdit{
                 '    </div>'+
                 '    <div class="helfinput">'+
                 '        <p>照片上傳</p>'+
-                '        <input type="file" id="file-uploader" data-target="file-uploader" accept=".png, .jpg, .jpeg" width="110px" />' +
+                '        <input type="file" id="file-uploader" data-target="file-uploader" accept=".png, .jpg, .jpeg"/>' +
                 // '        <input type="text" value="../static/products/product1.jpg" disabled>'+
                 '    </div>'+
                 '    <div class="helfinput">'+
-                '    <img src="" id="preview_pic">'+
+                '    <img src="" id="preview_pic" width="135px" >'+
                 '    </div>'+
                 '</div>'+
                 '<div class="fullinput">'+

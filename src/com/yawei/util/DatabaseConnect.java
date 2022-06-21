@@ -18,8 +18,10 @@ public interface DatabaseConnect {
     public abstract JsonArray getAllProducts() throws SQLException;
 //    取得指定商品資料
     public abstract JsonArray getProduct(String id);
+//    取得下筆商品編號
+    public abstract  int getNewProductNo();
 //    新增商品
-    public abstract JsonArray createProduct(JSONObject data);
+    public abstract JsonArray createProduct(JSONObject data,String path);
 //    變更商品資訊
     public abstract JsonArray updateProduct(JSONObject data);
 //    取得會員資訊
