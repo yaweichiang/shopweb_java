@@ -5,8 +5,12 @@ import org.json.JSONObject;
 import javax.json.*;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import static javax.json.Json.createArrayBuilder;
 import static javax.json.Json.createObjectBuilder;
@@ -310,8 +314,50 @@ public class MySqlConnect implements DatabaseConnect{
         return false;
     }//x
     @Override
-    public Boolean checkManagerLogin(JsonObject object) {
-        return null;
+    public String getManagerHashPW( String managerId) {
+        String result = null;
+        Statement sm = null;
+        String sql = String.format("select ma_hashPW from managers where ma_phone = '%s'",managerId);
+        System.out.println(sql);
+        try{
+            sm = this.conn.createStatement();
+            ResultSet rs = sm.executeQuery(sql);
+            while(rs.next()){
+                result = rs.getString(1);
+                System.out.println("result:"+result);
+
+            }
+        }catch (SQLException e ){
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                sm.close();
+            }catch (SQLException e ){
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+    ///
+    public void updateManagerHashPW(String pa , String managerId) {
+        byte[] result = null;
+        Statement sm = null;
+        String sql = String.format("update managers set ma_hashPW = '%s' where ma_phone = '%s' ",pa,managerId);
+        System.out.println(sql);
+        try{
+            sm = this.conn.createStatement();
+            sm.executeUpdate(sql);
+
+        }catch (SQLException e ){
+            e.printStackTrace();
+        }finally {
+            try {
+                sm.close();
+            }catch (SQLException e ){
+                e.printStackTrace();
+            }
+        }
     }
     @Override
     public int checkMail(String mail) {

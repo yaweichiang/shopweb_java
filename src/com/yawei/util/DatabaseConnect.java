@@ -36,7 +36,7 @@ public interface DatabaseConnect {
 //    會員登入帳號密碼檢查
     public abstract boolean checkUserLogin(JsonObject object);
 //    管理者登入帳號密碼檢查
-    public abstract Boolean checkManagerLogin(JsonObject object);
+    public abstract String getManagerHashPW(String managerid);
 //    檢查電話是否已註冊過
     public abstract int checkMail(String phone);
 //    取得所有商品容量資訊
