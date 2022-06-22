@@ -12,8 +12,11 @@ let parent = document.querySelector(".innercontainer");
 getProducts().then(data=>{
 
     data.map((product)=>{
+
         let item = new Product(product);
-        parent.appendChild(createProductsDom(item));
+        if(item.type)
+            parent.appendChild(createProductsDom(item));
+
     })
 })
 

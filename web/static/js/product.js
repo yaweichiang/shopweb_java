@@ -136,10 +136,16 @@ export class Product {
                         inputs[i].focus;
                         alert("請輸入商品資料");
                         return false;
-                    }else if(i==2||i==3){
+                    }else if(i==2){
                         let check = /^[1-9]+[0-9]*$/;
                         if(!check.test(inputs[i].value)){
-                            alert(i==1?"請輸入正確商品單價":"請輸入正確商品數量");
+                            alert("請輸入正確商品單價");
+                            return false;
+                        }
+                    }else if(i==3){
+                        let check = /^[1-9]+[0-9]*$/;
+                        if(!check.test(inputs[i].value)&&inputs[i].value!="0"){
+                            alert("請輸入正確商品數量");
                             return false;
                         }
                     }
