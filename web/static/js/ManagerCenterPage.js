@@ -99,6 +99,12 @@ function showIndex(){
         let today = new Date();
         let date = today.getFullYear()+"-"+(today.getMonth()<9?'0':'')+(today.getMonth()+1)+"-"+(today.getDate()<=9?'0':'')+today.getDate();
         getManagerOrderList("date",date).then(datas=>{
+            datas.sort((a,b)=>{
+                if(a.no>b.no)
+                    return 1;
+                else
+                    return 0;
+            })
             datas.forEach(data=>{
                 main.children[2].lastChild.appendChild(new ManagerOrderList(data).createTableRowView());
 

@@ -499,6 +499,12 @@ export class OrderListSearch{
             '       </tbody>';
         getManagerOrderList(type,date).then(datas=>{
             history.pushState({action:"doordersearch",searchKey:datas}, null, "");
+            datas.sort((a,b)=>{
+                if(a.no>b.no)
+                    return 1;
+                else
+                    return 0;
+            })
             datas.forEach(data=>{
                 table.children[1].appendChild(new ManagerOrderList(data).createTableRowView()); 
             })
@@ -572,6 +578,12 @@ export class MemberSearch{
                 document.querySelector(".memberinfo").innerHTML = "";
                 getMemberOrderList(user.no).then(datas=>{
                     history.pushState({action:"domemberorderlistsearch",member:[data],list:datas}, null, "");
+                    datas.sort((a,b)=>{
+                        if(a.no>b.no)
+                            return 1;
+                        else
+                            return 0;
+                    })
                     this.memberSearchTableView([data]);
                     this.orderListTableView(datas);
                 })

@@ -1,17 +1,16 @@
 package com.yawei.util;
 
+import javafx.print.Collation;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import javax.json.*;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.*;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import static javax.json.Json.createArrayBuilder;
 import static javax.json.Json.createObjectBuilder;
 
@@ -723,7 +722,8 @@ public class MySqlConnect implements DatabaseConnect{
                 "b_price ," +
                 "b_num  from" +
                 "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
-                ") as temp4 using(no) where id = %s order by no;",id);
+                ") as temp4 using(no) where id = %s order by no",id);
+        System.out.println(sql);
         JSONArray lists =null;
         try{
             sm = this.conn.createStatement();
@@ -807,56 +807,57 @@ public class MySqlConnect implements DatabaseConnect{
                 "b_price ," +
                 "b_num  from" +
                 "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
-                ") as temp4 using(no) where id = %s order by orderDate;",id);
+                ") as temp4 using(no) where id = %s order by orderDate",id);
         JSONArray lists = null;
-        try{
+        try {
             sm = this.conn.createStatement();
             ResultSet rs = sm.executeQuery(sql);
-            HashMap<String,HashMap> result  = new HashMap();
-            ResultSetMetaData rsmd =  rs.getMetaData();
+            HashMap<String, HashMap> result = new HashMap();
+            ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rsmd.getColumnCount();
-            while(rs.next()){
+            while (rs.next()) {
                 String no = rs.getString("no");
-                if(!result.containsKey(no)){//訂單編號 key 不存在
-                    HashMap<String,Object> temp = new HashMap();
-                    temp.put("no",rs.getInt("no"));
-                    temp.put("phone",rs.getString("phone"));
-                    temp.put("id",rs.getInt("id"));
-                    temp.put("payType",rs.getString("payType"));
-                    temp.put("orderDate",rs.getDate("orderDate"));
-                    temp.put("sendNo",rs.getString("sendNo")==null?"":rs.getString("sendNo"));
-                    temp.put("sendDate",rs.getString("sendDate")==null?"":rs.getString("sendDate"));
-                    temp.put("type",rs.getString("type"));
-                    temp.put("recipient",rs.getString("recipient"));
-                    temp.put("total",rs.getInt("total"));
-                    temp.put("name",rs.getString("name"));
-                    temp.put("payNo",rs.getString("payNo")==null?"":rs.getString("payNo"));
-                    temp.put("remark",rs.getString("remark")==null?"":rs.getString("remark"));
-                    ArrayList<HashMap<String,Object>> list = new ArrayList<>();
-                    HashMap<String,Object> product = new HashMap();
-                    product.put("id",rs.getInt("p_no"));
-                    product.put("name",rs.getString("p_name"));
-                    product.put("capacity",rs.getInt("c_size"));
-                    product.put("price",rs.getInt("b_price"));
-                    product.put("amount",rs.getInt("b_num"));
+                if (!result.containsKey(no)) {//訂單編號 key 不存在
+                    HashMap<String, Object> temp = new HashMap();
+                    temp.put("no", rs.getInt("no"));
+                    temp.put("phone", rs.getString("phone"));
+                    temp.put("id", rs.getInt("id"));
+                    temp.put("payType", rs.getString("payType"));
+                    temp.put("orderDate", rs.getDate("orderDate"));
+                    temp.put("sendNo", rs.getString("sendNo") == null ? "" : rs.getString("sendNo"));
+                    temp.put("sendDate", rs.getString("sendDate") == null ? "" : rs.getString("sendDate"));
+                    temp.put("type", rs.getString("type"));
+                    temp.put("recipient", rs.getString("recipient"));
+                    temp.put("total", rs.getInt("total"));
+                    temp.put("name", rs.getString("name"));
+                    temp.put("payNo", rs.getString("payNo") == null ? "" : rs.getString("payNo"));
+                    temp.put("remark", rs.getString("remark") == null ? "" : rs.getString("remark"));
+                    ArrayList<HashMap<String, Object>> list = new ArrayList<>();
+                    HashMap<String, Object> product = new HashMap();
+                    product.put("id", rs.getInt("p_no"));
+                    product.put("name", rs.getString("p_name"));
+                    product.put("capacity", rs.getInt("c_size"));
+                    product.put("price", rs.getInt("b_price"));
+                    product.put("amount", rs.getInt("b_num"));
                     list.add(product);
-                    temp.put("productsList",list);
-                    result.put(no,temp);
-                }else{// 訂單編號 key已存在 插入新品項資料即可
-                    ArrayList<HashMap<String,String>> list = (ArrayList<HashMap<String,String>>) result.get(no).get("productsList");
-                    HashMap<String,String> product = new HashMap();
-                    product.put("id",rs.getString("p_no"));
-                    product.put("name",rs.getString("p_name"));
-                    product.put("capacity",rs.getString("c_size"));
-                    product.put("price",rs.getString("b_price"));
-                    product.put("amount",rs.getString("b_num"));
+                    temp.put("productsList", list);
+                    result.put(no, temp);
+                } else {// 訂單編號 key已存在 插入新品項資料即可
+                    ArrayList<HashMap<String, String>> list = (ArrayList<HashMap<String, String>>) result.get(no).get("productsList");
+                    HashMap<String, String> product = new HashMap();
+                    product.put("id", rs.getString("p_no"));
+                    product.put("name", rs.getString("p_name"));
+                    product.put("capacity", rs.getString("c_size"));
+                    product.put("price", rs.getString("b_price"));
+                    product.put("amount", rs.getString("b_num"));
                     list.add(product);
                 }
             }
             lists = new JSONArray();
-            for(String key : result.keySet()){
+            for(String key :  result.keySet()){
                 lists.put(result.get(key));
             }
+
         }catch(SQLException e){
             e.printStackTrace();
         }finally {
@@ -1064,6 +1065,7 @@ public class MySqlConnect implements DatabaseConnect{
                 "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
                 ") as temp4 using(no) where no = %s and id = %s order by orderDate;",o_no,m_id);
         JSONArray lists =null;
+
         try{
             sm = this.conn.createStatement();
             ResultSet rs = sm.executeQuery(sql);
