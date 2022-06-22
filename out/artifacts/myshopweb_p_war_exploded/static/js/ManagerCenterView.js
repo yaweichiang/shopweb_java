@@ -579,7 +579,7 @@ export class MemberSearch{
                 getMemberOrderList(user.no).then(datas=>{
                     history.pushState({action:"domemberorderlistsearch",member:[data],list:datas}, null, "");
                     datas.sort((a,b)=>{
-                        if(a.no>b.no)
+                        if(a.no<b.no)
                             return 1;
                         else
                             return 0;

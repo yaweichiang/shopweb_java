@@ -35,7 +35,7 @@ export class Member extends User{
         let temp =[];
         getMemberOrderList(this.no).then(datas=>{
             datas.sort((a,b)=>{
-                if(a.no>b.no)
+                if(a.no<b.no)
                     return 1;
                 else
                     return 0;
