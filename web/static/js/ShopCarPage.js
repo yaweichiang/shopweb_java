@@ -26,7 +26,8 @@ MYCAR.showProducts(); // 建立購物車商品明細的dom物件
 
 // 這邊要直接跟後端請求address
 getMemberAddress().then(datas=>{
-    if(typeof(datas.length)!="undefined"){
+    console.log(datas)
+    if(datas!=null){
         datas.forEach(data=>{
             document.querySelector(".selectrecipient").appendChild(new Address(data).createShopCarItem());
         })

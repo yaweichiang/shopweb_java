@@ -48,7 +48,7 @@ public class MySqlConnect implements DatabaseConnect{
     private boolean isInt(Object object){
 
         String num = object.toString();
-        if(num.substring(0,1).equals("0"))
+        if(num.length()>1&&num.substring(0,1).equals("0"))
             return false;
         try {
             int i = Integer.parseInt(object.toString());
@@ -217,13 +217,18 @@ public class MySqlConnect implements DatabaseConnect{
             int columnCount = rs.getMetaData().getColumnCount();
             while(rs.next()) {
                 JsonObjectBuilder obj = createObjectBuilder();
-                for (int i = 1; i <= columnCount; i++) {
-                    if(this.isInt(rs.getObject(i))){
-                        obj.add(rsmd.getColumnLabel(i),rs.getInt(i) );
-                    }else{
-                        obj.add(rsmd.getColumnLabel(i),rs.getString(i)==null?"null":rs.getString(i) );
-                    }
-                }
+                obj.add("no",rs.getInt("no"));
+                obj.add("name",rs.getString("name"));
+                obj.add("nickname",rs.getString("nickname"));
+                obj.add("phone",rs.getString("phone")==null?"":rs.getString("phone"));
+                obj.add("email",rs.getString("email"));
+//                for (int i = 1; i <= columnCount; i++) {
+//                    if(this.isInt(rs.getObject(i))){
+//                        obj.add(rsmd.getColumnLabel(i),rs.getInt(i) );
+//                    }else{
+//                        obj.add(rsmd.getColumnLabel(i),rs.getString(i)==null?"null":rs.getString(i) );
+//                    }
+//                }
                 result.add(obj);
             }
 
@@ -254,13 +259,19 @@ public class MySqlConnect implements DatabaseConnect{
             int columnCount = rs.getMetaData().getColumnCount();
             while(rs.next()) {
                 JsonObjectBuilder obj = createObjectBuilder();
-                for (int i = 1; i <= columnCount; i++) {
-                    if(this.isInt(rs.getObject(i))){
-                        obj.add(rsmd.getColumnLabel(i),rs.getInt(i) );
-                    }else{
-                        obj.add(rsmd.getColumnLabel(i),rs.getString(i)==null?"null":rs.getString(i) );
-                    }
-                }
+                obj.add("no",rs.getInt("no"));
+                obj.add("name",rs.getString("name"));
+                obj.add("phone",rs.getString("phone")==null?"":rs.getString("phone"));
+                obj.add("email",rs.getString("email"));
+                obj.add("url",rs.getString("url"));
+
+//                for (int i = 1; i <= columnCount; i++) {
+//                    if(this.isInt(rs.getObject(i))){
+//                        obj.add(rsmd.getColumnLabel(i),rs.getInt(i) );
+//                    }else{
+//                        obj.add(rsmd.getColumnLabel(i),rs.getString(i)==null?"null":rs.getString(i) );
+//                    }
+//                }
                 result.add(obj);
             }
             System.out.println("result:"+result);
@@ -641,13 +652,18 @@ public class MySqlConnect implements DatabaseConnect{
             int columnCount = rsmd.getColumnCount();
             while(rs.next()){
                 JsonObjectBuilder obj = createObjectBuilder();
-                for(int i = 1 ; i <= columnCount; i++) {
-                    if(isInt(rs.getObject(i))) {
-                        obj.add(rsmd.getColumnLabel(i),rs.getInt(i));
-                    }else{
-                        obj.add(rsmd.getColumnLabel(i),rs.getString(i)==null?"null":rs.getString(i));
-                    }
-                }
+                obj.add("no",rs.getInt("no"));
+                obj.add("name",rs.getString("name"));
+                obj.add("phone",rs.getString("phone")==null?"":rs.getString("phone"));
+                obj.add("address",rs.getString("address"));
+
+//                for(int i = 1 ; i <= columnCount; i++) {
+//                    if(isInt(rs.getObject(i))) {
+//                        obj.add(rsmd.getColumnLabel(i),rs.getInt(i));
+//                    }else{
+//                        obj.add(rsmd.getColumnLabel(i),rs.getString(i)==null?"null":rs.getString(i));
+//                    }
+//                }
                 result.add(obj);
             }
 
