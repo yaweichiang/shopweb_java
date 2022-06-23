@@ -37,6 +37,7 @@ public class MySqlConnect implements DatabaseConnect{
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(String.format("jdbc:mysql:%s%s?serverTimezone=GMT&user=%s&password=%s",databaseUrl,database,user,password));
+            conn.setAutoCommit(false); //開啟交易模式
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -45,6 +46,7 @@ public class MySqlConnect implements DatabaseConnect{
             return conn;
         }
     }
+
     private boolean isInt(Object object){
 
         String num = object.toString();
@@ -142,7 +144,7 @@ public class MySqlConnect implements DatabaseConnect{
             e.printStackTrace();
         }
         return id;
-    }
+    }//v
     @Override
     public JsonArray createProduct(JSONObject data,String path) {
         Statement sm = null;
@@ -154,9 +156,15 @@ public class MySqlConnect implements DatabaseConnect{
         try {
             sm = this.conn.createStatement();
             sm.executeUpdate(sql);
-
+            this.conn.commit(); // 儲存變更
         } catch(SQLException e) {
             e.printStackTrace();
+            try {
+                if(this.conn!=null)
+                    this.conn.rollback();//復原交易
+            }catch (SQLException ex){
+                ex.printStackTrace();
+            }
         }finally {
             try {
                 sm.close();
@@ -178,8 +186,15 @@ public class MySqlConnect implements DatabaseConnect{
         try {
             sm = this.conn.createStatement();
             sm.executeUpdate(sql);
+            this.conn.commit();
         } catch(SQLException e) {
             e.printStackTrace();
+            try {
+                if(this.conn!=null)
+                    this.conn.rollback();//復原交易
+            }catch (SQLException ex){
+                ex.printStackTrace();
+            }
         }finally {
             try{
                 sm.close();
@@ -264,7 +279,7 @@ public class MySqlConnect implements DatabaseConnect{
             return array;
         }
 
-    }
+    }//v
     @Override
     public void createUser(JSONObject data) {
         Statement sm = null;
@@ -272,9 +287,16 @@ public class MySqlConnect implements DatabaseConnect{
         try{
             sm = this.conn.createStatement();
             int rs = sm.executeUpdate(sql);
-            System.out.println(rs);
+//            System.out.println(rs);
+            this.conn.commit();
         }catch(SQLException e){
             e.printStackTrace();
+            try {
+                if(this.conn!=null)
+                    this.conn.rollback();//復原交易
+            }catch (SQLException ex){
+                ex.printStackTrace();
+            }
         }finally {
             try{
                 sm.close();
@@ -293,8 +315,15 @@ public class MySqlConnect implements DatabaseConnect{
         try{
             sm = this.conn.createStatement();
             int rs = sm.executeUpdate(sql);
+            this.conn.commit();
         }catch(SQLException e){
             e.printStackTrace();
+            try {
+                if(this.conn!=null)
+                    this.conn.rollback();//復原交易
+            }catch (SQLException ex){
+                ex.printStackTrace();
+            }
         }finally {
             try{
                 sm.close();
@@ -337,8 +366,8 @@ public class MySqlConnect implements DatabaseConnect{
             }
         }
         return result;
-    }
-    ///
+    } //v
+    @Override
     public void updateManagerHashPW(String pa , String managerId) {
         byte[] result = null;
         Statement sm = null;
@@ -347,9 +376,15 @@ public class MySqlConnect implements DatabaseConnect{
         try{
             sm = this.conn.createStatement();
             sm.executeUpdate(sql);
-
-        }catch (SQLException e ){
+            this.conn.commit();
+        }catch (SQLException e){
             e.printStackTrace();
+            try {
+                if(this.conn!=null)
+                    this.conn.rollback();//復原交易
+            }catch (SQLException ex){
+                ex.printStackTrace();
+            }
         }finally {
             try {
                 sm.close();
@@ -357,7 +392,7 @@ public class MySqlConnect implements DatabaseConnect{
                 e.printStackTrace();
             }
         }
-    }
+    }//v
     @Override
     public int checkMail(String mail) {
         String sql = String.format("select m_no from members where m_mail = '%s'",mail);
@@ -452,8 +487,15 @@ public class MySqlConnect implements DatabaseConnect{
                 System.out.println("sql="+sql);
                 sm.executeUpdate(sql);
             }
+            this.conn.commit();
         }catch (SQLException e){
             e.printStackTrace();
+            try {
+                if(this.conn!=null)
+                    this.conn.rollback();//復原交易
+            }catch (SQLException ex){
+                ex.printStackTrace();
+            }
         }finally {
             try{
                 sm.close();
@@ -572,8 +614,15 @@ public class MySqlConnect implements DatabaseConnect{
                     ,this.isInt(object.get("id"))?object.get("id"):"null",object.get("content") );
             System.out.println("sql="+sql);
             sm.executeUpdate(sql);
+            this.conn.commit();
         }catch (SQLException e){
             e.printStackTrace();
+            try {
+                if(this.conn!=null)
+                    this.conn.rollback();//復原交易
+            }catch (SQLException ex){
+                ex.printStackTrace();
+            }
         }finally {
             try{
                 sm.close();
@@ -625,8 +674,15 @@ public class MySqlConnect implements DatabaseConnect{
         try{
             sm = this.conn.createStatement();
             sm.executeUpdate(sql);
+            this.conn.commit();
         }catch (SQLException e){
             e.printStackTrace();
+            try {
+                if(this.conn!=null)
+                    this.conn.rollback();//復原交易
+            }catch (SQLException ex){
+                ex.printStackTrace();
+            }
         }finally {
             try{
                 sm.close();
@@ -644,8 +700,15 @@ public class MySqlConnect implements DatabaseConnect{
         try{
             sm = this.conn.createStatement();
             sm.executeUpdate(sql);
+            this.conn.commit();
         }catch (SQLException e){
             e.printStackTrace();
+            try {
+                if(this.conn!=null)
+                    this.conn.rollback();//復原交易
+            }catch (SQLException ex){
+                ex.printStackTrace();
+            }
         }finally {
             try{
                 sm.close();
@@ -671,7 +734,7 @@ public class MySqlConnect implements DatabaseConnect{
             e.printStackTrace();
         }
         return id;
-    }
+    } //v
     @Override
     public void createOrderList(JSONObject object,String userid) {
         int no = MySqlConnect.getMySql().getNewOrderListNo();
@@ -688,10 +751,16 @@ public class MySqlConnect implements DatabaseConnect{
                 sql = String.format("insert into order_products values(%d,%d,%d,%d)",no,product.getInt("id"),product.getInt("amount"),product.getInt("price"));
                 sm.executeUpdate(sql);
             }
-
+            this.conn.commit();
             System.out.println("新增完成");
         }catch (SQLException e){
             e.printStackTrace();
+            try {
+                if(this.conn!=null)
+                    this.conn.rollback();//復原交易
+            }catch (SQLException ex){
+                ex.printStackTrace();
+            }
         }finally {
             try{
                 sm.close();
@@ -699,7 +768,7 @@ public class MySqlConnect implements DatabaseConnect{
                 e.printStackTrace();
             }
         }
-    }
+    } //v
     @Override
     public JSONArray getOrderListByMemberId(String id) {
         Statement sm = null;
@@ -741,7 +810,7 @@ public class MySqlConnect implements DatabaseConnect{
                     temp.put("payType",rs.getString("payType"));
                     temp.put("orderDate",rs.getDate("orderDate"));
                     temp.put("sendNo",rs.getString("sendNo")==null?"":rs.getString("sendNo"));
-                    temp.put("sendDate",rs.getString("sendDate")==null?"":rs.getString("sendDate"));
+                    temp.put("sendDate",rs.getDate("sendDate")==null?"尚未出貨":rs.getString("sendDate"));
                     temp.put("type",rs.getString("type"));
                     temp.put("recipient",rs.getString("recipient"));
                     temp.put("total",rs.getInt("total"));
@@ -912,7 +981,7 @@ public class MySqlConnect implements DatabaseConnect{
                     temp.put("payType",rs.getString("payType"));
                     temp.put("orderDate",rs.getDate("orderDate"));
                     temp.put("sendNo",rs.getString("sendNo")==null?"":rs.getString("sendNo"));
-                    temp.put("sendDate",rs.getString("sendDate")==null?"":rs.getString("sendDate"));
+                    temp.put("sendDate",rs.getDate("sendDate")==null?"尚未出貨":rs.getString("sendDate"));
                     temp.put("type",rs.getString("type"));
                     temp.put("recipient",rs.getString("recipient"));
                     temp.put("total",rs.getInt("total"));
@@ -998,7 +1067,7 @@ public class MySqlConnect implements DatabaseConnect{
                     temp.put("payType",rs.getString("payType"));
                     temp.put("orderDate",rs.getDate("orderDate"));
                     temp.put("sendNo",rs.getString("sendNo")==null?"":rs.getString("sendNo"));
-                    temp.put("sendDate",rs.getString("sendDate")==null?"":rs.getString("sendDate"));
+                    temp.put("sendDate",rs.getDate("sendDate")==null?"尚未出貨":rs.getString("sendDate"));
                     temp.put("type",rs.getString("type"));
                     temp.put("recipient",rs.getString("recipient"));
                     temp.put("total",rs.getInt("total"));
@@ -1082,7 +1151,7 @@ public class MySqlConnect implements DatabaseConnect{
                     temp.put("payType",rs.getString("payType"));
                     temp.put("orderDate",rs.getDate("orderDate"));
                     temp.put("sendNo",rs.getString("sendNo")==null?"":rs.getString("sendNo"));
-                    temp.put("sendDate",rs.getString("sendDate")==null?"":rs.getString("sendDate"));
+                    temp.put("sendDate",rs.getDate("sendDate")==null?"尚未出貨":rs.getString("sendDate"));
                     temp.put("type",rs.getString("type"));
                     temp.put("recipient",rs.getString("recipient"));
                     temp.put("total",rs.getInt("total"));
@@ -1166,7 +1235,7 @@ public class MySqlConnect implements DatabaseConnect{
                     temp.put("payType",rs.getString("payType"));
                     temp.put("orderDate",rs.getDate("orderDate"));
                     temp.put("sendNo",rs.getString("sendNo")==null?"":rs.getString("sendNo"));
-                    temp.put("sendDate",rs.getString("sendDate")==null?"":rs.getString("sendDate"));
+                    temp.put("sendDate",rs.getDate("sendDate")==null?"尚未出貨":rs.getString("sendDate"));
                     temp.put("type",rs.getString("type"));
                     temp.put("recipient",rs.getString("recipient"));
                     temp.put("total",rs.getInt("total"));
@@ -1216,8 +1285,15 @@ public class MySqlConnect implements DatabaseConnect{
         try {
             sm = this.conn.createStatement();
             sm.executeUpdate(sql);
+            this.conn.commit();
         }catch (SQLException e){
             e.printStackTrace();
+            try {
+                if(this.conn!=null)
+                    this.conn.rollback();//復原交易
+            }catch (SQLException ex){
+                ex.printStackTrace();
+            }
         }finally {
             try {
                 sm.close();
@@ -1225,18 +1301,39 @@ public class MySqlConnect implements DatabaseConnect{
                 e.printStackTrace();
             }
         }
-    }
+    } //v
     @Override
     public void updateOrder(JSONObject object) {
         Statement sm = null;
+        String sql = null;
         if(object.get("send_no").equals("")) {
-            String sql = String.format("update order_list set o_remark = '%s' where o_no=%s", object.get("remark"), object.get("order_no"));
+            sql = String.format("update order_list set o_remark = '%s' where o_no=%s", object.get("remark"), object.get("order_no"));
         }else if(object.get("send_date").equals("尚未出貨")){
-            String sql = String.format("update order_list set o_senddate=current_date ,o_type = 'send' ,o_sendno = '{data['send_no']}',o_remark = '{data['remark']}' where o_no={data['order_no']}", object.get("remark"), object.get("order_no"));
+            sql = String.format("update order_list set o_senddate=current_date ,o_type = 'send' ,o_sendno = '%s',o_remark = '%s' where o_no=%s",object.get("send_no"), object.get("remark"), object.get("order_no"));
         }else{
-            String sql = String.format("update order_list set o_remark = '%s' where o_no=%s", object.get("remark"), object.get("order_no"));
+            sql = String.format("update order_list set o_remark = '%s' where o_no=%s", object.get("remark"), object.get("order_no"));
         }
-    }
+        System.out.println("訂單變更sql:"+sql);
+        try{
+            sm = this.conn.createStatement();
+            sm.executeUpdate(sql);
+            this.conn.commit();
+        }catch (SQLException e){
+            e.printStackTrace();
+            try {
+                if(this.conn!=null)
+                    this.conn.rollback();//復原交易
+            }catch (SQLException ex){
+                ex.printStackTrace();
+            }
+        }finally {
+            try {
+                sm.close();
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
+    } //v
     @Override
     public boolean checkPhone(String id){
         boolean result = false;
@@ -1260,5 +1357,5 @@ public class MySqlConnect implements DatabaseConnect{
 
         }
         return result;
-    }
+    } //v
 }

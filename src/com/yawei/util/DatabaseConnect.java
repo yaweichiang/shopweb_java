@@ -37,6 +37,8 @@ public interface DatabaseConnect {
     public abstract boolean checkUserLogin(JsonObject object);
 //    管理者登入帳號密碼檢查
     public abstract String getManagerHashPW(String managerid);
+//    管理者登入帳號密碼變更
+    public abstract void updateManagerHashPW(String pa , String managerId);
 //    檢查電話是否已註冊過
     public abstract int checkMail(String phone);
 //    取得所有商品容量資訊
