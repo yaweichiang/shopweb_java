@@ -2,7 +2,6 @@ import {getOrderListByNo} from './util.js';
 
 class OrderList{
     constructor(obj){
-        console.log(obj)
         this.no = obj.no;  //訂單編號
         this.orderDate = obj.orderDate;//訂購日期
         this.sendDate = obj.sendDate===null?"尚未出貨":obj.sendDate;//出貨日期
@@ -32,10 +31,6 @@ class OrderList{
         this.productsList = obj.productsList;//JSON.parse(obj.productsList);
         this.total =  obj.total;//總金額
     }
-    getFresh(){
-
-    }
-    
 }
 
 export class MemberOrderList extends OrderList{
@@ -281,14 +276,12 @@ export class ManagerOrderList extends MemberOrderList{
         let today = new Date();
         let date = today.getFullYear()+"/"+(today.getMonth()+1)+"/"+today.getDate();
         // 這邊應該要將變動資訊存入後端資料庫 然後重建畫面
-        console.log(document.querySelector(".basicinfo").children[1].lastChild.value)
         let obj ={
             order_no:this.no,
             send_no:document.querySelector(".basicinfo").children[1].lastChild.value,
             send_date:this.sendDate,
             remark:this.remark+date+document.querySelector(".basicinfo").children[2].lastChild.value+";"
         }
-        console.log(obj)
         fetch('/order/update',{
             method:'PUT',
             headers:{'Content-Type':'application/json'},
