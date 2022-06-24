@@ -25,10 +25,10 @@ document.getElementById("login").addEventListener("click",(e)=>{
 
 
 //改串接google 登入api
-function handleCredentialResponse(response) {
-
-    const responsePayload = jwtDecode(response.credential);
-    console.log(responsePayload)
+// function handleCredentialResponse(response) {
+//
+//     const responsePayload = jwtDecode(response.credential);
+//     console.log(responsePayload)
         // 將取得資料作為會員資料傳回後端
     // let data = {
     //     id:responsePayload.sub,
@@ -48,16 +48,16 @@ function handleCredentialResponse(response) {
     //         window.location.href='/usercenter';
     //     }
     // }).catch(err=>console.log(err))
-}
-window.onload = function () {
-    google.accounts.id.initialize({
-        client_id:"539314786146-5vihlvbdoppi677kdppo9gdpo3moas5e.apps.googleusercontent.com",
-        callback: handleCredentialResponse
-    });
-    google.accounts.id.renderButton(
-        document.getElementById("buttonDiv"),
-        { theme: "outline", size: "large" }
-    );
-    google.accounts.id.prompt();
-}
+// }
+// window.onload = function () {
+//     google.accounts.id.initialize({
+//         client_id:"539314786146-5vihlvbdoppi677kdppo9gdpo3moas5e.apps.googleusercontent.com",
+//         callback: handleCredentialResponse
+//     });
+//     google.accounts.id.renderButton(
+//         document.getElementById("buttonDiv"),
+//         { theme: "outline", size: "large" }
+//     );
+//     google.accounts.id.prompt();
+// }
 

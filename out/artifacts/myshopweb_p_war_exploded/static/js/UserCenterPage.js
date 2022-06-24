@@ -158,11 +158,12 @@ document.querySelector(".main").innerHTML =
     USER.addresslists.forEach(list=>{
             let tr = list.createTableRowView();
             tr.querySelector(".checkbtn").addEventListener("click",(e)=>{
-                    fetch('/address',{
-                        method:'DELETE',
-                        headers:{ 'Content-Type': 'application/json' },
-                        body:JSON.stringify(list)
-                    }).then(response=> {
+                if(confirm("確認要刪除此常用收件人？")) {
+                    fetch('/address', {
+                        method: 'DELETE',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(list)
+                    }).then(response => {
                         if (response.status == 200) {
                             e.target.parentElement.parentElement.remove();
                             // history.back();
@@ -175,8 +176,8 @@ document.querySelector(".main").innerHTML =
                                 showAddressList();
                             })
                         }
-                    }).catch(err=>console.log(err))
-
+                    }).catch(err => console.log(err))
+                }
             })
             document.querySelector(".orderlist").appendChild(tr);
     });
@@ -246,46 +247,83 @@ function showAccountInfo(){
         '<div class="space"></div>'+
         '<div class="basicinfo">'+
             '<div class="helfinput"><p>名字</p><input type="text" value="'+USER.name+'"></div>'+
-            '<div class="helfinput"><p>電話</p><input type="text" value="'+USER.phone+'"></div>'+
+            '<div class="helfinput"><p>電話</p><input type="text" value="'+USER.phone+'" disabled></div>'+
             '<div class="fullinput"><p>顯示名稱</p><input type="text" value="'+USER.nickname+'"></div>'+
             '<div class="fullinput">電子郵件<input type="email" value="'+USER.email+'" disabled></div>'+
-        '</div>';
+        '</div>'+
+        '<div class="space"></div>'+
+        '<div className="changepw">'+
+        '   <div className="oldpw"><p>目前密碼(不需變更請空白)</p><input type="password"></div>'+
+        '   <div className="newpw"><p>新密碼 (6~12位英數至少一個英文)</p><input type="password"></div>'+
+        '   <div className="newpw2"><p>確認新密碼</p><input type="password"></div>'+
+        '</div>'+
+        '<div class="space"></div>';
         let mainbtn = document.createElement("button");
         mainbtn.innerText = "儲存修改";
         mainbtn.classList.add("mainbtn");
         mainbtn.addEventListener("click",(e)=>{
-            //檢查資料欄位合法性  密碼欄位必須是"" 或符合資料 
+            //檢查資料欄位合法性  //密碼欄位必須是"" 或符合資料
             let inputs = document.querySelectorAll("input");
-            let name = inputs[0].value;
-            let phone = inputs[1].value;
-            let nickname = inputs[2].value;
+            console.log(inputs);
+            let name = inputs[0];
+            let phone = inputs[1];
+            let nickname = inputs[2];
+            let email = inputs[3];
+            let oldPassword =  inputs[4];
+            let newPassword =  inputs[5];
+            let newPasswordR =  inputs[6];
             let phone_rg = /^09[0-9]{8}$/;
-            if(phone_rg.test(phone.value)){
-                alert("電話格式有誤")
+            let pw_rg = /^(?=.*\d)(?=.*[a-zA-Z]).{6,12}$/;
+            // if(phone_rg.test(phone.value)){
+            //     alert("電話格式有誤")
+            //     phone.focus();
+            //     return false;
+            // }
+            if(name.value.length>=15&&nickname.value.length>=15){
+                alert("姓名、暱稱名字不得超過15字")
+                name.focus();
                 return false;
             }
-            if(name.length>=15&&nickname.length>=15){
-                alert("姓名、暱稱名字不得超過15字")
-                return false;
+            if(oldPassword.value!=""){
+                //  變更密碼
+                if(newPassword.value.length<=12 && pw_rg.test(newPassword.value) && newPassword.value.length>=6){
+                    if(!newPassword.value===newPasswordR.value){
+                        alert("第二次密碼與新密碼不同，請確認要變更的新密碼！")
+                        newPasswordR.focus();
+                        return false;
+                    }
+                }else{
+                    alert("密碼格式錯誤,須為6~12位英數至少一個英文！");
+                    newPassword.focus();
+                    return false;
+                }
             }
             let obj = {
                 "id":USER.no,
-                "name":name,
-                "phone":phone,
-                "nickname":nickname,
+                "name":name.value,
+                "phone":phone.value,
+                "nickname":nickname.value,
+                "email":email.value,
+                "oldPW":oldPassword.value,
+                "newPW":newPassword.value
             }
-            fetch('user/',{
-                method:'put',
+            fetch('user/update',{
+                method:'post',
                 headers:{"Content-Type":"application/json"},
                 body:JSON.stringify(obj)
             }).then(response=>{
                 if(response.status==200){
-                    getMemberinfo().then(data=>{
-                        USER.updateUserInfo(data[0]);
-                        showAccountInfo();
-                    })
+                   return response.text();
                 }
-            }).catch(err=>console.log(err))
+            }).then(datas=>{
+                console.log(datas);
+                getMemberinfo().then(data=>{
+                    console.log(data)
+                    USER.updateUserInfo(data[0]);
+                    showAccountInfo();
+                    alert(datas);
+                })
+                }).catch(err=>console.log(err))
 
         });
         document.querySelector(".main").appendChild(mainbtn);

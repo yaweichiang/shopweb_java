@@ -59,22 +59,23 @@ export class MemberOrderList extends OrderList{
         cancelBtn.classList.add("checkbtn");
         cancelBtn.innerText="取消訂購";
         cancelBtn.addEventListener("click",(e)=>{
-            let obj = {'order_no':this.no}
-            fetch('order/cancel',{
-                method:'put',
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify(obj)
-            }).then(response=>{
-                let oldrow = e.target.parentElement.parentElement;
-                getOrderListByNo(this.no).then(datas=>{
-                    this.type = datas[0].type==="order"?"訂購":(obj.type==="send"?"已寄送":"訂單取消")
-                    oldrow.parentElement.replaceChild((this.createTableRowView()),oldrow)
+            if(confirm("確認取消訂單！")) {
+                let obj = {'order_no': this.no}
+                fetch('order/cancel', {
+                    method: 'put',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(obj)
+                }).then(response => {
+                    let oldrow = e.target.parentElement.parentElement;
+                    getOrderListByNo(this.no).then(datas => {
+                        this.type = datas[0].type === "order" ? "訂購" : (obj.type === "send" ? "已寄送" : "訂單取消")
+                        oldrow.parentElement.replaceChild((this.createTableRowView()), oldrow)
 
+                    })
+                }).catch(err => {
+                    console.log(err)
                 })
-            }).catch(err=>{
-                console.log(err)
-            })
-
+            }
 
             
         })

@@ -32,7 +32,7 @@ public interface DatabaseConnect {
 //    變更會員資料
     public abstract void updateUser(JSONObject data);
 //    變更會員密碼
-    public abstract JsonArray updateUserPW(JsonObject object);
+    public abstract void updateUserHashPW(String pa, int  userId);
 //    會員登入帳號密碼檢查
     public abstract String getMemberHashPW(String memberPhone);
 //    管理者登入帳號密碼檢查

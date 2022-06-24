@@ -120,25 +120,67 @@ public class UserAPI extends HttpServlet {
                 System.out.println("帳號錯誤");
             }
             resp.sendRedirect("/usercenter");
+        }else if(subPath.equals("/update")){
+            //會員資料變更
+//            resp.setContentType("application/json;charset=UTF-8");
+            resp.setContentType("text/html;charset=UTF-8");
+            PrintWriter out = resp.getWriter();
+            String result = "error";
+            BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
+            String json = "";
+            if (br != null) {
+                json = br.readLine();
+            }
+            JSONObject obj = new JSONObject(json);
+            System.out.println("取得更新物件"+obj);
+            System.out.println( req.getSession().getAttribute("userid")!=null);
+            if(req.getSession().getAttribute("userid")!=null){
+                System.out.println(req.getSession().getAttribute("userid")+":"+obj.getInt("id"));
+                if(req.getSession().getAttribute("userid").toString().equals(String.valueOf(obj.getInt("id")))){
+                    result = "會員資料變更成功";
+                    System.out.println(result);
+                    MySqlConnect.getMySql().updateUser(obj); //變更姓名 暱稱 mail
+                    String oldPW = obj.getString("oldPW");
+                    //判斷是否有要進行密碼變更 分別處理回應
+                    if(oldPW.length()!=0){
+                        //要變更密碼
+                        String savedPW = MySqlConnect.getMySql().getMemberHashPW(obj.getString("phone"));
+                        if(HashPassWord.getHash(oldPW).equals(savedPW)){
+                            MySqlConnect.getMySql().updateUserHashPW(HashPassWord.getHash(obj.getString("newPW")),obj.getInt("id"));
+                            result = "會員資料及密碼變更成功";
+                            System.out.println(result);
+                        }else{
+                            result = "會員資料更新成功;舊密碼錯誤，密碼變更失敗！";
+                            System.out.println(result);
+                        }
+                    }
+
+                }else{
+                    result = "error";
+                    System.out.println(result);
+                }
+
+            }
+            out.print(result);
         }
     }
 
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        resp.setContentType("application/json;charset=UTF-8");
-        PrintWriter out = resp.getWriter();
-        JsonArray result;
-        BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
-        String json = "";
-        if (br != null) {
-            json = br.readLine();
-        }
-        JSONObject obj = new JSONObject(json);
-        System.out.println("put取得物件"+obj);
-        System.out.println( req.getSession().getAttribute("userid")!=null);
-        if(req.getSession().getAttribute("userid")!=null){
-            MySqlConnect.getMySql().updateUser(obj);
-        }
-    }
+//    @Override
+//    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//        resp.setContentType("application/json;charset=UTF-8");
+//        PrintWriter out = resp.getWriter();
+//        JsonArray result;
+//        BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
+//        String json = "";
+//        if (br != null) {
+//            json = br.readLine();
+//        }
+//        JSONObject obj = new JSONObject(json);
+//        System.out.println("put取得物件"+obj);
+//        System.out.println( req.getSession().getAttribute("userid")!=null);
+//        if(req.getSession().getAttribute("userid")!=null){
+//            MySqlConnect.getMySql().updateUser(obj);
+//        }
+//    }
 }
 

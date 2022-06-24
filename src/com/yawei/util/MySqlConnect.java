@@ -344,8 +344,8 @@ public class MySqlConnect implements DatabaseConnect{
     @Override
     public void updateUser(JSONObject data) {
         Statement sm =null;
-        String sql = String.format("update members set m_name = '%s',m_nickname = '%s',m_phone = '%s' where m_no = %s ",
-                data.get("name"),data.get("nickname"),data.get("phone"),data.get("id"));
+        String sql = String.format("update members set m_name = '%s',m_nickname = '%s',m_mail = '%s' where m_no = %s ",
+                data.get("name"),data.get("nickname"),data.get("email"),data.get("id"));
         System.out.println(sql);
         try{
             sm = this.conn.createStatement();
@@ -369,8 +369,29 @@ public class MySqlConnect implements DatabaseConnect{
         }
     }//v
     @Override
-    public JsonArray updateUserPW(JsonObject object) {
-        return null;
+    public void updateUserHashPW(String pa,int userId) {
+        Statement sm = null;
+        String sql = String.format("update members set m_hashPW = '%s' where m_no = '%d' ",pa,userId);
+        System.out.println(sql);
+        try{
+            sm = this.conn.createStatement();
+            sm.executeUpdate(sql);
+            this.conn.commit();
+        }catch (SQLException e){
+            e.printStackTrace();
+            try {
+                if(this.conn!=null)
+                    this.conn.rollback();//復原交易
+            }catch (SQLException ex){
+                ex.printStackTrace();
+            }
+        }finally {
+            try {
+                sm.close();
+            }catch (SQLException e ){
+                e.printStackTrace();
+            }
+        }
     }//x
     @Override
     public String getMemberHashPW(String memberPhone) {
@@ -426,7 +447,6 @@ public class MySqlConnect implements DatabaseConnect{
     } //v
     @Override
     public void updateManagerHashPW(String pa , String managerId) {
-        byte[] result = null;
         Statement sm = null;
         String sql = String.format("update managers set ma_hashPW = '%s' where ma_phone = '%s' ",pa,managerId);
         System.out.println(sql);

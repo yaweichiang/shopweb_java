@@ -139,10 +139,17 @@ function singup(){ //註冊資料輸入狀況檢核
         return false;
     }else if(!check2password()){
         checkmsg.innerText = "密碼輸入不相同";
+        second.focus();
         return false;
     }
-    checkmail()
-    checkpassword()
+    if(!checkmail()){
+        usermail.focus();
+        return false;
+    }
+    if(!checkpassword()){
+        first.focus();
+        return false;
+    }
 
     let phone_rg = /^09[0-9]{8}$/;
     if(phone_rg.test(phonenumber.value)) {
