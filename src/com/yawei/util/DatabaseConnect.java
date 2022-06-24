@@ -34,13 +34,15 @@ public interface DatabaseConnect {
 //    變更會員密碼
     public abstract JsonArray updateUserPW(JsonObject object);
 //    會員登入帳號密碼檢查
-    public abstract boolean checkUserLogin(JsonObject object);
+    public abstract String getMemberHashPW(String memberPhone);
 //    管理者登入帳號密碼檢查
     public abstract String getManagerHashPW(String managerid);
 //    管理者登入帳號密碼變更
     public abstract void updateManagerHashPW(String pa , String managerId);
-//    檢查電話是否已註冊過
-    public abstract int checkMail(String phone);
+//    通過mail查詢會員id
+    public abstract int checkIdByMail(String phone);
+//    通過電話查詢會員id
+    public int checkIdByPhone(String phone);
 //    取得所有商品容量資訊
     public abstract JsonArray getCapacity();
 //    取得所有運費資訊
@@ -83,6 +85,8 @@ public interface DatabaseConnect {
     public abstract void updateOrder(JSONObject object);
 //    確認會員是否有登記電話
     public boolean checkPhone(String id);
+//    確認電話是否有被註冊
+    public boolean checkPhoneExist(String id);
 
 
 

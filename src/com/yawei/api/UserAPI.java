@@ -1,8 +1,10 @@
 package com.yawei.api;
 
+import com.yawei.util.HashPassWord;
 import com.yawei.util.MySqlConnect;
 
 import javax.json.JsonArray;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -12,6 +14,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.HashMap;
+
 import  org.json.JSONObject;
 
 
@@ -44,28 +48,79 @@ public class UserAPI extends HttpServlet {
         }
     }
 
+// google 登入api串接
+//    @Override
+//    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//                BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
+//        String json = "";
+//        if (br != null) {
+//            json = br.readLine();
+//        }
+//        JSONObject obj = new JSONObject(json);
+//        System.out.println("取得物件"+obj);
+//
+//        int id = MySqlConnect.getMySql().checkIdByMail(obj.getString("email"));
+//        System.out.println("查詢是否存在此會員id:"+id);
+//        if(id==0){//帳號不存在 建立帳號 註冊
+//            System.out.println("建立新帳號");
+//            MySqlConnect.getMySql().createUser(obj);
+//            id =  MySqlConnect.getMySql().checkIdByMail(obj.getString("email"));
+//        }
+//        System.out.println("id:"+id);
+//        if(req.getSession(false) != null) { // null 表示 session 不存在
+//            req.changeSessionId();//若以存在session 變更sessionID
+//        }
+//        req.getSession().setAttribute("userid",id); // 帳號密碼正確 設定userid Session
+//    }
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-                BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
-        String json = "";
-        if (br != null) {
-            json = br.readLine();
-        }
-        JSONObject obj = new JSONObject(json);
-        System.out.println("取得物件"+obj);
+        req.setCharacterEncoding("UTF-8");
+        String subPath = req.getPathInfo();
+        System.out.println(subPath);
+        if(subPath.equals("/singup")) {
+            HashMap<String, String> user = new HashMap<>();
+            user.put("name", req.getParameter("user"));
+            user.put("nickname", req.getParameter("user"));
+            user.put("phone", req.getParameter("phone"));
+            //  將密碼進行雜湊處理 後存入資料庫
+            user.put("hashPW", HashPassWord.getHash(req.getParameter("password")));
+            user.put("mail", req.getParameter("mail"));
+            System.out.println("註冊"+user);
+            MySqlConnect.getMySql().createUser(user);
 
-        int id = MySqlConnect.getMySql().checkMail(obj.getString("email"));
-        System.out.println("查詢是否存在此會員id:"+id);
-        if(id==0){//帳號不存在 建立帳號
-            System.out.println("建立新帳號");
-            MySqlConnect.getMySql().createUser(obj);
-            id =  MySqlConnect.getMySql().checkMail(obj.getString("email"));
+            int id = MySqlConnect.getMySql().checkIdByPhone(user.get("phone")); //取得會員id
+            System.out.println("id:"+id);
+            if(req.getSession(false) != null) { // null 表示 session 不存在
+                req.changeSessionId();//若以存在session 變更sessionID
+            }
+            req.getSession().setAttribute("userid",id); // 註冊完成 直接登入
+            resp.sendRedirect("/usercenter");
+
+        }else if(subPath.equals("/login")){
+            String phone = req.getParameter("user");
+            String password =  req.getParameter("password");
+            // 對使用者密碼輸入密碼進行雜湊
+            String hashed = HashPassWord.getHash(password);
+            // 取得資料庫儲存的雜湊馬進行比對
+            String saveHashPW = MySqlConnect.getMySql().getMemberHashPW(phone);
+            System.out.println("使用者登入"+phone+"="+password);
+            if(saveHashPW!=null) {
+                if (saveHashPW.equals(hashed)) {
+                    System.out.println("密碼正確");
+                    if (req.getSession(false) != null) { // null 表示 session 不存在
+                        req.changeSessionId();//若以存在session 變更sessionID
+                    }
+                    int userid = MySqlConnect.getMySql().checkIdByPhone(phone);
+                    req.getSession().setAttribute("userid", userid); // 帳號密碼正確 設定userid Session
+                }else{
+                    System.out.println("密碼錯誤");
+                }
+            }else{
+                System.out.println("帳號錯誤");
+            }
+            resp.sendRedirect("/usercenter");
         }
-        System.out.println("id:"+id);
-        if(req.getSession(false) != null) { // null 表示 session 不存在
-            req.changeSessionId();//若以存在session 變更sessionID
-        }
-        req.getSession().setAttribute("userid",id); // 帳號密碼正確 設定userid Session
     }
 
     @Override

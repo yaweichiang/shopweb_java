@@ -26,12 +26,15 @@
                 請輸入以下資料進行註冊。</div>
             <div id="checkmsg" class="space"></div>
             <div class="infoboard">
-                <form name="singupform" action="/user" method="post">
+                <form name="singupform" action="/user/singup" method="post">
                     <p>姓名</p>
-                    <div class="user"><span class="user_icon"><img src="../static/icon/user2.png" ></span><input id="user" type="text" name="name"></div>
+                    <div class="user"><span class="user_icon"><img src="../static/icon/user2.png" ></span><input id="user" type="text" name="user"></div>
                     <p>手機號碼<span> [ 帳號 ]</span></p>
                     <!-- onblur="checkphone()" -->
-                    <div class="phone"><span class="phone_icon"><img src="../static/icon/phone.png" ></span><input id="phone" type="text" name="phone"><span id="telchekresult" class="checkresult"></span></div>
+                    <div class="phone"><span class="phone_icon"><img src="../static/icon/phone.png" ></span><input id="phone" type="text" name="phone"><span id="telcheckresult" class="checkresult"></span></div>
+                    <p>電子信箱</p>
+                    <!-- onblur="checkphone()" -->
+                    <div class="mail"><span class="mail_icon"><img src="../static/icon/mail.png" ></span><input id="mail" type="text" name="mail"><span id="mailcheckresult"class="checkresult"></span></div>
                     <p>密碼 (6~12位英數至少一個英文)</p>
                     <!-- onkeyup="checkpassword()" -->
                     <div class ="password"><span class="lock_icon"><img src="../static/icon/lock2.png" ></span><input id="fstpw" type="password" name="password"><span id="passwordcheckresult" class="checkresult"></span></div>

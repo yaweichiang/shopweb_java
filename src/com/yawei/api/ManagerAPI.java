@@ -34,15 +34,23 @@ public class ManagerAPI extends HttpServlet {
             String hashed = HashPassWord.getHash(password);
             // 取得資料庫儲存的雜湊馬進行比對
             String saveHashPW = MySqlConnect.getMySql().getManagerHashPW(managerId);
-            if(saveHashPW.equals(hashed)){
-                if(req.getSession(false) != null) { // null 表示 session 不存在
-                    req.changeSessionId();//若以存在session 變更sessionID
+            System.out.println("管理者登入");
+            if(saveHashPW!=null) {
+
+                if (saveHashPW.equals(hashed)) {
+                    System.out.println("密碼正確");
+                    if (req.getSession(false) != null) { // null 表示 session 不存在
+                        req.changeSessionId();//若以存在session 變更sessionID
+                    }
+                    req.getSession().setAttribute("managerid", managerId); // 帳號密碼正確 設定userid Session
+
+                }else{
+                    System.out.println("密碼錯誤");
                 }
-                req.getSession().setAttribute("managerid",managerId); // 帳號密碼正確 設定userid Session
+            }else{
+                System.out.println("帳號錯誤");
             }
-            resp.sendRedirect("/managercenter"); //將頁面導入會員中心
-
-
+            resp.sendRedirect("/managercenter");
         }else if(subPath.equals("/new")){
             //新增管理人員
 //            MySqlConnect.getMySql().updateManagerHashPW(result1,managerId); //變更密碼

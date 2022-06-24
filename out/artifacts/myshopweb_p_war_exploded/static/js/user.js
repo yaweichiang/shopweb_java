@@ -12,12 +12,16 @@ export class User{
         this.url=obj.url==null?"":obj.url;
     }
     createSearchResultTR(){
+        console.log(this)
         let tr = document.createElement("tr");
         tr.innerHTML =
             '<td><a>'+this.no+'</a></td>'+
-            '<td><div style="display: flex;justify-content: center;flex-direction: row;">'+'<img src="'+this.url+'" width="30px" height="30px" style="border-radius: 15px">'+this.name+'<div></td>'+
+            '<td><div style="display: flex;justify-content: center;flex-direction: row;">'+
+            // +(this.url===""?'':('<img src="'+this.url+'" width="30px" height="30px" style="border-radius: 15px">'))+
+            this.name+'<div></td>'+
             '<td>'+this.phone+'</td>'+
             '<td>'+this.email+'</td>';
+        console.log(tr.innerHTML);
         return tr;
     }
 }

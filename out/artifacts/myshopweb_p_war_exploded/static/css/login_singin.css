@@ -10,7 +10,7 @@
     border: .5px solid #bcb8b8;
     border-radius: .5rem;
 }
-.password,.user,.phone{
+.password,.user,.phone,.mail{
     display: flex;
     width: 220px;
     height: 30px;
@@ -25,14 +25,14 @@
     outline:none;
     line-height: 30px;
 }
-.lock_icon,.user_icon,.phone_icon{
+.lock_icon,.user_icon,.phone_icon,.mail_icon{
     height: 30px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 10px;
 }
-.lock_icon img,.user_icon img,.phone_icon img{
+.lock_icon img,.user_icon img,.phone_icon img,.mail_icon img{
     width: 20px;
     height: 20px;
 }

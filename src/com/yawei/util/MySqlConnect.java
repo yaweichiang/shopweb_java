@@ -262,8 +262,8 @@ public class MySqlConnect implements DatabaseConnect{
                 obj.add("no",rs.getInt("no"));
                 obj.add("name",rs.getString("name"));
                 obj.add("phone",rs.getString("phone")==null?"":rs.getString("phone"));
-                obj.add("email",rs.getString("email"));
-                obj.add("url",rs.getString("url"));
+                obj.add("email",rs.getString("email")==null?"":rs.getString("email"));
+                obj.add("url",rs.getString("url")==null?"":rs.getString("url"));
 
 //                for (int i = 1; i <= columnCount; i++) {
 //                    if(this.isInt(rs.getObject(i))){
@@ -293,6 +293,32 @@ public class MySqlConnect implements DatabaseConnect{
     public void createUser(JSONObject data) {
         Statement sm = null;
         String sql = String.format("insert into members(m_name,m_nickname,m_mail,url) values('%s','%s','%s','%s')",data.get("name"),data.get("nickname"),data.get("email"),data.get("url"));
+        try{
+            sm = this.conn.createStatement();
+            int rs = sm.executeUpdate(sql);
+//            System.out.println(rs);
+            this.conn.commit();
+        }catch(SQLException e){
+            e.printStackTrace();
+            try {
+                if(this.conn!=null)
+                    this.conn.rollback();//復原交易
+            }catch (SQLException ex){
+                ex.printStackTrace();
+            }
+        }finally {
+            try{
+                sm.close();
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+            return;
+        }
+    }//v
+
+    public void createUser(HashMap<String,String> user) {
+        Statement sm = null;
+        String sql = String.format("insert into members(m_name,m_nickname,m_phone,m_mail,m_hashPW) values('%s','%s','%s','%s','%s')",user.get("name"),user.get("nickname"),user.get("phone"),user.get("mail"),user.get("hashPW"));
         try{
             sm = this.conn.createStatement();
             int rs = sm.executeUpdate(sql);
@@ -347,9 +373,31 @@ public class MySqlConnect implements DatabaseConnect{
         return null;
     }//x
     @Override
-    public boolean checkUserLogin(JsonObject object) {
-        return false;
-    }//x
+    public String getMemberHashPW(String memberPhone) {
+        String result = null;
+        Statement sm = null;
+        String sql = String.format("select m_hashPW from members where m_phone = '%s'",memberPhone);
+        System.out.println(sql);
+        try{
+            sm = this.conn.createStatement();
+            ResultSet rs = sm.executeQuery(sql);
+            while(rs.next()){
+                result = rs.getString(1);
+                System.out.println("result:"+result);
+            }
+        }catch (SQLException e ){
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                sm.close();
+            }catch (SQLException e ){
+                e.printStackTrace();
+            }
+        }
+        return result;
+
+    }//v
     @Override
     public String getManagerHashPW( String managerId) {
         String result = null;
@@ -403,7 +451,7 @@ public class MySqlConnect implements DatabaseConnect{
         }
     }//v
     @Override
-    public int checkMail(String mail) {
+    public int checkIdByMail(String mail) {
         String sql = String.format("select m_no from members where m_mail = '%s'",mail);
         try{
             Statement sm = this.conn.createStatement();
@@ -417,6 +465,22 @@ public class MySqlConnect implements DatabaseConnect{
         }
         return 0;
     }//v
+    @Override
+    public int checkIdByPhone(String phone) {
+        String sql = String.format("select m_no from members where m_phone = '%s'",phone);
+        try{
+            Statement sm = this.conn.createStatement();
+            ResultSet rs = sm.executeQuery(sql);
+            while(rs.next()){
+                return rs.getInt(1);
+            }
+        }catch ( SQLException e){
+//            e.printStackTrace();
+            return 0;
+        }
+        return 0;
+    }//v
+
     @Override
     public JsonArray getCapacity() {
         JsonArrayBuilder result = createArrayBuilder();
@@ -1372,4 +1436,29 @@ public class MySqlConnect implements DatabaseConnect{
         }
         return result;
     } //v
+    @Override
+    public boolean checkPhoneExist(String phone){
+        boolean result = false;
+        Statement sm = null;
+        String sql = String.format("select m_name from members where m_phone = %s",phone);
+        try{
+            sm = this.conn.createStatement();
+            ResultSet rs = sm.executeQuery(sql);
+            while(rs.next()){
+                result = rs.getString(1)==null?false:true;
+                System.out.println("電話查詢結果："+result); //不存在 false  存在true
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                sm.close();
+
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+
+        }
+        return result;
+    }
 }
