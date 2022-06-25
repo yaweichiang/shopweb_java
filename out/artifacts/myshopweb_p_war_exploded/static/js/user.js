@@ -5,11 +5,13 @@ import { getMemberAddress,getMemberOrderList } from './util.js';
 
 export class User{
     constructor(obj){
-        this.name = obj.name;
+        this.name = String(obj.name);
         this.no = obj.no;
         this.phone = obj.phone==null?"": obj.phone;
         this.email = obj.email==null?"":obj.email;
         this.url=obj.url==null?"":obj.url;
+        console.log(obj);
+        console.log(this);
     }
     createSearchResultTR(){
         console.log(this)

@@ -57,17 +57,18 @@ public class MySqlConnect implements DatabaseConnect{
         }
         return  true;
     } //v
+
     @Override
     public JsonArray getAllProducts(){
         JsonArrayBuilder result =createArrayBuilder();
-        Statement sm = null;
+        PreparedStatement sm = null;
         String sql = String.format("select p_no as id,p_name as name,p_inventory as inventory," +
                 "p_price as price,p_url as url,p_introduction as intr,p_type as type," +
                 "c_size as capacity,if(t_name='常溫','false','true') as isFreezing " +
                 "from products inner join (product_capacity,tote_type) using(c_no,t_no) order by id");
         try {
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            ResultSet rs = sm.executeQuery();
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rs.getMetaData().getColumnCount();
             while(rs.next()) {
@@ -92,19 +93,24 @@ public class MySqlConnect implements DatabaseConnect{
                 e.printStackTrace();
             }
             javax.json.JsonArray array = result.build();
+            System.out.println(array);
             return array;
         }
     }//v
+
     @Override
     public JsonArray getProduct(String id) {
         JsonArrayBuilder result = createArrayBuilder();
         String sql = String.format("select p_no as id,p_name as name,p_inventory as inventory," +
                 "p_price as price,p_url as url,p_introduction as intr,p_type as type," +
                 "c_size as capacity,if(t_name='常溫','false','true') as isFreezing " +
-                "from products inner join (product_capacity,tote_type) using(c_no,t_no) where p_no = %s",id);
+                "from products inner join (product_capacity,tote_type) using(c_no,t_no) where p_no = ?");
+        PreparedStatement sm =null;
         try {
-            Statement sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,id);
+            ResultSet rs = sm.executeQuery();
+
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rs.getMetaData().getColumnCount();
             while(rs.next()) {
@@ -123,18 +129,21 @@ public class MySqlConnect implements DatabaseConnect{
             e.printStackTrace();
         }finally {
             javax.json.JsonArray array = result.build();
+            System.out.println(array);
             return array;
         }
     }//v
+
+
     @Override
     public int getNewProductNo() {
 
-        Statement sm = null;
+        PreparedStatement sm = null;
         String sql=String.format("select p_no from products order by p_no desc limit 1");
         int id = 1;
         try{
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            ResultSet rs = sm.executeQuery();
             while(rs.next()){
                 id = rs.getInt(1) + 1;
             }
@@ -145,15 +154,20 @@ public class MySqlConnect implements DatabaseConnect{
     }//v
     @Override
     public JsonArray createProduct(JSONObject data,String path) {
-        Statement sm = null;
-        String sql = String.format("insert into products values(null,'%s',%s,%s,%s,%s,'%s','%s','%s')",
-                data.get("name"),data.get("inventory"),data.get("capacity"),
-                data.get("tote_type"),data.get("price"),path,
-                data.get("introduction"),data.get("type"));
+        PreparedStatement sm = null;
+        String sql = String.format("insert into products values(null,?,?,?,?,?,?,?,?)");
         System.out.println(sql);
         try {
-            sm = this.conn.createStatement();
-            sm.executeUpdate(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,data.get("name"));
+            sm.setObject(2,data.get("inventory"));
+            sm.setObject(3,data.get("capacity"));
+            sm.setObject(4,data.get("tote_type"));
+            sm.setObject(5,data.get("price"));
+            sm.setObject(6,path);
+            sm.setObject(7,data.get("introduction"));
+            sm.setObject(8,data.get("type"));
+            sm.executeUpdate();
             this.conn.commit(); // 儲存變更
         } catch(SQLException e) {
             e.printStackTrace();
@@ -170,20 +184,25 @@ public class MySqlConnect implements DatabaseConnect{
                 e.printStackTrace();
             }
             JsonArray result = this.getAllProducts();
+            System.out.println(result);
             return result;
         }
 
     }//v
     @Override
     public JsonArray updateProduct(JSONObject data) {
-        Statement sm = null;
-        String sql = String.format("update products set p_name='%s', p_price=%s, p_inventory=%s," +
-                        " p_type='%s', p_introduction='%s' where p_no =%s",
-                data.get("name"),data.get("price"),data.get("inventory"),data.get("type"),
-                data.get("introduction"),data.get("id"));
+        PreparedStatement sm = null;
+        String sql = String.format("update products set p_name=?, p_price=?, p_inventory=?," +
+                        " p_type=?, p_introduction=? where p_no =?");
         try {
-            sm = this.conn.createStatement();
-            sm.executeUpdate(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,data.get("name"));
+            sm.setObject(2,data.get("price"));
+            sm.setObject(3,data.get("inventory"));
+            sm.setObject(4,data.get("type"));
+            sm.setObject(5,data.get("introduction"));
+            sm.setObject(6,data.get("id"));
+            sm.executeUpdate();
             this.conn.commit();
         } catch(SQLException e) {
             e.printStackTrace();
@@ -200,6 +219,7 @@ public class MySqlConnect implements DatabaseConnect{
                 e.printStackTrace();
             }
             JsonArray result = this.getProduct(data.get("id").toString());
+            System.out.println(result);
             return result;
         }
 
@@ -207,12 +227,12 @@ public class MySqlConnect implements DatabaseConnect{
     @Override
     public JsonArray getUserInfo(String id) {
         JsonArrayBuilder result = createArrayBuilder();
-        Statement sm = null;
-        String sql = String.format("select m_no as no,m_name as name,m_nickname as nickname,m_phone as phone,m_mail as email from members where m_no=%s",id);
-        System.out.println(sql);
+        PreparedStatement sm = null;
+        String sql = String.format("select m_no as no,m_name as name,m_nickname as nickname,m_phone as phone,m_mail as email from members where m_no=?");
         try {
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,id);
+            ResultSet rs = sm.executeQuery();
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rs.getMetaData().getColumnCount();
             while(rs.next()) {
@@ -222,13 +242,6 @@ public class MySqlConnect implements DatabaseConnect{
                 obj.add("nickname",rs.getString("nickname"));
                 obj.add("phone",rs.getString("phone")==null?"":rs.getString("phone"));
                 obj.add("email",rs.getString("email"));
-//                for (int i = 1; i <= columnCount; i++) {
-//                    if(this.isInt(rs.getObject(i))){
-//                        obj.add(rsmd.getColumnLabel(i),rs.getInt(i) );
-//                    }else{
-//                        obj.add(rsmd.getColumnLabel(i),rs.getString(i)==null?"null":rs.getString(i) );
-//                    }
-//                }
                 result.add(obj);
             }
 
@@ -249,12 +262,14 @@ public class MySqlConnect implements DatabaseConnect{
     @Override
     public JsonArray searchUsers(String keyword) {
         JsonArrayBuilder result = createArrayBuilder();
-        Statement sm = null;
-        String sql = String.format("select m_no as no,m_name as name,m_phone as phone,m_mail as email,url as url from members where m_name like '%s' or m_phone like '%s' or m_mail like '%s'","%"+keyword+"%","%"+keyword+"%","%"+keyword+"%");
-        System.out.println("sql"+sql);
+        PreparedStatement sm = null;
+        String sql = String.format("select m_no as no,m_name as name,m_phone as phone,m_mail as email,url as url from members where m_name like ? or m_phone like ? or m_mail like ?");
         try {
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,"%"+keyword+"%");
+            sm.setObject(2,"%"+keyword+"%");
+            sm.setObject(3,"%"+keyword+"%");
+            ResultSet rs = sm.executeQuery();
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rs.getMetaData().getColumnCount();
             while(rs.next()) {
@@ -264,14 +279,6 @@ public class MySqlConnect implements DatabaseConnect{
                 obj.add("phone",rs.getString("phone")==null?"":rs.getString("phone"));
                 obj.add("email",rs.getString("email")==null?"":rs.getString("email"));
                 obj.add("url",rs.getString("url")==null?"":rs.getString("url"));
-
-//                for (int i = 1; i <= columnCount; i++) {
-//                    if(this.isInt(rs.getObject(i))){
-//                        obj.add(rsmd.getColumnLabel(i),rs.getInt(i) );
-//                    }else{
-//                        obj.add(rsmd.getColumnLabel(i),rs.getString(i)==null?"null":rs.getString(i) );
-//                    }
-//                }
                 result.add(obj);
             }
             System.out.println("result:"+result);
@@ -284,19 +291,26 @@ public class MySqlConnect implements DatabaseConnect{
                 e.printStackTrace();
             }
             JsonArray array = result.build();
-            System.out.println("array"+array);
+            System.out.println(array);
             return array;
         }
 
     }//v
+
+
+
     @Override
-    public void createUser(JSONObject data) {
-        Statement sm = null;
-        String sql = String.format("insert into members(m_name,m_nickname,m_mail,url) values('%s','%s','%s','%s')",data.get("name"),data.get("nickname"),data.get("email"),data.get("url"));
+    public void createUser(HashMap<String,String> user) {
+        PreparedStatement sm = null;
+        String sql = String.format("insert into members(m_name,m_nickname,m_phone,m_mail,m_hashPW) values(?,?,?,?,?)");
         try{
-            sm = this.conn.createStatement();
-            int rs = sm.executeUpdate(sql);
-//            System.out.println(rs);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,user.get("name"));
+            sm.setObject(2,user.get("nickname"));
+            sm.setObject(3,user.get("phone"));
+            sm.setObject(4,user.get("mail"));
+            sm.setObject(5,user.get("hashPW"));
+            int rs = sm.executeUpdate();
             this.conn.commit();
         }catch(SQLException e){
             e.printStackTrace();
@@ -316,40 +330,19 @@ public class MySqlConnect implements DatabaseConnect{
         }
     }//v
 
-    public void createUser(HashMap<String,String> user) {
-        Statement sm = null;
-        String sql = String.format("insert into members(m_name,m_nickname,m_phone,m_mail,m_hashPW) values('%s','%s','%s','%s','%s')",user.get("name"),user.get("nickname"),user.get("phone"),user.get("mail"),user.get("hashPW"));
-        try{
-            sm = this.conn.createStatement();
-            int rs = sm.executeUpdate(sql);
-//            System.out.println(rs);
-            this.conn.commit();
-        }catch(SQLException e){
-            e.printStackTrace();
-            try {
-                if(this.conn!=null)
-                    this.conn.rollback();//復原交易
-            }catch (SQLException ex){
-                ex.printStackTrace();
-            }
-        }finally {
-            try{
-                sm.close();
-            }catch (SQLException e){
-                e.printStackTrace();
-            }
-            return;
-        }
-    }//v
     @Override
     public void updateUser(JSONObject data) {
-        Statement sm =null;
-        String sql = String.format("update members set m_name = '%s',m_nickname = '%s',m_mail = '%s' where m_no = %s ",
-                data.get("name"),data.get("nickname"),data.get("email"),data.get("id"));
+        PreparedStatement sm =null;
+        String sql = String.format("update members set m_name = ?,m_nickname = ?,m_mail = ? where m_no = ? ");
+
         System.out.println(sql);
         try{
-            sm = this.conn.createStatement();
-            int rs = sm.executeUpdate(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,data.get("name"));
+            sm.setObject(2,data.get("nickname"));
+            sm.setObject(3,data.get("email"));
+            sm.setObject(4,data.get("id"));
+            int rs = sm.executeUpdate();
             this.conn.commit();
         }catch(SQLException e){
             e.printStackTrace();
@@ -370,12 +363,13 @@ public class MySqlConnect implements DatabaseConnect{
     }//v
     @Override
     public void updateUserHashPW(String pa,int userId) {
-        Statement sm = null;
-        String sql = String.format("update members set m_hashPW = '%s' where m_no = '%d' ",pa,userId);
-        System.out.println(sql);
+        PreparedStatement sm = null;
+        String sql = String.format("update members set m_hashPW = ? where m_no = ? ");
         try{
-            sm = this.conn.createStatement();
-            sm.executeUpdate(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,pa);
+            sm.setObject(2,userId);
+            sm.executeUpdate();
             this.conn.commit();
         }catch (SQLException e){
             e.printStackTrace();
@@ -392,19 +386,39 @@ public class MySqlConnect implements DatabaseConnect{
                 e.printStackTrace();
             }
         }
-    }//x
+    }//v
+    public static void main(String[] args) {
+//        System.out.println(MySqlConnect.getMySql().getAllProducts());
+//        System.out.println(MySqlConnect.getMySql().getProduct("1"));
+//        System.out.println(MySqlConnect.getMySql().getNewProductNo());
+//        JSONObject obj1 = new JSONObject("{\"name\":\"測試\",\"inventory\":20,\"capacity\":1,\"tote_type\":2,\"price\":666,\"introduction\":\"介紹！！！\",\"type\":\"true\"}");
+//        MySqlConnect.getMySql().createProduct(obj1,"../static/products/product1.jpg");
+//        JSONObject obj2 = new JSONObject("{\"id\":13,\"name\":\"測試222\",\"inventory\":40,\"price\":656,\"introduction\":\"介紹！！！\",\"type\":\"true\"}");
+//        MySqlConnect.getMySql().updateProduct(obj2);
+//        System.out.println(MySqlConnect.getMySql().getUserInfo("12"));
+//        System.out.println(MySqlConnect.getMySql().searchUsers("09"));
+//        HashMap obj3 = new HashMap();
+//        obj3.put("name","ff");
+//        obj3.put("nickname","ff");
+//        obj3.put("phone","0937513566");
+//        obj3.put("mail","ff");
+//        obj3.put("hashPW","ff");
+//        MySqlConnect.getMySql().createUser(obj3);
+//        JSONObject obj4 = new JSONObject("{\"id\":15,\"name\":\"測試2aaa2\",\"nickname\":\"daaaa\",\"email\":dhj2@askldhjkaj}");
+//        MySqlConnect.getMySql().updateUser(obj4);
+//        MySqlConnect.getMySql().updateUserHashPW("djskhdkj",15);
+    }
     @Override
     public String getMemberHashPW(String memberPhone) {
         String result = null;
-        Statement sm = null;
-        String sql = String.format("select m_hashPW from members where m_phone = '%s'",memberPhone);
-        System.out.println(sql);
+        PreparedStatement sm = null;
+        String sql = String.format("select m_hashPW from members where m_phone = ?");
         try{
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,memberPhone);
+            ResultSet rs = sm.executeQuery();
             while(rs.next()){
                 result = rs.getString(1);
-                System.out.println("result:"+result);
             }
         }catch (SQLException e ){
             e.printStackTrace();
@@ -422,15 +436,14 @@ public class MySqlConnect implements DatabaseConnect{
     @Override
     public String getManagerHashPW( String managerId) {
         String result = null;
-        Statement sm = null;
-        String sql = String.format("select ma_hashPW from managers where ma_phone = '%s'",managerId);
-        System.out.println(sql);
+        PreparedStatement sm = null;
+        String sql = String.format("select ma_hashPW from managers where ma_phone = ?");
         try{
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,managerId);
+            ResultSet rs = sm.executeQuery();
             while(rs.next()){
                 result = rs.getString(1);
-                System.out.println("result:"+result);
 
             }
         }catch (SQLException e ){
@@ -447,12 +460,13 @@ public class MySqlConnect implements DatabaseConnect{
     } //v
     @Override
     public void updateManagerHashPW(String pa , String managerId) {
-        Statement sm = null;
-        String sql = String.format("update managers set ma_hashPW = '%s' where ma_phone = '%s' ",pa,managerId);
-        System.out.println(sql);
+        PreparedStatement sm = null;
+        String sql = String.format("update managers set ma_hashPW = ? where ma_phone = ? ");
         try{
-            sm = this.conn.createStatement();
-            sm.executeUpdate(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,pa);
+            sm.setObject(2,managerId);
+            sm.executeUpdate();
             this.conn.commit();
         }catch (SQLException e){
             e.printStackTrace();
@@ -472,30 +486,36 @@ public class MySqlConnect implements DatabaseConnect{
     }//v
     @Override
     public int checkIdByMail(String mail) {
-        String sql = String.format("select m_no from members where m_mail = '%s'",mail);
+        PreparedStatement sm = null;
+        String sql = String.format("select m_no from members where m_mail = ?");
+        //,mail);
         try{
-            Statement sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+             sm = this.conn.prepareStatement(sql);
+             sm.setObject(1,mail);
+            ResultSet rs = sm.executeQuery();
             while(rs.next()){
                 return rs.getInt(1);
             }
         }catch ( SQLException e){
-//            e.printStackTrace();
+            e.printStackTrace();
             return 0;
         }
         return 0;
     }//v
     @Override
     public int checkIdByPhone(String phone) {
-        String sql = String.format("select m_no from members where m_phone = '%s'",phone);
+        PreparedStatement sm =null;
+        String sql = String.format("select m_no from members where m_phone = ?");
+
         try{
-            Statement sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,phone);
+            ResultSet rs = sm.executeQuery();
             while(rs.next()){
                 return rs.getInt(1);
             }
         }catch ( SQLException e){
-//            e.printStackTrace();
+            e.printStackTrace();
             return 0;
         }
         return 0;
@@ -504,11 +524,11 @@ public class MySqlConnect implements DatabaseConnect{
     @Override
     public JsonArray getCapacity() {
         JsonArrayBuilder result = createArrayBuilder();
-        Statement sm = null;
+        PreparedStatement sm = null;
         String sql = String.format("select * from product_capacity");
         try {
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            ResultSet rs = sm.executeQuery();
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rs.getMetaData().getColumnCount();
             while(rs.next()) {
@@ -538,11 +558,11 @@ public class MySqlConnect implements DatabaseConnect{
     @Override
     public JsonArray getTote() {
         JsonArrayBuilder result = createArrayBuilder();
-        Statement sm = null;
+        PreparedStatement sm = null;
         String sql = String.format("select t_no as id,t_name as name,t_threshold as threshold,t_fare as fare from tote_type;");
         try {
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            ResultSet rs = sm.executeQuery();
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rs.getMetaData().getColumnCount();
             while(rs.next()) {
@@ -570,15 +590,17 @@ public class MySqlConnect implements DatabaseConnect{
         }    }//v
     @Override
     public void updateTote(JSONObject object) {
-        Statement sm = null;
+        PreparedStatement sm = null;
         try{
-            sm = this.conn.createStatement();
             String sql="";
             for(String key:object.keySet()) {
-                sql = String.format("update tote_type set t_fare=%s , t_threshold=%s where t_name = '%s'"
-                        ,object.getJSONObject(key).get("fare"),object.getJSONObject(key).get("threshold"),key );
-                System.out.println("sql="+sql);
-                sm.executeUpdate(sql);
+
+                sql = String.format("update tote_type set t_fare=? , t_threshold=? where t_name = ?");
+                sm = this.conn.prepareStatement(sql);
+                sm.setObject(1,object.getJSONObject(key).get("fare"));
+                sm.setObject(2,object.getJSONObject(key).get("threshold"));
+                sm.setObject(3,key);
+                sm.executeUpdate();
             }
             this.conn.commit();
         }catch (SQLException e){
@@ -600,11 +622,11 @@ public class MySqlConnect implements DatabaseConnect{
     @Override
     public JsonArray getPay() {
         JsonArrayBuilder result = createArrayBuilder();
-        Statement sm = null;
+        PreparedStatement sm = null;
         String sql = String.format("select pay_id as id,pay_name as name,pay_fee as fee from pay_type");
         try {
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            ResultSet rs = sm.executeQuery();
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rs.getMetaData().getColumnCount();
             while(rs.next()) {
@@ -634,11 +656,11 @@ public class MySqlConnect implements DatabaseConnect{
     @Override
     public JsonArray getNewAnno() {
         JsonArrayBuilder result = createArrayBuilder();
-        Statement sm = null;
+        PreparedStatement sm = null;
         String sql = String.format("select  a_no as id ,a_content as content from (select * from announcements order by a_no desc) as sub order by a_time desc limit 1");
         try {
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            ResultSet rs = sm.executeQuery();
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rs.getMetaData().getColumnCount();
             while(rs.next()) {
@@ -668,11 +690,11 @@ public class MySqlConnect implements DatabaseConnect{
     @Override
     public JsonArray getAllAnno() {
         JsonArrayBuilder result = createArrayBuilder();
-        Statement sm = null;
+        PreparedStatement sm = null;
         String sql = String.format("select a_no as id , a_content as content , if(a_time=(select Max(a_time) from announcements),'true','false') as target from announcements  order by a_time desc limit 6");
         try {
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            ResultSet rs = sm.executeQuery();
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rs.getMetaData().getColumnCount();
             while(rs.next()) {
@@ -695,18 +717,19 @@ public class MySqlConnect implements DatabaseConnect{
                 e.printStackTrace();
             }
             JsonArray array = result.build();
+            System.out.println(array);
             return array;
         }
     }//v
     @Override
     public void updateAnno(JSONObject object) {
-        Statement sm = null;
+        PreparedStatement sm = null;
         try{
-            sm = this.conn.createStatement();
-            String sql = String.format("replace into announcements(a_no,a_content,a_time) values (%s,'%s',current_timestamp)"
-                    ,this.isInt(object.get("id"))?object.get("id"):"null",object.get("content") );
-            System.out.println("sql="+sql);
-            sm.executeUpdate(sql);
+            String sql = String.format("replace into announcements(a_no,a_content,a_time) values (?,?,current_timestamp)");
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,this.isInt(object.get("id"))?object.get("id"):"null");
+            sm.setObject(2,object.get("content"));
+            sm.executeUpdate();
             this.conn.commit();
         }catch (SQLException e){
             e.printStackTrace();
@@ -727,11 +750,12 @@ public class MySqlConnect implements DatabaseConnect{
     @Override
     public JsonArray getUserAddress(String id) {
         JsonArrayBuilder result = createArrayBuilder();
-        Statement sm = null;
-        String sql = String.format("select r_no as no ,r_name as name ,r_phone as phone ,r_address as address from address  where m_no = %s",id);
+        PreparedStatement sm = null;
+        String sql = String.format("select r_no as no ,r_name as name ,r_phone as phone ,r_address as address from address  where m_no = ?");
         try{
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,id);
+            ResultSet rs = sm.executeQuery();
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rsmd.getColumnCount();
             while(rs.next()){
@@ -740,14 +764,6 @@ public class MySqlConnect implements DatabaseConnect{
                 obj.add("name",rs.getString("name"));
                 obj.add("phone",rs.getString("phone")==null?"":rs.getString("phone"));
                 obj.add("address",rs.getString("address"));
-
-//                for(int i = 1 ; i <= columnCount; i++) {
-//                    if(isInt(rs.getObject(i))) {
-//                        obj.add(rsmd.getColumnLabel(i),rs.getInt(i));
-//                    }else{
-//                        obj.add(rsmd.getColumnLabel(i),rs.getString(i)==null?"null":rs.getString(i));
-//                    }
-//                }
                 result.add(obj);
             }
 
@@ -760,18 +776,23 @@ public class MySqlConnect implements DatabaseConnect{
                 e.printStackTrace();
             }
             JsonArray array = result.build();
+            System.out.println(array);
             return array;
         }
     }//v
     @Override
     public void createAddress(JSONObject object) {
-        Statement sm = null;
-        String sql = String.format("insert into address (m_no,r_name,r_phone,r_address) values(%s,'%s','%s','%s')",
-                object.get("id"),object.get("name"),object.get("phone"),object.get("address"));
+        PreparedStatement sm = null;
+        String sql = String.format("insert into address (m_no,r_name,r_phone,r_address) values(?,?,?,?)");
+
         System.out.print(sql);
         try{
-            sm = this.conn.createStatement();
-            sm.executeUpdate(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,object.get("id"));
+            sm.setObject(2,object.get("name"));
+            sm.setObject(3,object.get("phone"));
+            sm.setObject(4,object.get("address"));
+            sm.executeUpdate();
             this.conn.commit();
         }catch (SQLException e){
             e.printStackTrace();
@@ -791,13 +812,12 @@ public class MySqlConnect implements DatabaseConnect{
     }//v
     @Override
     public void deleteAddress(JSONObject object) {
-        Statement sm = null;
-        String sql = String.format("delete from address where r_no = %s",
-                object.get("no"));
-        System.out.println(sql);
+        PreparedStatement sm = null;
+        String sql = String.format("delete from address where r_no = ?");
         try{
-            sm = this.conn.createStatement();
-            sm.executeUpdate(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,object.get("no"));
+            sm.executeUpdate();
             this.conn.commit();
         }catch (SQLException e){
             e.printStackTrace();
@@ -818,13 +838,12 @@ public class MySqlConnect implements DatabaseConnect{
     }//v
     @Override
     public int getNewOrderListNo() {
-
-        Statement sm = null;
+        PreparedStatement sm = null;
         String sql=String.format("select o_no from order_list order by o_no desc limit 1");
         int id = 1;
         try{
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            ResultSet rs = sm.executeQuery();
             while(rs.next()){
                 id = rs.getInt(1) + 1;
             }
@@ -836,18 +855,28 @@ public class MySqlConnect implements DatabaseConnect{
     @Override
     public void createOrderList(JSONObject object,String userid) {
         int no = MySqlConnect.getMySql().getNewOrderListNo();
-        Statement sm = null;
-        String sql = String.format("insert into order_list(o_no,m_no,pay_id,t_no,o_recipient,o_total) values(%d,%s,%d,'%d','%s',%d)",
-                no,userid,object.getInt("payID"),object.getInt("toteNo"),(object.getString("name")+"/"+object.getString("address")+"/"+object.getString("phone")),object.getInt("total"));
+        PreparedStatement sm = null;
+        String sql = String.format("insert into order_list(o_no,m_no,pay_id,t_no,o_recipient,o_total) values(?,?,?,?,?,?)");
         try{
-            sm = this.conn.createStatement();
-            sm.executeUpdate(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,no);
+            sm.setObject(2,userid);
+            sm.setObject(3,object.getInt("payID"));
+            sm.setObject(4,object.getInt("toteNo"));
+            sm.setObject(5,(object.getString("name")+"/"+object.getString("address")+"/"+object.getString("phone")));
+            sm.setObject(6,object.getInt("total"));
+            sm.executeUpdate();
             Object json = object.get("products");
             JSONArray products = new JSONArray(json.toString());
             for(Object obj :products){
                 JSONObject product = new JSONObject(obj.toString());
-                sql = String.format("insert into order_products values(%d,%d,%d,%d)",no,product.getInt("id"),product.getInt("amount"),product.getInt("price"));
-                sm.executeUpdate(sql);
+                sql = String.format("insert into order_products values(?,?,?,?)");
+                sm = this.conn.prepareStatement(sql);
+                sm.setObject(1,no);
+                sm.setObject(2,product.getInt("id"));
+                sm.setObject(3,product.getInt("amount"));
+                sm.setObject(4,product.getInt("price"));
+                sm.executeUpdate();
             }
             this.conn.commit();
             System.out.println("新增完成");
@@ -869,7 +898,7 @@ public class MySqlConnect implements DatabaseConnect{
     } //v
     @Override
     public JSONArray getOrderListByMemberId(String id) {
-        Statement sm = null;
+        PreparedStatement sm = null;
         String sql = String.format("select * from" +
                 "(select o_no as no," +
                 "m_no as id," +
@@ -889,12 +918,12 @@ public class MySqlConnect implements DatabaseConnect{
                 "b_price ," +
                 "b_num  from" +
                 "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
-                ") as temp4 using(no) where id = %s order by no",id);
-        System.out.println(sql);
+                ") as temp4 using(no) where id = ? order by no");
         JSONArray lists =null;
         try{
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,id);
+            ResultSet rs = sm.executeQuery();
             HashMap<String,HashMap> result  = new HashMap();
             ResultSetMetaData rsmd =  rs.getMetaData();
             int columnCount = rsmd.getColumnCount();
@@ -951,7 +980,7 @@ public class MySqlConnect implements DatabaseConnect{
     }//v
     @Override
     public JSONArray getOrderListByMemberIdforManager(String id) {
-        Statement sm = null;
+        PreparedStatement sm = null;
         String sql = String.format("select * from" +
                 "(select o_no as no," +
                 "m_no as id," +
@@ -974,11 +1003,13 @@ public class MySqlConnect implements DatabaseConnect{
                 "b_price ," +
                 "b_num  from" +
                 "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
-                ") as temp4 using(no) where id = %s order by orderDate",id);
+                ") as temp4 using(no) where id = ? order by orderDate");
+
         JSONArray lists = null;
         try {
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,id);
+            ResultSet rs = sm.executeQuery();
             HashMap<String, HashMap> result = new HashMap();
             ResultSetMetaData rsmd = rs.getMetaData();
             int columnCount = rsmd.getColumnCount();
@@ -1038,7 +1069,7 @@ public class MySqlConnect implements DatabaseConnect{
     }//v
     @Override
     public JSONArray getOrderListByDate(String date) {
-        Statement sm = null;
+        PreparedStatement sm = null;
         String sql = String.format("select * from" +
                 "(select o_no as no," +
                 "m_no as id," +
@@ -1061,11 +1092,13 @@ public class MySqlConnect implements DatabaseConnect{
                 "b_price ," +
                 "b_num  from" +
                 "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
-                ") as temp4 using(no) where orderDate like '%s %s' order by orderDate",date,'%');
+                ") as temp4 using(no) where orderDate like ? order by orderDate");
+        //,date,'%');
         JSONArray lists = null;
         try{
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,date+" %");
+            ResultSet rs = sm.executeQuery();
             HashMap<String,HashMap> result  = new HashMap();
             ResultSetMetaData rsmd =  rs.getMetaData();
             int columnCount = rsmd.getColumnCount();
@@ -1124,7 +1157,7 @@ public class MySqlConnect implements DatabaseConnect{
     } //v
     @Override
     public JSONArray getOrderListByDays(String days) {
-        Statement sm = null;
+        PreparedStatement sm = null;
         String sql = String.format("select * from" +
                 "(select o_no as no," +
                 "m_no as id," +
@@ -1147,11 +1180,13 @@ public class MySqlConnect implements DatabaseConnect{
                 "b_price ," +
                 "b_num  from" +
                 "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
-                ") as temp4 using(no) where orderDate >= current_date-%s order by orderDate;",days);
+                ") as temp4 using(no) where orderDate >= current_date-? order by orderDate;");
+
         JSONArray lists = null;
         try{
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,days);
+            ResultSet rs = sm.executeQuery();
             HashMap<String,HashMap> result  = new HashMap();
             ResultSetMetaData rsmd =  rs.getMetaData();
             int columnCount = rsmd.getColumnCount();
@@ -1210,7 +1245,7 @@ public class MySqlConnect implements DatabaseConnect{
     } //v
     @Override
     public JSONArray getOrderListByNo(String o_no,String m_id) {
-        Statement sm = null;
+        PreparedStatement sm = null;
         String sql = String.format("select * from" +
                 "(select o_no as no," +
                 "m_no as id," +
@@ -1230,12 +1265,15 @@ public class MySqlConnect implements DatabaseConnect{
                 "b_price ," +
                 "b_num  from" +
                 "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
-                ") as temp4 using(no) where no = %s and id = %s order by orderDate;",o_no,m_id);
+                ") as temp4 using(no) where no = ? and id = ? order by orderDate;");
+        //,o_no,m_id);
         JSONArray lists =null;
 
         try{
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,o_no);
+            sm.setObject(2,m_id);
+            ResultSet rs = sm.executeQuery();
             HashMap<String,HashMap> result  = new HashMap();
             ResultSetMetaData rsmd =  rs.getMetaData();
             int columnCount = rsmd.getColumnCount();
@@ -1292,7 +1330,7 @@ public class MySqlConnect implements DatabaseConnect{
     } //v
     @Override
     public JSONArray getOrderListByNoForManager(String o_no) {
-        Statement sm = null;
+        PreparedStatement sm = null;
         String sql = String.format("select * from" +
                 "(select o_no as no," +
                 "m_no as id," +
@@ -1315,11 +1353,13 @@ public class MySqlConnect implements DatabaseConnect{
                 "b_price ," +
                 "b_num  from" +
                 "( (order_products inner join products using(p_no))inner join product_capacity using(c_no) )" +
-                ") as temp4 using(no) where no = %s order by orderDate;",o_no);
+                ") as temp4 using(no) where no = ? order by orderDate;");
+
         JSONArray lists = null;
         try{
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,o_no);
+            ResultSet rs = sm.executeQuery();
             HashMap<String,HashMap> result  = new HashMap();
             ResultSetMetaData rsmd =  rs.getMetaData();
             int columnCount = rsmd.getColumnCount();
@@ -1378,11 +1418,14 @@ public class MySqlConnect implements DatabaseConnect{
     } //v
     @Override
     public void cancelOrder(String no,String id ) {
-        Statement sm = null;
-        String sql = String.format("update order_list set o_type = 'cancel' where o_no = %s and m_no = %s",no,id);
+        PreparedStatement sm = null;
+        String sql = String.format("update order_list set o_type = 'cancel' where o_no = ? and m_no = ?");
+
         try {
-            sm = this.conn.createStatement();
-            sm.executeUpdate(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,no);
+            sm.setObject(2,id);
+            sm.executeUpdate();
             this.conn.commit();
         }catch (SQLException e){
             e.printStackTrace();
@@ -1402,19 +1445,28 @@ public class MySqlConnect implements DatabaseConnect{
     } //v
     @Override
     public void updateOrder(JSONObject object) {
-        Statement sm = null;
+        PreparedStatement sm = null;
         String sql = null;
-        if(object.get("send_no").equals("")) {
-            sql = String.format("update order_list set o_remark = '%s' where o_no=%s", object.get("remark"), object.get("order_no"));
-        }else if(object.get("send_date").equals("尚未出貨")){
-            sql = String.format("update order_list set o_senddate=current_date ,o_type = 'send' ,o_sendno = '%s',o_remark = '%s' where o_no=%s",object.get("send_no"), object.get("remark"), object.get("order_no"));
-        }else{
-            sql = String.format("update order_list set o_remark = '%s' where o_no=%s", object.get("remark"), object.get("order_no"));
-        }
-        System.out.println("訂單變更sql:"+sql);
         try{
-            sm = this.conn.createStatement();
-            sm.executeUpdate(sql);
+            if(object.get("send_no").equals("")) {
+                sql = String.format("update order_list set o_remark = ? where o_no=?");
+                sm = this.conn.prepareStatement(sql);
+                sm.setObject(1,object.get("remark"));
+                sm.setObject(2,object.get("order_no"));
+            }else if(object.get("send_date").equals("尚未出貨")){
+                sql = String.format("update order_list set o_senddate=current_date ,o_type = 'send' ,o_sendno = ?,o_remark = ? where o_no=?");
+                sm = this.conn.prepareStatement(sql);
+                sm.setObject(1,object.get("send_no"));
+                sm.setObject(2,object.get("remark"));
+                sm.setObject(3,object.get("order_no"));
+            }else{
+                sql = String.format("update order_list set o_remark = ? where o_no=?");
+                sm = this.conn.prepareStatement(sql);
+                sm.setObject(1,object.get("remark"));
+                sm.setObject(2,object.get("order_no"));
+            }
+            System.out.println("訂單變更sql:"+sql);
+            sm.executeUpdate();
             this.conn.commit();
         }catch (SQLException e){
             e.printStackTrace();
@@ -1435,11 +1487,13 @@ public class MySqlConnect implements DatabaseConnect{
     @Override
     public boolean checkPhone(String id){
         boolean result = false;
-        Statement sm = null;
-        String sql = String.format("select m_phone from members where m_no = %s",id);
+        PreparedStatement sm = null;
+        String sql = String.format("select m_phone from members where m_no = ?");
+        //,id);
         try{
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,id);
+            ResultSet rs = sm.executeQuery();
             while(rs.next()){
                 result = rs.getString(1)==null?false:true;
             }
@@ -1459,11 +1513,13 @@ public class MySqlConnect implements DatabaseConnect{
     @Override
     public boolean checkPhoneExist(String phone){
         boolean result = false;
-        Statement sm = null;
-        String sql = String.format("select m_name from members where m_phone = %s",phone);
+        PreparedStatement sm = null;
+        String sql = String.format("select m_name from members where m_phone = ?");
+        //,phone);
         try{
-            sm = this.conn.createStatement();
-            ResultSet rs = sm.executeQuery(sql);
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,phone);
+            ResultSet rs = sm.executeQuery();
             while(rs.next()){
                 result = rs.getString(1)==null?false:true;
                 System.out.println("電話查詢結果："+result); //不存在 false  存在true

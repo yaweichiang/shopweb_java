@@ -7,6 +7,7 @@ import javax.json.JsonObject;
 import javax.json.JsonArray;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 
 public interface DatabaseConnect {
@@ -28,7 +29,7 @@ public interface DatabaseConnect {
 //    查詢會員
     public abstract JsonArray searchUsers(String keyword);
 //    註冊 新建會員
-    public abstract void createUser(JSONObject data);
+    public abstract void createUser(HashMap<String,String> user);
 //    變更會員資料
     public abstract void updateUser(JSONObject data);
 //    變更會員密碼

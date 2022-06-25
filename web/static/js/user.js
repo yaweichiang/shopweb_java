@@ -10,6 +10,8 @@ export class User{
         this.phone = obj.phone==null?"": obj.phone;
         this.email = obj.email==null?"":obj.email;
         this.url=obj.url==null?"":obj.url;
+        console.log(obj);
+        console.log(this);
     }
     createSearchResultTR(){
         console.log(this)
