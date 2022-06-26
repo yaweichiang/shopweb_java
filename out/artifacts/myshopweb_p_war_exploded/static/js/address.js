@@ -8,8 +8,11 @@ export class Address{
     createTableRowView(){// 建立顯示在會員中心的地址列表
         let tableRow = document.createElement("tr");
         tableRow.innerHTML = 
-                    '<td>'+this.name+'</td>'+
-                    '<td>'+this.address+'<br>'+this.phone+'</td>';
+                    '<td></td>'+
+                    '<td><span></span><br><span></span></td>';
+        tableRow.firstChild.innerText = this.name;
+        tableRow.lastChild.firstChild.innerText = this.address;
+        tableRow.lastChild.lastChild.innerText = this.phone;
         let btnTD = document.createElement("td");
         let deleteBtn = document.createElement("button");
         deleteBtn.classList.add("checkbtn");
@@ -22,8 +25,9 @@ export class Address{
         let label = document.createElement("label");
         label.innerHTML = 
             '<label>'+
-            '<input type="radio" name="recipient">'+this.name+
+            '<input type="radio" name="recipient">'+//this.name+
             '</label>';
+        label.innerText = this.name;
         label.addEventListener("click",()=>{
             let info = document.querySelectorAll(".addressinfo input[type='text']");
             info[0].value = this.name;

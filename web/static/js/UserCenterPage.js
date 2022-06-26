@@ -209,7 +209,26 @@ function showAddressEdit(){
             let name = inputs[0].value;
             let address = inputs[1].value;
             let phone = inputs[2].value;
-            if(name!=""&&address!=""&&phone_rg.test(phone)){
+            if(name.length>=15){
+                alert("姓名不得超過15個字");
+                inputs[0].focus();
+            }else if(name===""){
+                alert("收件人姓名不得為空");
+                inputs[0].focus();
+            }
+            if(address===""){
+                alert("收件地址不得為空");
+                inputs[1].focus();
+            }
+            if(phone===""){
+                alert("電話不得為空");
+                inputs[3].focus();
+            }else if(!phone_rg.test(phone)){
+                alert("電話格式不正確");
+                inputs[3].focus();
+            }
+
+            if(name!=""&&address!=""){
                 let obj = {
                     "id":USER.no,
                     "name":name,
@@ -246,10 +265,10 @@ function showAccountInfo(){
         ' <div class="subtitle">帳戶資料</div>'+
         '<div class="space"></div>'+
         '<div class="basicinfo">'+
-            '<div class="helfinput"><p>名字</p><input type="text" value="'+USER.name+'"></div>'+
-            '<div class="helfinput"><p>電話</p><input type="text" value="'+USER.phone+'" disabled></div>'+
-            '<div class="fullinput"><p>顯示名稱</p><input type="text" value="'+USER.nickname+'"></div>'+
-            '<div class="fullinput">電子郵件<input type="email" value="'+USER.email+'" disabled></div>'+
+            '<div class="helfinput"><p>名字</p><input type="text" value=""></div>'+
+            '<div class="helfinput"><p>電話</p><input type="text" value="" disabled></div>'+
+            '<div class="fullinput"><p>顯示名稱</p><input type="text" value=""></div>'+
+            '<div class="fullinput">電子郵件<input type="email" value="" disabled></div>'+
         '</div>'+
         '<div class="space"></div>'+
         '<div className="changepw">'+
@@ -258,6 +277,11 @@ function showAccountInfo(){
         '   <div className="newpw2"><p>確認新密碼</p><input type="password"></div>'+
         '</div>'+
         '<div class="space"></div>';
+        let inputs = document.querySelectorAll(".basicinfo input");
+        inputs[0].value = USER.name;
+        inputs[1].value = USER.phone;
+        inputs[2].value = USER.nickname;
+        inputs[3].value = USER.email;
         let mainbtn = document.createElement("button");
         mainbtn.innerText = "儲存修改";
         mainbtn.classList.add("mainbtn");
@@ -279,7 +303,7 @@ function showAccountInfo(){
             //     phone.focus();
             //     return false;
             // }
-            if(name.value.length>=15&&nickname.value.length>=15){
+            if(name.value.length>=15||nickname.value.length>=15){
                 alert("姓名、暱稱名字不得超過15字")
                 name.focus();
                 return false;

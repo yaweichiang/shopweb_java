@@ -5,7 +5,7 @@ import { getMemberAddress,getMemberOrderList } from './util.js';
 
 export class User{
     constructor(obj){
-        this.name = String(obj.name);
+        this.name = obj.name;
         this.no = obj.no;
         this.phone = obj.phone==null?"": obj.phone;
         this.email = obj.email==null?"":obj.email;

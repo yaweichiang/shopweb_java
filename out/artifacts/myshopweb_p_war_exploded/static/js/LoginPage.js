@@ -1,5 +1,5 @@
 import { MYCAR } from './util.js';
-import jwtDecode from 'https://esm.run/jwt-decode';
+// import jwtDecode from 'https://esm.run/jwt-decode';
 MYCAR.showproductsTypes();
 // 登入頁面
 //登入資料輸入狀況檢核

@@ -41,15 +41,18 @@ export class MemberOrderList extends OrderList{
         // 建立會員後台訂單欄dom物件
         let tableRow = document.createElement("tr");
         tableRow.innerHTML = 
-        '                <td>'+this.orderDate+'</td>'+
-        '                <td>'+this.type+'</td>'+
-        '                <td>NT$'+this.total+'</td>';
+            '<td></td>'+
+            '<td></td>'+
+            '<td></td>';
+        tableRow.children[0].innerText = this.orderDate;
+        tableRow.children[1].innerText = this.type;
+        tableRow.children[2].innerText = ('NT$'+this.total);
         let noTD =  document.createElement("td");
         let noLink = document.createElement("a");
         noLink.innerText = this.no;
         noLink.addEventListener("click",()=>{
             //顯示訂單明細物件 並記錄瀏覽動作
-            document.querySelector(".main").innerHTML = this.createDitalView();
+            document.querySelector(".main").replaceWith(this.createDitalView());//innerHTML = this.createDitalView();
             history.pushState({action:"my_older_list"}, null, "");
         })
         noTD.appendChild(noLink);
@@ -86,46 +89,66 @@ export class MemberOrderList extends OrderList{
 
     }
     createDitalView(){
-        let temp="";
+
+        let temp = document.createElement('div');
         this.productsList.forEach(product=>{
-            temp +='<p>'+product.name+"(單價:"+product.price+"元)"+"數量:"+product.amount+'</p>';
+            let p = document.createElement('p');
+            p.innerText = product.name+"(單價:"+product.price+"元)"+"數量:"+product.amount;
+            temp.appendChild(p)
         })
-        return '<div class="subtitle">訂單明細</div>'+
+        let mainDiv = document.createElement('div');
+        mainDiv.classList.add("main");
+        mainDiv.innerHTML =
+        '<div class="subtitle">訂單明細</div>'+
         '<div class="space"></div>'+
         '   <table class="edittable">'+
         '           <tr>'+
         '               <th>訂單</th>'+
-        '               <td><a>'+this.no+'</a></td>'+
+        '               <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '               <th>訂購日期</th>'+
-        '               <td>'+this.orderDate+'</td>'+
+        '               <td></td>'+
+        '               <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '                <th>狀態</th>'+
-        '                <td>'+this.type+'</td>'+
+        '                <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '                <th>總計</th> '+
-        '                <td>'+this.total+'</td>'+
+        '                <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '                <th>出貨日期</th>'+
-        '                <td>'+this.sendDate+'</td>'+
+        '                <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '                <th>收貨人資訊</th>'+
-        '                <td>'+this.recipient+'</td>'+
+        '                <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '                <th>付款方式</th>'+
-        '                <td>'+this.payType+'</td>'+
+        '                <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '                <th>購買商品</th>'+
-        '                <td>'+temp+'</td>'+
+        '                <td></td>'+
         '            </tr>'+
         '   </table>';
+        console.log(mainDiv);
+        console.log(mainDiv.children[2].children[0].children);
+        let a = document.createElement('a');
+        a.innerText = this.no;
+        mainDiv.children[2].children[0].children[0].children[1].appendChild(a);
+        mainDiv.children[2].children[0].children[1].children[1].innerText = this.orderDate;
+        mainDiv.children[2].children[0].children[2].children[1].innerText = this.type;
+        mainDiv.children[2].children[0].children[3].children[1].innerText = this.total;
+        mainDiv.children[2].children[0].children[4].children[1].innerText = this.sendDate;
+        mainDiv.children[2].children[0].children[5].children[1].innerText = this.recipient;
+        mainDiv.children[2].children[0].children[6].children[1].innerText = this.payType;
+        mainDiv.children[2].children[0].children[7].children[1].appendChild(temp);
+        return mainDiv;
     }
 
 }
@@ -136,15 +159,25 @@ export class ManagerOrderList extends MemberOrderList{
     createTableRowView(){
         let newTR = document.createElement("tr");
         newTR.innerHTML = 
-        '                <td><a>'+this.no+'</a></td>'+
-        '                <td>'+this.name+'</td>'+
-        '                <td>'+this.phone+'</td>'+
-        '                <td>'+this.orderDate+'</td>'+
-        '                <td>'+this.type+'</td>'+
-        '                <td>'+this.total+'</td>'+
-        '                <td>'+this.sendDate+'</td>'+
-        '                <td>'+this.payType+'</td>'+
+        '                <td></td>'+
+        '                <td></td>'+
+        '                <td></td>'+
+        '                <td></td>'+
+        '                <td></td>'+
+        '                <td></td>'+
+        '                <td></td>'+
+        '                <td></td>'+
         '                <td><a><button class="checkbtn">查看</button></a></td>';
+        let a = document.createElement('a');
+        a.innerText = this.no;
+        newTR.children[0].appendChild(a);
+        newTR.children[1].innerText = this.name;
+        newTR.children[2].innerText = this.phone;
+        newTR.children[3].innerText = this.orderDate;
+        newTR.children[4].innerText = this.type;
+        newTR.children[5].innerText = this.total;
+        newTR.children[6].innerText = this.sendDate;
+        newTR.children[7].innerText = this.payType;
         newTR.lastChild.firstChild.firstChild.addEventListener("click",()=>{
             history.pushState({action:"orderdital"}, null, "");
             //點取查看進入明細
@@ -161,13 +194,21 @@ export class ManagerOrderList extends MemberOrderList{
     createTableRowViewForMemberSearch(){
         let newTR = document.createElement("tr");
         newTR.innerHTML = 
-        '                <td><a>'+this.no+'</a></td>'+
-        '                <td>'+this.orderDate+'</td>'+
-        '                <td>'+this.type+'</td>'+
-        '                <td>'+this.total+'</td>'+
-        '                <td>'+this.sendDate+'</td>'+
-        '                <td>'+this.payType+'</td>'+
+        '                <td><a></a></td>'+
+        '                <td></td>'+
+        '                <td></td>'+
+        '                <td></td>'+
+        '                <td></td>'+
+        '                <td></td>'+
         '                <td><a><button class="checkbtn">查看</button></a></td>';
+        let a = document.createElement('a');
+        a.innerText = this.no;
+        newTR.children[0].appendChild(a);
+        newTR.children[1].innerText = this.orderDate;
+        newTR.children[2].innerText = this.type;
+        newTR.children[3].innerText = this.total;
+        newTR.children[4].innerText = this.sendDate;
+        newTR.children[5].innerText = this.payType;
         newTR.lastChild.firstChild.firstChild.addEventListener("click",()=>{
             history.pushState({action:"orderdital"}, null, "");
             //點取查看進入明細
@@ -183,9 +224,11 @@ export class ManagerOrderList extends MemberOrderList{
 
 
     createDitalView(){
-        let temp="";
+        let temp=document.createElement('div');
         this.productsList.forEach(product=>{
-            temp +='<p>'+product.name+"(單價:"+product.price+"元)"+"數量:"+product.amount+'</p>';
+            let p = document.createElement('p');
+            p.innerText = product.name+"(單價:"+product.price+"元)"+"數量:"+product.amount;
+            temp.appendChild(p);
         })
         let main = document.querySelector(".main");
         main.innerHTML =
@@ -194,55 +237,55 @@ export class ManagerOrderList extends MemberOrderList{
         '   <table class="edittable">'+
         '           <tr>'+
         '               <th>訂單</th>'+
-        '               <td><a>'+this.no+'</a></td>'+
+        '               <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '               <th>姓名</th>'+
-        '               <td>'+this.name+'</td>'+
+        '               <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '                <th>電話</th>'+
-        '                <td>'+this.phone+'</td>'+
+        '                <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '               <th>訂購日期</th>'+
-        '               <td>'+this.orderDate+'</td>'+
+        '               <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '                <th>狀態</th>'+
-        '                <td>'+this.type+'</td>'+
+        '                <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '                <th>收貨人資訊</th>'+
-        '                <td>'+this.recipient+'</td>'+
+        '                <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '                <th>總計</th> '+
-        '                <td>NT$'+this.total+'</td>'+
+        '                <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '                <th>出貨日期</th>'+
-        '                <td>'+this.sendDate+'</td>'+
+        '                <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '                <th>付款方式</th>'+
-        '                <td>'+this.payType+'</td>'+
+        '                <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '                <th>購買商品</th>'+
-        '                <td>'+temp+'</td>'+
+        '                <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '                <th>金流編號</th>'+
-        '                <td>'+this.payNo+'</td>'+
+        '                <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '                <th>貨運單號</th>'+
-        '                <td>'+this.sendNo+'</td>'+
+        '                <td></td>'+
         '            </tr>'+
         '            <tr>'+
         '                <th>備註</th>'+
-        '                <td>'+this.remark+'</td>'+
+        '                <td></td>'+
         '           </tr>'+
         '   </table>'+
         '   <div class="space"></div>'+
@@ -251,6 +294,23 @@ export class ManagerOrderList extends MemberOrderList{
         '        <div class="fullinput"><p>備註：</p><input type="text"></div>'+
         '   </div>'+
         '   <button class="mainbtn">訂單異動儲存</button>';
+        console.log(main.children[2].children[0]);
+        let a = document.createElement('a');
+        a.innerText = this.no;
+        main.children[2].children[0].children[0].children[1].appendChild(a);
+        main.children[2].children[0].children[1].children[1].innerText = this.name;
+        main.children[2].children[0].children[2].children[1].innerText = this.phone;
+        main.children[2].children[0].children[3].children[1].innerText = this.orderDate;
+        main.children[2].children[0].children[4].children[1].innerText = this.type;
+        main.children[2].children[0].children[5].children[1].innerText = this.recipient;
+        main.children[2].children[0].children[6].children[1].innerText = ('NT$'+this.total);
+        main.children[2].children[0].children[7].children[1].innerText = this.sendDate;
+        main.children[2].children[0].children[8].children[1].innerText = this.payType;
+        main.children[2].children[0].children[9].children[1].appendChild(temp);
+        main.children[2].children[0].children[10].children[1].innerText = this.payNo;
+        main.children[2].children[0].children[11].children[1].innerText = this.sendNo;
+        main.children[2].children[0].children[12].children[1].innerText = this.remark;
+
         main.lastChild.addEventListener("click",()=>{
             console.log("存變動")
             this.setInfo();
