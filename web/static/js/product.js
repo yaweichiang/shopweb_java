@@ -30,31 +30,49 @@ export class Product {
         this.intr = obj.intr; //商品介紹
     }
 
-
     getProductDiv(){ //銷售主頁的商品顯示
         let productDiv = document.createElement("div");
         productDiv.classList.add("product");
         productDiv.innerHTML = 
-        '<img class="productimg" src="'+this.url+'">'+
+        '<img class="productimg" src="">'+
         '<div class="productinfo">'+
-        '    <div class="name">'+(this.isFreezing?'<div class="ice_icon"><img src="../static/icon/freezing.png"></img></div>':'')+this.name+''+this.capacity+'克</div>'+
-        '    <div class="price">NT.'+this.price+'</div>'+
+        '    <div class="name"></div>'+
+        '    <div class="price"></div>'+
         '</div>'+
         //依照商品狀態變更按鈕樣式
         '<div class="productbtn">'+//商品停售 或是 庫存為0
             ( this.type && this.inventory>0 ? '<button class="addbtn">加入購物車</button><img src="../static/icon/addproduct.png">':'<button class="unsale">'+(this.inventory==0?'已售完':'已停售')+'</button>')+
         '</div>';
-        return  productDiv;  
+
+        let freezingIcon = document.createElement('div');
+        freezingIcon.outerHTML = '<div class="ice_icon"><img src="../static/icon/freezing.png"></div>';
+        let name = document.createElement('span');
+        name.innerText = this.name+this.capacity+'克';
+        productDiv.children[0].src = this.url;
+        if(this.isFreezing)
+            productDiv.children[1].children[0].appendChild(freezingIcon);
+        productDiv.children[1].children[0].appendChild(name);
+        productDiv.children[1].children[1].innerText = 'NT.'+this.price;
+        return  productDiv;
     }
     getProductTR(){ //管理中心的商品管理分頁 商品列
         let newTR = document.createElement("tr");
-        newTR.innerHTML = '<td><a>'+this.id+'</a></td>'+
-            '<td>'+this.name+'</td>'+
-            '<td>'+this.capacity+'克</td>'+
-            '<td>'+this.price+'元</td>'+
-            '<td>'+this.inventory+'</td>'+
-            '<td>'+(this.type?'銷售中':'停售中')+'</td>'+ 
+        newTR.innerHTML = '<td></td>'+
+            '<td></td>'+
+            '<td></td>'+
+            '<td></td>'+
+            '<td></td>'+
+            '<td></td>'+
             '<td><button class="checkbtn">編輯</button></td>';
+        let a  = document.createElement('a');
+        a.innerText = this.id;
+        newTR.children[0].appendChild(a);
+        newTR.children[1].innerText = this.name;
+        newTR.children[2].innerText =this.capacity+'克';
+        newTR.children[3].innerText =this.price+'元';
+        newTR.children[4].innerText =this.inventory;
+        newTR.children[5].innerText =this.type?'銷售中':'停售中';
+
         newTR.lastChild.lastChild.addEventListener("click",()=>{
             //點取編輯進入明細
             this.getProductEdit();
@@ -74,7 +92,7 @@ export class Product {
             '<div class="basicinfo">'+
             '    <div class="helfinput">'+
             '        <p>商品編號</p>'+
-            '        <input type="text" value="'+this.id+'" disabled>'+
+            '        <input type="text" value="" disabled>'+
             '    </div>'+
             '    <div class="helfinput">'+
             '        <p>商品狀態</p>'+
@@ -89,7 +107,7 @@ export class Product {
             '    </div>'+
             '    <div class="helfinput">'+
             '        <p>商品名稱</p>'+
-            '        <input type="text" value="'+this.name+'">'+
+            '        <input type="text" value="">'+
             '    </div>'+
             '    <div class="helfinput">'+
             '        <p>運送類型</p>'+
@@ -104,7 +122,7 @@ export class Product {
             '    </div>'+
             '    <div class="helfinput">'+
             '        <p>商品單價</p>'+
-            '        <input type="text" value="'+this.price+'">'+
+            '        <input type="text" value="">'+
             '    </div>'+
             '    <div class="helfinput">'+
             '        <p>商品容量</p>'+
@@ -114,20 +132,26 @@ export class Product {
             '    </div>'+
             '    <div class="helfinput">'+
             '        <p>商品庫存</p>'+
-            '        <input type="text" value="'+this.inventory+'">'+
+            '        <input type="text" value="">'+
             '    </div>'+
             '    <div class="helfinput">'+
             '    </div>'+
             '    <div class="helfinput">'+
-            // '        <p>照片</p>'+
-            // '        <input type="text" value="這邊要改成上傳照片" disabled>'+
             '    </div>'+
             '</div>'+
             '<div class="fullinput">'+
             '    <p>產品說明</p>'+
-            '    <textarea name="" id="" cols="30" rows="10">'+this.intr+'</textarea>'+
+            '    <textarea name="" id="" cols="30" rows="10"></textarea>'+
             '</div>'+
             '<button class="mainbtn">儲存變更</button>';
+            let inputs = document.querySelectorAll("input[type='text']");
+            console.log(inputs)
+            inputs[0].value = this.id;
+            inputs[1].value = this.name;
+            inputs[2].value = this.price;
+            inputs[3].value = this.inventory;
+            document.querySelector("textarea").innerText = this.intr
+
             main.lastChild.addEventListener("click",()=>{
                 let inputs = document.querySelectorAll("input[type='text']");
                 let textarea = document.querySelector("textarea");
@@ -208,12 +232,24 @@ export class BuyProduct extends Product{
         let newTr = document.createElement("tr");
         newTr.classList.add("myproduct");
         newTr.innerHTML=
-                '    <td>'+(this.isFreezing?'<div class="ice_icon"><img src="../static/icon/freezing.png"></img></div>':'')+this.name+'</td>'+
-                '    <td>'+this.capacity+'克</td>'+
-                '    <td>'+this.price+'元</td>'+
-                '    <td><img src="../static/icon/min_g.png"></img><input type="text" value="'+this.amount+'" disabled></input><img src="../static/icon/add_'+(this.amount<this.inventory?'r':'g')+'.png"></img></td>'+//購買數量達庫存數量時不顯示
-                '    <td><input type="text" value="'+this.amount*this.price+'" disabled></input></td>'+
+                '    <td></td>'+
+                '    <td></td>'+
+                '    <td></td>'+
+                '    <td><img src="../static/icon/min_g.png"><input type="text" value="" disabled><img src="../static/icon/add_'+(this.amount<this.inventory?'r':'g')+'.png"></td>'+//購買數量達庫存數量時不顯示
+                '    <td><input type="text" value="" disabled></td>'+
                 '    <td><button class="checkbtn">刪除</button></td>';
+        let iceIcon = document.createElement('div');
+        iceIcon.outerHTML = '<div class="ice_icon"><img src="../static/icon/freezing.png"></div>'
+        let name = document.createElement('span');
+        name.innerText = this.name;
+        if(this.isFreezing)
+            newTr.children[0].appendChild(iceIcon);
+        newTr.children[0].appendChild(name);
+        newTr.children[1].innerText = this.capacity+'克';
+        newTr.children[2].innerText = this.price+'元';
+        newTr.children[3].children[1].value = this.amount;
+        newTr.children[4].firstChild.value = (this.amount*this.price);
+
         return newTr;
 
     }

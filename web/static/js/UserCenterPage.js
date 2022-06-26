@@ -75,13 +75,17 @@ window.addEventListener("popstate",(e)=>{
 
 function showIndex(){
     history.pushState({action:"my_control_center"}, null, "");
-    document.querySelector(".main").innerHTML = 
+    let main = document.querySelector(".main")
+    main.innerHTML =
         '<div class="space"></div>'+
         '<div class="helloword">'+
-            '<span class="nickname">'+USER.nickname+'</span> 您好 (不是 <span class="nickname">'+USER.nickname+'</span> 嗎？ <a myaction="/logout">請登出</a>)<br>'+
+            '<span class="nickname"></span> 您好 (不是 <span class="nickname"></span> 嗎？ <a myaction="/logout">請登出</a>)<br>'+
 
                 '在您的帳號控制台裡，您可以檢視<a myaction="my_older_list">近期的訂單</a>，管理您的<a myaction="my_address">收貨地址</a>和<a myaction="my_account">更改密碼或修改帳號資料</a>。'+
         '</div>';
+    document.querySelectorAll(".nickname").forEach(item=>{
+        item.innerText = USER.nickname;
+    })
     document.getElementById("target").removeAttribute("id");
     document.querySelector("ul li:nth-child(1)").setAttribute("id", "target");
     document.querySelector(".helloword").addEventListener("click",(e)=>{

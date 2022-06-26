@@ -62,11 +62,14 @@ export class WebSetting{
     fareView(){ //頁面上半部分運費相關設定顯示dom物件
         let basicDiv = document.createElement("div");
         basicDiv.classList.add("basicinfo");
-        basicDiv.innerHTML = '<div class="helfinput"><p>常溫運費</p>'+'<div class="editicon"><img src="../static/icon/edit2.png"></div>'+'<input type="text" value="'+this.normalFare+'" disabled></div>'+
-        '    <div class="helfinput"><p>冷凍運費</p>'+'<div class="editicon"><img src="../static/icon/edit2.png"></div>'+'<input type="text" value="'+this.freezingFare+'" disabled></div>'+
-        '    <div class="helfinput"><p>常溫免運門檻</p>'+'<div class="editicon"><img src="../static/icon/edit2.png"></div>'+'<input type="text" value="'+this.normalThreshold+'" disabled></div>'+
-        '    <div class="helfinput"><p>冷凍免運門檻</p>'+'<div class="editicon"><img src="../static/icon/edit2.png"></div>'+'<input type="text" value="'+this.freezingThreshold+'" disabled></div>';
-
+        basicDiv.innerHTML = '<div class="helfinput"><p>常溫運費</p>'+'<div class="editicon"><img src="../static/icon/edit2.png"></div>'+'<input type="text" value="" disabled></div>'+
+        '    <div class="helfinput"><p>冷凍運費</p>'+'<div class="editicon"><img src="../static/icon/edit2.png"></div>'+'<input type="text" value="" disabled></div>'+
+        '    <div class="helfinput"><p>常溫免運門檻</p>'+'<div class="editicon"><img src="../static/icon/edit2.png"></div>'+'<input type="text" value="" disabled></div>'+
+        '    <div class="helfinput"><p>冷凍免運門檻</p>'+'<div class="editicon"><img src="../static/icon/edit2.png"></div>'+'<input type="text" value="" disabled></div>';
+        basicDiv.children[0].children[2].value = this.normalFare
+        basicDiv.children[1].children[2].value = this.freezingFare
+        basicDiv.children[2].children[2].value = this.normalThreshold
+        basicDiv.children[3].children[2].value = this.freezingThreshold
         //監控 編輯按鈕 點選編輯按鈕才可以異動input格中的數字
         basicDiv.addEventListener("click",(e)=>{
             let target = e.target;

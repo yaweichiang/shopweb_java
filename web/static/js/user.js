@@ -17,12 +17,15 @@ export class User{
         console.log(this)
         let tr = document.createElement("tr");
         tr.innerHTML =
-            '<td><a>'+this.no+'</a></td>'+
-            '<td><div style="display: flex;justify-content: center;flex-direction: row;">'+
+            '<td><a></a></td>'+
+            '<td><div style="display: flex;justify-content: center;flex-direction: row;"><div></td>'+
             // +(this.url===""?'':('<img src="'+this.url+'" width="30px" height="30px" style="border-radius: 15px">'))+
-            this.name+'<div></td>'+
-            '<td>'+this.phone+'</td>'+
-            '<td>'+this.email+'</td>';
+            '<td></td>'+
+            '<td></td>';
+        tr.children[0].firstChild.innerText = this.no;
+        tr.children[1].firstChild.innerText = this.name;
+        tr.children[2].innerText = this.phone;
+        tr.children[3].innerText = this.email;
         console.log(tr.innerHTML);
         return tr;
     }
