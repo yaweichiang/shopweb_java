@@ -66,3 +66,21 @@ text-align: left;
     width: 20px;
     height: 20px;
 }
+.checkCode{
+    display: flex;
+    width: 220px;
+    height: 30px;
+    margin: 10px 0;
+    border: none;
+    border-radius:.5rem ;
+    background-color: transparent;
+    justify-content: space-around;
+}
+.checkCode input[type=text]{
+    width: 50%;
+    text-align: center;
+    background-color: #e7e4e4;
+}
+.checkCode img{
+    ;
+}

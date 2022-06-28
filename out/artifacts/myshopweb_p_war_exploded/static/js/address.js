@@ -24,10 +24,10 @@ export class Address{
     createShopCarItem(){ //建立顯示在購物車常用地址的元件
         let label = document.createElement("label");
         label.innerHTML = 
-            '<label>'+
-            '<input type="radio" name="recipient">'+//this.name+
-            '</label>';
-        label.innerText = this.name;
+            // '<label>'+
+            '<input type="radio" name="recipient"><span></span>';//+//this.name+
+            // '</label>';
+        label.children[1].innerText = this.name;
         label.addEventListener("click",()=>{
             let info = document.querySelectorAll(".addressinfo input[type='text']");
             info[0].value = this.name;

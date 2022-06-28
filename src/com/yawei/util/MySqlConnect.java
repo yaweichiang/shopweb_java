@@ -724,11 +724,18 @@ public class MySqlConnect implements DatabaseConnect{
     @Override
     public void updateAnno(JSONObject object) {
         PreparedStatement sm = null;
+        String sql = null;
         try{
-            String sql = String.format("replace into announcements(a_no,a_content,a_time) values (?,?,current_timestamp)");
-            sm = this.conn.prepareStatement(sql);
-            sm.setObject(1,this.isInt(object.get("id"))?object.get("id"):"null");
-            sm.setObject(2,object.get("content"));
+            if(this.isInt(object.get("id"))){
+                sql = String.format("replace into announcements(a_no,a_content,a_time) values (?,?,current_timestamp)");
+                sm = this.conn.prepareStatement(sql);
+                sm.setObject(1, object.get("id"));
+                sm.setObject(2,object.get("content"));
+            }else{
+                sql = String.format("replace into announcements(a_content,a_time) values (?,current_timestamp)");
+                sm = this.conn.prepareStatement(sql);
+                sm.setObject(1,object.get("content"));
+            }
             sm.executeUpdate();
             this.conn.commit();
         }catch (SQLException e){

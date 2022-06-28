@@ -1,7 +1,8 @@
-import { MYCAR } from './util.js';
+import { MYCAR,getNewCheckImg } from './util.js';
 // import jwtDecode from 'https://esm.run/jwt-decode';
 MYCAR.showproductsTypes();
 // 登入頁面
+
 //登入資料輸入狀況檢核
 document.getElementById("login").addEventListener("click",(e)=>{
     let usertel = document.querySelector(".infoboard input[type='tel']");

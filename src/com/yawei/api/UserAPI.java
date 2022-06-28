@@ -100,24 +100,31 @@ public class UserAPI extends HttpServlet {
         }else if(subPath.equals("/login")){
             String phone = req.getParameter("user");
             String password =  req.getParameter("password");
-            // 對使用者密碼輸入密碼進行雜湊
-            String hashed = HashPassWord.getHash(password);
-            // 取得資料庫儲存的雜湊馬進行比對
-            String saveHashPW = MySqlConnect.getMySql().getMemberHashPW(phone);
-            System.out.println("使用者登入"+phone+"="+password);
-            if(saveHashPW!=null) {
-                if (saveHashPW.equals(hashed)) {
-                    System.out.println("密碼正確");
-                    if (req.getSession(false) != null) { // null 表示 session 不存在
-                        req.changeSessionId();//若以存在session 變更sessionID
+            String inputCheckCode = req.getParameter("checkCode");
+//            System.out.println("checkCode"+req.getSession().getAttribute("checkCode"));
+//            System.out.println("input"+inputCheckCode);
+            if(inputCheckCode.equals(req.getSession().getAttribute("checkCode"))){
+                // 對使用者密碼輸入密碼進行雜湊
+                String hashed = HashPassWord.getHash(password);
+                // 取得資料庫儲存的雜湊馬進行比對
+                String saveHashPW = MySqlConnect.getMySql().getMemberHashPW(phone);
+                System.out.println("使用者登入"+phone+"="+password);
+                if(saveHashPW!=null) {
+                    if (saveHashPW.equals(hashed)) {
+                        System.out.println("密碼正確");
+                        if (req.getSession(false) != null) { // null 表示 session 不存在
+                            req.changeSessionId();//若以存在session 變更sessionID
+                        }
+                        int userid = MySqlConnect.getMySql().checkIdByPhone(phone);
+                        req.getSession().setAttribute("userid", userid); // 帳號密碼正確 設定userid Session
+                    }else{
+                        System.out.println("密碼錯誤");
                     }
-                    int userid = MySqlConnect.getMySql().checkIdByPhone(phone);
-                    req.getSession().setAttribute("userid", userid); // 帳號密碼正確 設定userid Session
                 }else{
-                    System.out.println("密碼錯誤");
+                    System.out.println("帳號錯誤");
                 }
             }else{
-                System.out.println("帳號錯誤");
+                System.out.println("驗證碼錯誤");
             }
             resp.sendRedirect("/usercenter");
         }else if(subPath.equals("/update")){
