@@ -29,8 +29,7 @@ public class MySqlConnect implements DatabaseConnect{
         }
         return mysql;
     }
-    @Override
-    public Connection getConnection() {
+    private Connection getConnection() {
         Connection conn = null;
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -43,6 +42,10 @@ public class MySqlConnect implements DatabaseConnect{
         } finally{
             return conn;
         }
+    }
+
+    public Connection getConn() {
+        return conn;
     }
 
     private boolean isInt(Object object){
@@ -859,50 +862,49 @@ public class MySqlConnect implements DatabaseConnect{
         }
         return id;
     } //v
-    @Override
-    public void createOrderList(JSONObject object,String userid) {
-        int no = MySqlConnect.getMySql().getNewOrderListNo();
-        PreparedStatement sm = null;
-        String sql = String.format("insert into order_list(o_no,m_no,pay_id,t_no,o_recipient,o_total) values(?,?,?,?,?,?)");
-        try{
-            sm = this.conn.prepareStatement(sql);
-            sm.setObject(1,no);
-            sm.setObject(2,userid);
-            sm.setObject(3,object.getInt("payID"));
-            sm.setObject(4,object.getInt("toteNo"));
-            sm.setObject(5,(object.getString("name")+"/"+object.getString("address")+"/"+object.getString("phone")));
-            sm.setObject(6,object.getInt("total"));
-            sm.executeUpdate();
-            Object json = object.get("products");
-            JSONArray products = new JSONArray(json.toString());
-            for(Object obj :products){
-                JSONObject product = new JSONObject(obj.toString());
-                sql = String.format("insert into order_products values(?,?,?,?)");
-                sm = this.conn.prepareStatement(sql);
-                sm.setObject(1,no);
-                sm.setObject(2,product.getInt("id"));
-                sm.setObject(3,product.getInt("amount"));
-                sm.setObject(4,product.getInt("price"));
-                sm.executeUpdate();
-            }
-            this.conn.commit();
-            System.out.println("新增完成");
-        }catch (SQLException e){
-            e.printStackTrace();
-            try {
-                if(this.conn!=null)
-                    this.conn.rollback();//復原交易
-            }catch (SQLException ex){
-                ex.printStackTrace();
-            }
-        }finally {
-            try{
-                sm.close();
-            }catch (SQLException e){
-                e.printStackTrace();
-            }
-        }
-    } //v
+//    public void createOrderList(OrderList object) {
+//        int no = object.getNo();
+//        PreparedStatement sm = null;
+//        String sql = String.format("insert into order_list(o_no,m_no,pay_id,t_no,o_recipient,o_total) values(?,?,?,?,?,?)");
+//        try{
+//            sm = this.conn.prepareStatement(sql);
+//            sm.setObject(1,no);
+//            sm.setObject(2,object.getUserid());
+//            sm.setObject(3,object.getPayID());
+//            sm.setObject(4,object.getToteNo());
+//            sm.setObject(5,object.getRecipient());
+//            sm.setObject(6,object.getTotal());
+//            sm.executeUpdate();
+//            Object json = object.getProducts();
+//            JSONArray products = new JSONArray(json.toString());
+//            for(Object obj :products){
+//                JSONObject product = new JSONObject(obj.toString());
+//                sql = String.format("insert into order_products values(?,?,?,?)");
+//                sm = this.conn.prepareStatement(sql);
+//                sm.setObject(1,no);
+//                sm.setObject(2,product.getInt("id"));
+//                sm.setObject(3,product.getInt("amount"));
+//                sm.setObject(4,product.getInt("price"));
+//                sm.executeUpdate();
+//            }
+//            this.conn.commit();
+//            System.out.println("新增完成");
+//        }catch (SQLException e){
+//            e.printStackTrace();
+//            try {
+//                if(this.conn!=null)
+//                    this.conn.rollback();//復原交易
+//            }catch (SQLException ex){
+//                ex.printStackTrace();
+//            }
+//        }finally {
+//            try{
+//                sm.close();
+//            }catch (SQLException e){
+//                e.printStackTrace();
+//            }
+//        }
+//    } //v
     @Override
     public JSONArray getOrderListByMemberId(String id) {
         PreparedStatement sm = null;
@@ -1530,6 +1532,79 @@ public class MySqlConnect implements DatabaseConnect{
             while(rs.next()){
                 result = rs.getString(1)==null?false:true;
                 System.out.println("電話查詢結果："+result); //不存在 false  存在true
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                sm.close();
+
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+
+        }
+        return result;
+    }
+    public int getProductPrice(int productNo){
+        int result = 0;
+        PreparedStatement sm = null;
+        String sql = String.format("select p_price from products where p_no = ?");
+        try{
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,productNo);
+            ResultSet rs = sm.executeQuery();
+            while(rs.next()){
+                result = rs.getInt(1);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                sm.close();
+
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+
+        }
+        return result;
+    }
+    public int[] getToteInfo(int toteNo){
+        int[] result = new int[2];
+        PreparedStatement sm = null;
+        String sql = String.format("select t_threshold,t_fare from tote_type where t_no = ?");
+        try{
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,toteNo);
+            ResultSet rs = sm.executeQuery();
+            while(rs.next()){
+                result[0] = rs.getInt(1);
+                result[1] = rs.getInt(2);
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                sm.close();
+
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+
+        }
+        return result;
+    }
+    public int getPayFee(int payId){
+        int result = 0;
+        PreparedStatement sm = null;
+        String sql = String.format("select pay_fee from pay_type where pay_id = ?");
+        try{
+            sm = this.conn.prepareStatement(sql);
+            sm.setObject(1,payId);
+            ResultSet rs = sm.executeQuery();
+            while(rs.next()){
+                result = rs.getInt(1);
             }
         }catch(SQLException e){
             e.printStackTrace();

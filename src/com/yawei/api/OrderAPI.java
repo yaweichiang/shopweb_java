@@ -1,6 +1,7 @@
 package com.yawei.api;
 
 import com.yawei.util.MySqlConnect;
+import com.yawei.util.OrderList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -63,7 +64,8 @@ public class OrderAPI extends HttpServlet {
             }
         }else if(subPath.equals("update")){
             if(req.getSession().getAttribute("managerid")!=null) {
-                System.out.println("update" + obj.get("order_no"));
+                System.out.println("update:" + obj.get("order_no"));
+                System.out.println("obj:" + obj);
                 MySqlConnect.getMySql().updateOrder(obj);
             }else{
                 out.print("error");
@@ -86,7 +88,10 @@ public class OrderAPI extends HttpServlet {
                 json = br.readLine();
             }
             JSONObject obj = new JSONObject(json);
-            MySqlConnect.getMySql().createOrderList(obj,id);
+            int total = obj.getInt("total");
+            //依照前端傳遞過來的訂單資料(json) 建立訂單物件 存入資料庫
+            OrderList orderlist = new OrderList(obj,id);
+            orderlist.save();
             out.print("ok");
 
         }else{

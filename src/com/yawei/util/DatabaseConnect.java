@@ -12,8 +12,7 @@ import java.util.HashMap;
 
 public interface DatabaseConnect {
 
-//    取得資料庫連線
-    public abstract  Connection getConnection();
+
 //    取得所有商品資料
     public abstract JsonArray getAllProducts() throws SQLException;
 //    取得指定商品資料
@@ -66,8 +65,10 @@ public interface DatabaseConnect {
     public abstract void deleteAddress(JSONObject object);
 //    取得下筆訂單編號
     public abstract  int getNewOrderListNo();
-//    新增訂單
-    public abstract  void createOrderList(JSONObject object,String userid);
+//    新增訂單  改寫至 OrderList 類別中
+//    public abstract  void createOrderList(JSONObject object,String userid);
+//    public abstract  void createOrderList(OrderList object);
+
 //    取得指定會員訂單資料  會員專用
     public abstract JSONArray getOrderListByMemberId(String id);
 //    取得指定會員訂單資料  管理者專用
