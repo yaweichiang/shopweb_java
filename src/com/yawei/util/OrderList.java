@@ -28,6 +28,7 @@ public class OrderList {
         this.products = new JSONArray(obj.get("products").toString());
         this.total = this.countTotal();
     }
+
     //依照訂單資料 計算商品金額 運費 手續費用 合計金額
     private int countTotal() {
         int[] toteInfo = MySqlConnect.getMySql().getToteInfo(this.toteNo);
@@ -118,10 +119,10 @@ public class OrderList {
     public String toString() {
         return "{" +
                 "\"no\":" + no +
-                ", \"userid\":" + userid +
+                ",\"userid\":" + userid +
                 ",\"payID\":" + payID +
                 ",\"toteNo\":" + toteNo +
-                ",\"recipient\":" + recipient +
+                ",\"recipient\":\"" + recipient + "\"" +
                 ",\"total\":" + total +
                 ",\"products\":" + products +
                 "}";

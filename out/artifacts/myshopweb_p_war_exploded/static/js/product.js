@@ -4,6 +4,7 @@ import {getProduct} from "./util.js";
 
 export class Product {
     constructor(obj){
+
         this.id = obj.id; //商品編號
         this.name = obj.name; //商品名稱
         this.inventory = obj.inventory; //商品庫存
@@ -13,6 +14,7 @@ export class Product {
         this.isFreezing = obj.isFreezing==="true"?true:false;//運送類型是否冷凍運送
         this.url = obj.url; //商品圖片url
         this.intr = obj.intr; //商品介紹
+        console.log(this);
     }
     
     equal(product){
@@ -45,7 +47,8 @@ export class Product {
         '</div>';
 
         let freezingIcon = document.createElement('div');
-        freezingIcon.outerHTML = '<div class="ice_icon"><img src="../static/icon/freezing.png"></div>';
+        freezingIcon.classList.add("ice_icon");
+        freezingIcon.innerHTML = '<img src="../static/icon/freezing.png">';
         let name = document.createElement('span');
         name.innerText = this.name+this.capacity+'克';
         productDiv.children[0].src = this.url;
@@ -239,7 +242,8 @@ export class BuyProduct extends Product{
                 '    <td><input type="text" value="" disabled></td>'+
                 '    <td><button class="checkbtn">刪除</button></td>';
         let iceIcon = document.createElement('div');
-        iceIcon.outerHTML = '<div class="ice_icon"><img src="../static/icon/freezing.png"></div>'
+        iceIcon.classList.add("ice_icon");
+        iceIcon.innerHTML = '<img src="../static/icon/freezing.png">';
         let name = document.createElement('span');
         name.innerText = this.name;
         if(this.isFreezing)

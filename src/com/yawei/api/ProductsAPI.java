@@ -68,18 +68,17 @@ public class ProductsAPI extends HttpServlet {
             String savePath = req.getServletContext().getRealPath("")+"static/products/product"+id+"."+filetype;
             //建立讀取圖片的相對路徑,用來存到資料庫供讀取使用
             String readPath = "../static/products/product"+id+"."+filetype;
-
+            FileOutputStream productPic=null;
             try{
-                FileOutputStream productPic = new FileOutputStream(savePath);
+                productPic = new FileOutputStream(savePath);
                 productPic.write(pic);
-                productPic.close();
                 JsonArray result = MySqlConnect.getMySql().createProduct(obj,readPath);
                 System.out.print(result);
                 out.print(result);
             }catch (IOException e){
                 out.print("error");
             }finally {
-
+                productPic.close();
             }
 
 
