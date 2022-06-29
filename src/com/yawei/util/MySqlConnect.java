@@ -1469,10 +1469,11 @@ public class MySqlConnect implements DatabaseConnect{
                 sm.setObject(2,object.get("remark"));
                 sm.setObject(3,object.get("order_no"));
             }else{
-                sql = String.format("update order_list set o_remark = ? where o_no=?");
+                sql = String.format("update order_list set o_sendno = ?,o_remark = ? where o_no=?");
                 sm = this.conn.prepareStatement(sql);
-                sm.setObject(1,object.get("remark"));
-                sm.setObject(2,object.get("order_no"));
+                sm.setObject(1,object.get("send_no"));
+                sm.setObject(2,object.get("remark"));
+                sm.setObject(3,object.get("order_no"));
             }
             System.out.println("訂單變更sql:"+sql);
             sm.executeUpdate();
