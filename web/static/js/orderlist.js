@@ -62,24 +62,29 @@ export class MemberOrderList extends OrderList{
         cancelBtn.classList.add("checkbtn");
         cancelBtn.innerText="取消訂購";
         cancelBtn.addEventListener("click",(e)=>{
-            if(confirm("確認取消訂單！")) {
-                let obj = {'order_no': this.no}
-                fetch('order/cancel', {
-                    method: 'put',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(obj)
-                }).then(response => {
-                    let oldrow = e.target.parentElement.parentElement;
-                    getOrderListByNo(this.no).then(datas => {
-                        this.type = datas[0].type === "order" ? "訂購" : (obj.type === "send" ? "已寄送" : "訂單取消")
-                        oldrow.parentElement.replaceChild((this.createTableRowView()), oldrow)
+            if(this.type === "訂購") {
+                if (confirm("確認取消訂單！")) {
+                    let obj = {'order_no': this.no}
+                    fetch('order/cancel', {
+                        method: 'put',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(obj)
+                    }).then(response => {
+                        let oldrow = e.target.parentElement.parentElement;
+                        getOrderListByNo(this.no).then(datas => {
+                            this.type = datas[0].type === "order" ? "訂購" : (obj.type === "send" ? "已寄送" : "訂單取消")
+                            oldrow.parentElement.replaceChild((this.createTableRowView()), oldrow)
 
+                        })
+                    }).catch(err => {
+                        console.log(err)
                     })
-                }).catch(err => {
-                    console.log(err)
-                })
-            }
 
+                }
+            }else{
+                let msg = this.type==="已寄送"?"商品已寄出不得取消":"此訂單已取消訂購";
+                alert(msg);
+            }
             
         })
         btnTD.appendChild(cancelBtn);
@@ -342,6 +347,10 @@ export class ManagerOrderList extends MemberOrderList{
             send_no:document.querySelector(".basicinfo").children[1].lastChild.value,
             send_date:this.sendDate,
             remark:this.remark+date+document.querySelector(".basicinfo").children[2].lastChild.value+";"
+        }
+        if(this.type==="訂單取消"&&obj.send_no!=""){
+            alert("會員已取消此筆訂單，出貨單號不與更新");
+            obj.send_no = "";
         }
         fetch('/order/update',{
             method:'PUT',
