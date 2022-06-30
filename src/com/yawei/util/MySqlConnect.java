@@ -7,6 +7,8 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import java.sql.*;
 import java.util.*;
+import org.apache.tomcat.jdbc.pool.DataSource;
+import org.apache.tomcat.jdbc.pool.PoolProperties;
 
 
 import static javax.json.Json.createArrayBuilder;
@@ -15,8 +17,8 @@ import static javax.json.Json.createObjectBuilder;
 
 public class MySqlConnect implements DatabaseConnect{
     private static String databaseUrl = "//localhost:3306/";
-    private static String user = "root";
-    private static String password = "0937513541";
+    private static String user = "test";
+    private static String password = "1234";
     private static String database = "yawei_shopweb";
     private Connection conn;
     private static MySqlConnect mysql;
