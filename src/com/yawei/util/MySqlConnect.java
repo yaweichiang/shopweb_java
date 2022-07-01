@@ -1386,9 +1386,9 @@ public class MySqlConnect implements DatabaseConnect{
                 String no = rs.getString("no");
                 if(!result.containsKey(no)){//訂單編號 key 不存在
                     HashMap<String,Object> temp = new HashMap();
-                    temp.put("no",rs.getInt("no"));
+                    temp.put("no",rs.getInt("no"));//
                     temp.put("phone",rs.getString("phone"));
-                    temp.put("id",rs.getInt("id"));
+                    temp.put("id",rs.getInt("id"));//
                     temp.put("payType",rs.getString("payType"));
                     temp.put("orderDate",rs.getDate("orderDate"));
                     temp.put("sendNo",rs.getString("sendNo")==null?"":rs.getString("sendNo"));

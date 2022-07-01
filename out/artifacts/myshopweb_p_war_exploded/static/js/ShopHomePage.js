@@ -24,7 +24,7 @@ getProducts().then(data=>{
 //建立商品的div物件 並在加入購物車按鈕加上監聽
 function createProductsDom(product){
     let productDiv = product.getProductDiv();
-    if(product.type||product.inventory == 0){//若商品為停售商品 或 庫存0 則不監聽按鈕事件
+    if(product.type||product.inventory === 0){//若商品為停售商品 或 庫存0 則不監聽按鈕事件
         productDiv.children[2].addEventListener("click",(e)=>{
             let tagName = e.target.tagName;
             if(tagName == "BUTTON"|| tagName == "IMG"){

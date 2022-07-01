@@ -2,8 +2,6 @@ package com.yawei.util;
 
 import org.json.JSONObject;
 import sun.misc.BASE64Decoder;
-
-import javax.json.JsonArray;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.ResultSet;

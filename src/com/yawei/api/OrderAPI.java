@@ -26,13 +26,18 @@ public class OrderAPI extends HttpServlet {
         String no = subPath.substring(1);
         JSONArray result = null;
         if(subPath!=null){
+            OrderList orderlist = new OrderList(no);
             if(req.getSession().getAttribute("managerid")!=null){
-                result = MySqlConnect.getMySql().getOrderListByNoForManager(no);
-                out.print(result.toString());
+//                result = MySqlConnect.getMySql().getOrderListByNoForManager(no);
+//                out.print(result.toString());
+                out.print(orderlist);
             }else if(req.getSession().getAttribute("userid")!=null){
                 String id = req.getSession().getAttribute("userid").toString();
-                result = MySqlConnect.getMySql().getOrderListByNo(no,id);
-                out.print(result.toString());
+
+//                result = MySqlConnect.getMySql().getOrderListByNo(no,id);
+//                out.print(result.toString());
+                if(orderlist.getId() == Integer.parseInt(id))
+                    out.print(orderlist);
             }else{
                 out.print("error");
             }
@@ -87,11 +92,10 @@ public class OrderAPI extends HttpServlet {
             if (br != null) {
                 json = br.readLine();
             }
-            JSONObject obj = new JSONObject(json);
-            int total = obj.getInt("total");
+
             //依照前端傳遞過來的訂單資料(json) 建立訂單物件 存入資料庫
-            OrderList orderlist = new OrderList(obj,id);
-            orderlist.save();
+            OrderList orderlist = new OrderList(json,id);
+            orderlist.create();
             out.print("ok");
 
         }else{
