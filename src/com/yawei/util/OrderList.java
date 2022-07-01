@@ -87,6 +87,18 @@ public class OrderList {
 
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+                "\"no\":" + no +
+                ",\"userid\":" + userid +
+                ",\"payID\":" + payID +
+                ",\"toteNo\":" + toteNo +
+                ",\"recipient\":\"" + recipient + "\"" +
+                ",\"total\":" + total +
+                ",\"products\":" + products +
+                "}";
+    }
     public int getNo() {
         return no;
     }
@@ -115,18 +127,6 @@ public class OrderList {
         return products;
     }
 
-    @Override
-    public String toString() {
-        return "{" +
-                "\"no\":" + no +
-                ",\"userid\":" + userid +
-                ",\"payID\":" + payID +
-                ",\"toteNo\":" + toteNo +
-                ",\"recipient\":\"" + recipient + "\"" +
-                ",\"total\":" + total +
-                ",\"products\":" + products +
-                "}";
-    }
 }
 
 

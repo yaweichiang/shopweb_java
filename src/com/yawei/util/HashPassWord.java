@@ -1,8 +1,6 @@
 package com.yawei.util;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
 public class HashPassWord {
     public static String getHash(String input){
         String result = "";

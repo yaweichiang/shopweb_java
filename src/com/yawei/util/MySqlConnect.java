@@ -5,7 +5,6 @@ import org.json.JSONObject;
 import javax.json.*;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
@@ -15,22 +14,22 @@ import static javax.json.Json.createObjectBuilder;
 
 
 public class MySqlConnect implements DatabaseConnect{
+    private static Properties properties = new Properties();
     static{
         try {
             InputStream in = MySqlConnect.class.getClassLoader().getResourceAsStream("dbconfig.properties");
-            Properties properties = new Properties();
             properties.load(in);
-
-        }catch (IOException e){
+        }catch (Exception e){
             e.printStackTrace();
         }
     }
-    private static String databaseUrl ="//localhost:3306/";
-    private static String user = "root";
-    private static String password = "0937513541";
-    private static String database = "yawei_shopweb";
+    private static String databaseUrl = properties.getProperty("databaseUrl");
+    private static String user = properties.getProperty("user");
+    private static String password = properties.getProperty("password");
+    private static String database = properties.getProperty("database");
     private Connection conn;
     private static MySqlConnect mysql;
+
     public MySqlConnect(){
         this.conn = this.getConnection();
     }

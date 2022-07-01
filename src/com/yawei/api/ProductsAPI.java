@@ -22,7 +22,7 @@ public class ProductsAPI extends HttpServlet {
         String subPath = req.getPathInfo();
         PrintWriter out = resp.getWriter();
         if(subPath == null){
-            //取的全部的商品資訊
+            //取得全部的商品資訊
             JsonArray result =  MySqlConnect.getMySql().getAllProducts();
             out.print(result);
         }else{
