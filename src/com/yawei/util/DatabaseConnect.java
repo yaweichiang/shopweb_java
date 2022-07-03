@@ -13,16 +13,16 @@ import java.util.HashMap;
 public interface DatabaseConnect {
 
 
-//    取得所有商品資料
-    public abstract JsonArray getAllProducts() throws SQLException;
-//    取得指定商品資料
-    public abstract JsonArray getProduct(String id);
+////    取得所有商品資料
+//    public abstract JsonArray getAllProducts() throws SQLException;
+////    取得指定商品資料
+//    public abstract JsonArray getProduct(String id);
 //    取得下筆商品編號
     public abstract  int getNewProductNo();
 //    新增商品
-    public abstract JsonArray createProduct(JSONObject data,String path);
-//    變更商品資訊
-    public abstract JsonArray updateProduct(JSONObject data);
+//    public abstract JsonArray createProduct(JSONObject data,String path);
+////    變更商品資訊
+//    public abstract JsonArray updateProduct(JSONObject data);
 //    取得會員資訊
     public abstract JsonArray getUserInfo(String id);
 //    查詢會員
@@ -70,21 +70,21 @@ public interface DatabaseConnect {
 //    public abstract  void createOrderList(OrderList object);
 
 //    取得指定會員訂單資料  會員專用
-    public abstract JSONArray getOrderListByMemberId(String id);
+//    public abstract JSONArray getOrderListByMemberId(String id);
 //    取得指定會員訂單資料  管理者專用
-    public abstract  JSONArray getOrderListByMemberIdforManager(String id);
+//    public abstract  JSONArray getOrderListByMemberIdforManager(String id);
 //    取得指定日期訂單資料
-    public abstract  JSONArray getOrderListByDate(String date);
-//    取得指定天數內的訂單資料
-    public abstract  JSONArray getOrderListByDays(String days);
+//    public abstract  JSONArray getOrderListByDate(String date);
+////    取得指定天數內的訂單資料
+//    public abstract  JSONArray getOrderListByDays(String days);
 //    取得指定編號訂單資料  會員專用
-    public abstract  JSONArray getOrderListByNo(String no,String id);
-//    取得指定編號訂單資料  管理者專用
-    public abstract  JSONArray getOrderListByNoForManager(String no);
-//    取消訂單  會員專用
-    public abstract  void cancelOrder(String no,String id);
-//    更新訂單資訊  管理者專用
-    public abstract void updateOrder(JSONObject object);
+//    public abstract  JSONArray getOrderListByNo(String no,String id);
+////    取得指定編號訂單資料  管理者專用
+//    public abstract  JSONArray getOrderListByNoForManager(String no);
+////    取消訂單  會員專用
+//    public abstract  void cancelOrder(String no,String id);
+////    更新訂單資訊  管理者專用
+//    public abstract void updateOrder(JSONObject object);
 //    確認會員是否有登記電話
     public boolean checkPhone(String id);
 //    確認電話是否有被註冊

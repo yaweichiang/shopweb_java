@@ -4,7 +4,6 @@ import {getProduct} from "./util.js";
 
 export class Product {
     constructor(obj){
-
         this.id = obj.id; //商品編號
         this.name = obj.name; //商品名稱
         this.inventory = obj.inventory; //商品庫存
@@ -14,7 +13,6 @@ export class Product {
         this.isFreezing = obj.isFreezing==="true"?true:false;//運送類型是否冷凍運送
         this.url = obj.url; //商品圖片url
         this.intr = obj.intr; //商品介紹
-        console.log(this);
     }
     
     equal(product){
@@ -205,7 +203,7 @@ export class Product {
                 }).then(response=> {
                     if (response.status == 200) {
                         getProduct(this.id).then(datas=>{
-                            this.updateProductInfo(datas[0]);
+                            this.updateProductInfo(datas);
                             history.back();
                         })
                     }

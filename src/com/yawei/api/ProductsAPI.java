@@ -1,16 +1,14 @@
 package com.yawei.api;
 
-import com.yawei.util.MySqlConnect;
+import com.yawei.bean.Product;
 import org.json.JSONObject;
-import sun.misc.BASE64Decoder;
-
-import javax.json.*;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.List;
 import java.util.regex.Pattern;
 
 
@@ -21,18 +19,17 @@ public class ProductsAPI extends HttpServlet {
         resp.setContentType("application/json;charset=UTF-8");
         String subPath = req.getPathInfo();
         PrintWriter out = resp.getWriter();
+        System.out.println(subPath);
         if(subPath == null){
             //取得全部的商品資訊
-            JsonArray result =  MySqlConnect.getMySql().getAllProducts();
+            List<Product> result = Product.getAllProducts();
             out.print(result);
         }else{
             //取得指定id的商品資訊
             String idString = "^/[1-9]+[0-9]*$";
-            System.out.print(idString);
+            System.out.print("指定商品編號："+idString);
             if(Pattern.matches(idString,subPath)){
-                JsonArray result =  MySqlConnect.getMySql().getProduct(subPath.substring(1));
-                System.out.print(result);
-                out.print(result);
+                out.print(new Product(Integer.parseInt(subPath.substring(1))));
 
             }else{
                 out.print("error");
@@ -46,45 +43,16 @@ public class ProductsAPI extends HttpServlet {
         resp.setContentType("application/json;charset=UTF-8");
         String subPath = req.getPathInfo();
         PrintWriter out = resp.getWriter();
-        if(subPath == null){
+        if(subPath == null && req.getSession().getAttribute("managerid")!=null){
             BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
             String json = "";
             if (br != null) {
                 json = br.readLine();
             }
-            JSONObject obj = new JSONObject(json);
-            //取得下筆商品編號
-            int id = MySqlConnect.getMySql().getNewProductNo();
-            //取得前端上傳照片 base64資料
-            String[] urlData =  obj.getString("url").split(";");
-            //副檔名
-            String filetype = urlData[0].split("/")[1];
-            //檔案字串 ajax傳遞時會將 "+" 替換成" " 將其復原 並將自傳前面的base64去掉
-            String fileStr = urlData[1].replace(" ","+").replace("base64,","");
-            //對檔案字串進行解碼成byte[] 存成圖片
-            BASE64Decoder decoder = new BASE64Decoder();
-            byte[] pic = decoder.decodeBuffer(fileStr);
-            //取得web容器的真實路徑 加上資料夾名稱及商品id 作為檔案儲存的path
-            String savePath = req.getServletContext().getRealPath("")+"static/products/product"+id+"."+filetype;
-            //建立讀取圖片的相對路徑,用來存到資料庫供讀取使用
-            String readPath = "../static/products/product"+id+"."+filetype;
-            FileOutputStream productPic=null;
-            try{
-                productPic = new FileOutputStream(savePath);
-                productPic.write(pic);
-                JsonArray result = MySqlConnect.getMySql().createProduct(obj,readPath);
-                System.out.print(result);
-                out.print(result);
-            }catch (IOException e){
-                out.print("error");
-            }finally {
-                productPic.close();
-            }
-
-
-
-
-
+            String webPath = req.getServletContext().getRealPath("");
+            Product product = new Product(json, webPath);
+            product.create();
+            out.print(Product.getAllProducts());
         }else{
             out.print("error");
         }
@@ -104,9 +72,15 @@ public class ProductsAPI extends HttpServlet {
             }
             JSONObject obj = new JSONObject(json);
             System.out.print(obj);
-            JsonArray result = MySqlConnect.getMySql().updateProduct(obj);
-            System.out.print(result);
-            out.print(result);
+            Product product = new Product(obj.getInt("id"));
+            //新資料
+            String name = obj.getString("name");
+            int price = Integer.parseInt(obj.getString("price"));
+            int inventory = Integer.parseInt(obj.getString("inventory"));
+            String type = obj.getString("type");
+            String introduction = obj.getString("introduction");
+            //更新
+            product.update(name,price,inventory,type,introduction);
         }else{
             out.print("error");
         }

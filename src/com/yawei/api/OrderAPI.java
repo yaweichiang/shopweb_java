@@ -1,8 +1,6 @@
 package com.yawei.api;
 
-import com.yawei.util.MySqlConnect;
-import com.yawei.util.OrderList;
-import org.json.JSONArray;
+import com.yawei.bean.OrderList;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -24,18 +22,12 @@ public class OrderAPI extends HttpServlet {
         PrintWriter out = resp.getWriter();
         String subPath = req.getPathInfo();
         String no = subPath.substring(1);
-        JSONArray result = null;
         if(subPath!=null){
             OrderList orderlist = new OrderList(no);
             if(req.getSession().getAttribute("managerid")!=null){
-//                result = MySqlConnect.getMySql().getOrderListByNoForManager(no);
-//                out.print(result.toString());
                 out.print(orderlist);
             }else if(req.getSession().getAttribute("userid")!=null){
                 String id = req.getSession().getAttribute("userid").toString();
-
-//                result = MySqlConnect.getMySql().getOrderListByNo(no,id);
-//                out.print(result.toString());
                 if(orderlist.getId() == Integer.parseInt(id))
                     out.print(orderlist);
             }else{
@@ -62,16 +54,21 @@ public class OrderAPI extends HttpServlet {
         if(subPath.equals("cancel")){
             if(req.getSession().getAttribute("userid")!=null) {
                 String id = req.getSession().getAttribute("userid").toString();
-                System.out.println("cancel" + obj.get("order_no") + ";id=" +id );
-                MySqlConnect.getMySql().cancelOrder(obj.get("order_no").toString(),id);
+                OrderList orderlist = new OrderList(obj.get("order_no").toString());
+                if(String.valueOf(orderlist.getId()).equals(id))
+                    orderlist.cancel();
             }else{
                 out.print("error");
             }
         }else if(subPath.equals("update")){
             if(req.getSession().getAttribute("managerid")!=null) {
-                System.out.println("update:" + obj.get("order_no"));
-                System.out.println("obj:" + obj);
-                MySqlConnect.getMySql().updateOrder(obj);
+                OrderList orderlist = new OrderList(obj.get("order_no").toString());
+                if(orderlist.getSendDate().equals("尚未出貨")&&obj.get("send_no").toString()=="") {
+
+                    orderlist.send(obj.get("send_no").toString(), obj.get("remark").toString());
+                }else {
+                    orderlist.update(obj.get("send_no").toString(), obj.get("remark").toString());
+                }
             }else{
                 out.print("error");
             }
@@ -92,7 +89,6 @@ public class OrderAPI extends HttpServlet {
             if (br != null) {
                 json = br.readLine();
             }
-
             //依照前端傳遞過來的訂單資料(json) 建立訂單物件 存入資料庫
             OrderList orderlist = new OrderList(json,id);
             orderlist.create();

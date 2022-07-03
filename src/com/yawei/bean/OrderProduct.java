@@ -1,7 +1,9 @@
-package com.yawei.util;
+package com.yawei.bean;
 
 import org.json.JSONObject;
-public class OrderProduct extends JSONObject {
+import java.io.Serializable;
+
+public class OrderProduct extends JSONObject implements Serializable {
     private String name; //商品名稱
     private int id;//商品邊號
     private int price;//購買單價

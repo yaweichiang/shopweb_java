@@ -15,7 +15,6 @@ class OrderList{
         this.productsList = obj.productsList;//JSON.parse(obj.productsList);
         this.recipient = obj.recipient;
         this.total = obj.total;//this.getTotal();//總金額
-
     }
     updateData(obj){ //
         this.no = obj.no;  //訂單編號
@@ -72,7 +71,7 @@ export class MemberOrderList extends OrderList{
                     }).then(response => {
                         let oldrow = e.target.parentElement.parentElement;
                         getOrderListByNo(this.no).then(datas => {
-                            this.type = datas[0].type === "order" ? "訂購" : (obj.type === "send" ? "已寄送" : "訂單取消")
+                            this.type = datas.type === "order" ? "訂購" : (obj.type === "send" ? "已寄送" : "訂單取消")
                             oldrow.parentElement.replaceChild((this.createTableRowView()), oldrow)
 
                         })
@@ -358,7 +357,7 @@ export class ManagerOrderList extends MemberOrderList{
             body:JSON.stringify(obj)
         }).then(response=>{
             getOrderListByNo(obj.order_no).then(datas=>{
-                this.updateData(datas[0])
+                this.updateData(datas)
                 this.createDitalView();
             })
         }).catch(err=>console.log(err))
