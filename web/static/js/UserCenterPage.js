@@ -5,7 +5,7 @@ import { MYCAR,getMemberinfo,getMemberAddress } from './util.js';
 let USER;
    
 getMemberinfo().then(data=>{
-    USER = new Member(data[0]);
+    USER = new Member(data);
     showIndex();
     if(USER.phone.length===0)
         alert("請於消費前填寫補齊會員電話資料")
@@ -347,7 +347,7 @@ function showAccountInfo(){
                 console.log(datas);
                 getMemberinfo().then(data=>{
                     console.log(data)
-                    USER.updateUserInfo(data[0]);
+                    USER.updateUserInfo(data);
                     showAccountInfo();
                     alert(datas);
                 })

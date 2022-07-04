@@ -1,5 +1,6 @@
 package com.yawei.api;
 
+import com.yawei.bean.User;
 import com.yawei.util.MySqlConnect;
 import org.json.JSONArray;
 
@@ -23,8 +24,9 @@ public class SearchAPI extends HttpServlet {
         if(req.getSession().getAttribute("managerid")!=null){
             if(!req.getPathInfo().equals("/")) {
                 String subPath = req.getPathInfo();
-                result = MySqlConnect.getMySql().searchUsers(subPath.substring(1));
-                out.print(result);
+                out.print(User.search(subPath.substring(1)));
+//                result = MySqlConnect.getMySql().searchUsers(subPath.substring(1));
+//                out.print(result);
             }else{
                 out.print("null");
             }

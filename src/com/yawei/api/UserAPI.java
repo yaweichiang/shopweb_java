@@ -1,5 +1,6 @@
 package com.yawei.api;
 
+import com.yawei.bean.User;
 import com.yawei.util.HashPassWord;
 import com.yawei.util.MySqlConnect;
 
@@ -31,16 +32,19 @@ public class UserAPI extends HttpServlet {
         if(subPath == null){
 //            依照session回傳 對應會員個資 需要驗證是會員
             if(req.getSession().getAttribute("userid")==null){//非會員
-                out.print("no member");
+                out.print("not member");
             }else{//會員 回傳會員資料
-                result = MySqlConnect.getMySql().getUserInfo(req.getSession().getAttribute("userid").toString());
-                out.print(result);
+//                result = MySqlConnect.getMySql().getUserInfo(req.getSession().getAttribute("userid").toString());
+//                out.print(result);
+                User member = new User(req.getSession().getAttribute("userid").toString());
+                out.print(member);
             }
         }else{
             if(req.getSession().getAttribute("managerid")!=null) {//管理員
 //            依照 subPath 電話回傳 指定會員資料 需要驗證是管理員
-                result = MySqlConnect.getMySql().getUserInfo(subPath.substring(1));
-                out.print(result);
+//                result = MySqlConnect.getMySql().getUserInfo(subPath.substring(1));
+                User member = new User(subPath.substring(1));
+                out.print(member);
                 //回傳格式需要是json檔案
             }else {
                 out.print("no manager");
@@ -79,23 +83,44 @@ public class UserAPI extends HttpServlet {
         String subPath = req.getPathInfo();
         System.out.println(subPath);
         if(subPath.equals("/singup")) {
-            HashMap<String, String> user = new HashMap<>();
-            user.put("name", req.getParameter("user"));
-            user.put("nickname", req.getParameter("user"));
-            user.put("phone", req.getParameter("phone"));
+//            HashMap<String, String> user = new HashMap<>();
+//            user.put("name", req.getParameter("user"));
+//            user.put("nickname", req.getParameter("user"));
+//            user.put("phone", req.getParameter("phone"));
             //  將密碼進行雜湊處理 後存入資料庫
-            user.put("hashPW", HashPassWord.getHash(req.getParameter("password")));
-            user.put("mail", req.getParameter("mail"));
-            System.out.println("註冊"+user);
-            MySqlConnect.getMySql().createUser(user);
-
-            int id = MySqlConnect.getMySql().checkIdByPhone(user.get("phone")); //取得會員id
-            System.out.println("id:"+id);
-            if(req.getSession(false) != null) { // null 表示 session 不存在
-                req.changeSessionId();//若以存在session 變更sessionID
+//            user.put("hashPW", HashPassWord.getHash(req.getParameter("password")));
+//            user.put("mail", req.getParameter("mail"));
+            String name = req.getParameter("user");
+            String phone = req.getParameter("phone");
+            String mail = req.getParameter("mail");
+            String password = req.getParameter("password");
+//            int id = MySqlConnect.getMySql().checkIdByPhone(phone);
+            System.out.println(name);
+            System.out.println(phone);
+            System.out.println(mail);
+            System.out.println(password);
+            if(MySqlConnect.getMySql().checkIdByPhone(phone)==0) { // 電話沒有重複 建立會員
+                User member = new User(name, phone, mail, password);
+                System.out.println(member);
+                member.create();
+                System.out.println(member);
+                if(req.getSession(false) != null) { // null 表示 session 不存在
+                    req.changeSessionId();//若以存在session 變更sessionID
+                }
+                System.out.println(member.getId());
+                req.getSession().setAttribute("userid",member.getId()); // 註冊完成 直接登入
             }
-            req.getSession().setAttribute("userid",id); // 註冊完成 直接登入
             resp.sendRedirect("/usercenter");
+//            System.out.println("註冊"+user);
+//            MySqlConnect.getMySql().createUser(user);
+
+//            int id = MySqlConnect.getMySql().checkIdByPhone(user.get("phone")); //取得會員id
+//            System.out.println("id:"+id);
+//            if(req.getSession(false) != null) { // null 表示 session 不存在
+//                req.changeSessionId();//若以存在session 變更sessionID
+//            }
+//            req.getSession().setAttribute("userid",id); // 註冊完成 直接登入
+//            resp.sendRedirect("/usercenter");
 
         }else if(subPath.equals("/login")){
             String phone = req.getParameter("user");
@@ -103,26 +128,37 @@ public class UserAPI extends HttpServlet {
             String inputCheckCode = req.getParameter("checkCode");
 //            System.out.println("checkCode"+req.getSession().getAttribute("checkCode"));
 //            System.out.println("input"+inputCheckCode);
+
+
             if(inputCheckCode.equals(req.getSession().getAttribute("checkCode"))){
-                // 對使用者密碼輸入密碼進行雜湊
-                String hashed = HashPassWord.getHash(password);
-                // 取得資料庫儲存的雜湊馬進行比對
-                String saveHashPW = MySqlConnect.getMySql().getMemberHashPW(phone);
-                System.out.println("使用者登入"+phone+"="+password);
-                if(saveHashPW!=null) {
-                    if (saveHashPW.equals(hashed)) {
-                        System.out.println("密碼正確");
-                        if (req.getSession(false) != null) { // null 表示 session 不存在
-                            req.changeSessionId();//若以存在session 變更sessionID
-                        }
-                        int userid = MySqlConnect.getMySql().checkIdByPhone(phone);
-                        req.getSession().setAttribute("userid", userid); // 帳號密碼正確 設定userid Session
-                    }else{
-                        System.out.println("密碼錯誤");
+                User member = User.login(phone,password);
+                if(member != null){
+                    if (req.getSession(false) != null) { // null 表示 session 不存在
+                        req.changeSessionId();//若以存在session 變更sessionID
                     }
+                    req.getSession().setAttribute("userid", member.getId()); // 帳號密碼正確 設定userid Session
                 }else{
-                    System.out.println("帳號錯誤");
+                    System.out.println("帳號、密碼錯誤");
                 }
+                // 對使用者密碼輸入密碼進行雜湊
+//                String hashed = HashPassWord.getHash(password);
+                // 取得資料庫儲存的雜湊馬進行比對
+//                String saveHashPW = MySqlConnect.getMySql().getMemberHashPW(phone);
+//                System.out.println("使用者登入"+phone+"="+password);
+//                if(saveHashPW!=null) {
+//                    if (saveHashPW.equals(hashed)) {
+//                        System.out.println("密碼正確");
+//                        if (req.getSession(false) != null) { // null 表示 session 不存在
+//                            req.changeSessionId();//若以存在session 變更sessionID
+//                        }
+//                        int userid = MySqlConnect.getMySql().checkIdByPhone(phone);
+//                        req.getSession().setAttribute("userid", userid); // 帳號密碼正確 設定userid Session
+//                    }else{
+//                        System.out.println("密碼錯誤");
+//                    }
+//                }else{
+//                    System.out.println("帳號錯誤");
+//                }
             }else{
                 System.out.println("驗證碼錯誤");
             }
@@ -139,32 +175,36 @@ public class UserAPI extends HttpServlet {
                 json = br.readLine();
             }
             JSONObject obj = new JSONObject(json);
-            System.out.println("取得更新物件"+obj);
-            System.out.println( req.getSession().getAttribute("userid")!=null);
+//            System.out.println("取得更新物件"+obj);
+//            System.out.println( req.getSession().getAttribute("userid")!=null);
             if(req.getSession().getAttribute("userid")!=null){
-                System.out.println(req.getSession().getAttribute("userid")+":"+obj.getInt("id"));
+//                System.out.println(req.getSession().getAttribute("userid")+":"+obj.getInt("id"));
+                User member = new User(String.valueOf(obj.getInt("id")));
                 if(req.getSession().getAttribute("userid").toString().equals(String.valueOf(obj.getInt("id")))){
                     result = "會員資料變更成功";
-                    System.out.println(result);
-                    MySqlConnect.getMySql().updateUser(obj); //變更姓名 暱稱 mail
+//                    System.out.println(result);
+//                    MySqlConnect.getMySql().updateUser(obj); //變更姓名 暱稱 mail
+                    member.update(obj.getString("name"),obj.getString("nickname"),obj.getString("email"));
                     String oldPW = obj.getString("oldPW");
+                    String newPW = obj.getString("newPW");
                     //判斷是否有要進行密碼變更 分別處理回應
                     if(oldPW.length()!=0){
                         //要變更密碼
-                        String savedPW = MySqlConnect.getMySql().getMemberHashPW(obj.getString("phone"));
-                        if(HashPassWord.getHash(oldPW).equals(savedPW)){
-                            MySqlConnect.getMySql().updateUserHashPW(HashPassWord.getHash(obj.getString("newPW")),obj.getInt("id"));
-                            result = "會員資料及密碼變更成功";
-                            System.out.println(result);
-                        }else{
-                            result = "會員資料更新成功;舊密碼錯誤，密碼變更失敗！";
-                            System.out.println(result);
-                        }
+                        result = member.changePassword(oldPW,newPW);
+//                        String savedPW = MySqlConnect.getMySql().getMemberHashPW(obj.getString("phone"));
+//                        if(HashPassWord.getHash(oldPW).equals(savedPW)){
+//                            MySqlConnect.getMySql().updateUserHashPW(HashPassWord.getHash(obj.getString("newPW")),obj.getInt("id"));
+//                            result = "會員資料及密碼變更成功";
+//                            System.out.println(result);
+//                        }else{
+//                            result = "會員資料更新成功;舊密碼錯誤，密碼變更失敗！";
+//                            System.out.println(result);
+//                        }
                     }
 
                 }else{
                     result = "error";
-                    System.out.println(result);
+//                    System.out.println(result);
                 }
 
             }

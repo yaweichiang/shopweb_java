@@ -24,17 +24,17 @@ public interface DatabaseConnect {
 ////    變更商品資訊
 //    public abstract JsonArray updateProduct(JSONObject data);
 //    取得會員資訊
-    public abstract JsonArray getUserInfo(String id);
+//    public abstract JsonArray getUserInfo(String id);
 //    查詢會員
-    public abstract JsonArray searchUsers(String keyword);
+//    public abstract JsonArray searchUsers(String keyword);
 //    註冊 新建會員
-    public abstract void createUser(HashMap<String,String> user);
+//    public abstract void createUser(HashMap<String,String> user);
 //    變更會員資料
-    public abstract void updateUser(JSONObject data);
+//    public abstract void updateUser(JSONObject data);
 //    變更會員密碼
-    public abstract void updateUserHashPW(String pa, int  userId);
+//    public abstract void updateUserHashPW(String pa, int  userId);
 //    會員登入帳號密碼檢查
-    public abstract String getMemberHashPW(String memberPhone);
+//    public abstract String getMemberHashPW(String memberPhone);
 //    管理者登入帳號密碼檢查
     public abstract String getManagerHashPW(String managerid);
 //    管理者登入帳號密碼變更

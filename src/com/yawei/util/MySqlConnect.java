@@ -146,7 +146,21 @@ public class MySqlConnect implements DatabaseConnect{
 //            return array;
 //        }
 //    }//v
-
+    public int getNewUserNo() {
+        PreparedStatement sm = null;
+        String sql=String.format("select m_no from members order by m_no desc limit 1");
+        int id = 1;
+        try{
+            sm = this.conn.prepareStatement(sql);
+            ResultSet rs = sm.executeQuery();
+            while(rs.next()){
+                id = rs.getInt(1) + 1;
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return id;
+    }//v
     @Override
     public int getNewProductNo() {
 
@@ -236,170 +250,170 @@ public class MySqlConnect implements DatabaseConnect{
 //        }
 //
 //    }//v
-    @Override
-    public JsonArray getUserInfo(String id) {
-        JsonArrayBuilder result = createArrayBuilder();
-        PreparedStatement sm = null;
-        String sql = String.format("select m_no as no,m_name as name,m_nickname as nickname,m_phone as phone,m_mail as email from members where m_no=?");
-        try {
-            sm = this.conn.prepareStatement(sql);
-            sm.setObject(1,id);
-            ResultSet rs = sm.executeQuery();
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int columnCount = rs.getMetaData().getColumnCount();
-            while(rs.next()) {
-                JsonObjectBuilder obj = createObjectBuilder();
-                obj.add("no",rs.getInt("no"));
-                obj.add("name",rs.getString("name"));
-                obj.add("nickname",rs.getString("nickname"));
-                obj.add("phone",rs.getString("phone")==null?"":rs.getString("phone"));
-                obj.add("email",rs.getString("email"));
-                result.add(obj);
-            }
+//    @Override
+//    public JsonArray getUserInfo(String id) {
+//        JsonArrayBuilder result = createArrayBuilder();
+//        PreparedStatement sm = null;
+//        String sql = String.format("select m_no as no,m_name as name,m_nickname as nickname,m_phone as phone,m_mail as email from members where m_no=?");
+//        try {
+//            sm = this.conn.prepareStatement(sql);
+//            sm.setObject(1,id);
+//            ResultSet rs = sm.executeQuery();
+//            ResultSetMetaData rsmd = rs.getMetaData();
+//            int columnCount = rs.getMetaData().getColumnCount();
+//            while(rs.next()) {
+//                JsonObjectBuilder obj = createObjectBuilder();
+//                obj.add("no",rs.getInt("no"));
+//                obj.add("name",rs.getString("name"));
+//                obj.add("nickname",rs.getString("nickname"));
+//                obj.add("phone",rs.getString("phone")==null?"":rs.getString("phone"));
+//                obj.add("email",rs.getString("email"));
+//                result.add(obj);
+//            }
+//
+//        } catch(SQLException e) {
+//            e.printStackTrace();
+//        }finally {
+//            try{
+//                sm.close();
+//            }catch (SQLException e){
+//                e.printStackTrace();
+//            }
+//            JsonArray array = result.build();
+//            System.out.println(array);
+//            return array;
+//        }
+//
+//    }//v
+//    @Override
+//    public JsonArray searchUsers(String keyword) {
+//        JsonArrayBuilder result = createArrayBuilder();
+//        PreparedStatement sm = null;
+//        String sql = String.format("select m_no as no,m_name as name,m_phone as phone,m_mail as email,url as url from members where m_name like ? or m_phone like ? or m_mail like ?");
+//        try {
+//            sm = this.conn.prepareStatement(sql);
+//            sm.setObject(1,"%"+keyword+"%");
+//            sm.setObject(2,"%"+keyword+"%");
+//            sm.setObject(3,"%"+keyword+"%");
+//            ResultSet rs = sm.executeQuery();
+//            ResultSetMetaData rsmd = rs.getMetaData();
+//            int columnCount = rs.getMetaData().getColumnCount();
+//            while(rs.next()) {
+//                JsonObjectBuilder obj = createObjectBuilder();
+//                obj.add("no",rs.getInt("no"));
+//                obj.add("name",rs.getString("name"));
+//                obj.add("phone",rs.getString("phone")==null?"":rs.getString("phone"));
+//                obj.add("email",rs.getString("email")==null?"":rs.getString("email"));
+//                obj.add("url",rs.getString("url")==null?"":rs.getString("url"));
+//                result.add(obj);
+//            }
+//            System.out.println("result:"+result);
+//        } catch(SQLException e) {
+//            e.printStackTrace();
+//        }finally {
+//            try{
+//                sm.close();
+//            }catch (SQLException e){
+//                e.printStackTrace();
+//            }
+//            JsonArray array = result.build();
+//            System.out.println(array);
+//            return array;
+//        }
+//
+//    }//v
 
-        } catch(SQLException e) {
-            e.printStackTrace();
-        }finally {
-            try{
-                sm.close();
-            }catch (SQLException e){
-                e.printStackTrace();
-            }
-            JsonArray array = result.build();
-            System.out.println(array);
-            return array;
-        }
 
-    }//v
-    @Override
-    public JsonArray searchUsers(String keyword) {
-        JsonArrayBuilder result = createArrayBuilder();
-        PreparedStatement sm = null;
-        String sql = String.format("select m_no as no,m_name as name,m_phone as phone,m_mail as email,url as url from members where m_name like ? or m_phone like ? or m_mail like ?");
-        try {
-            sm = this.conn.prepareStatement(sql);
-            sm.setObject(1,"%"+keyword+"%");
-            sm.setObject(2,"%"+keyword+"%");
-            sm.setObject(3,"%"+keyword+"%");
-            ResultSet rs = sm.executeQuery();
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int columnCount = rs.getMetaData().getColumnCount();
-            while(rs.next()) {
-                JsonObjectBuilder obj = createObjectBuilder();
-                obj.add("no",rs.getInt("no"));
-                obj.add("name",rs.getString("name"));
-                obj.add("phone",rs.getString("phone")==null?"":rs.getString("phone"));
-                obj.add("email",rs.getString("email")==null?"":rs.getString("email"));
-                obj.add("url",rs.getString("url")==null?"":rs.getString("url"));
-                result.add(obj);
-            }
-            System.out.println("result:"+result);
-        } catch(SQLException e) {
-            e.printStackTrace();
-        }finally {
-            try{
-                sm.close();
-            }catch (SQLException e){
-                e.printStackTrace();
-            }
-            JsonArray array = result.build();
-            System.out.println(array);
-            return array;
-        }
-
-    }//v
-
-
-
-    @Override
-    public void createUser(HashMap<String,String> user) {
-        PreparedStatement sm = null;
-        String sql = String.format("insert into members(m_name,m_nickname,m_phone,m_mail,m_hashPW) values(?,?,?,?,?)");
-        try{
-            sm = this.conn.prepareStatement(sql);
-            sm.setObject(1,user.get("name"));
-            sm.setObject(2,user.get("nickname"));
-            sm.setObject(3,user.get("phone"));
-            sm.setObject(4,user.get("mail"));
-            sm.setObject(5,user.get("hashPW"));
-            int rs = sm.executeUpdate();
-            this.conn.commit();
-        }catch(SQLException e){
-            e.printStackTrace();
-            try {
-                if(this.conn!=null)
-                    this.conn.rollback();//復原交易
-            }catch (SQLException ex){
-                ex.printStackTrace();
-            }
-        }finally {
-            try{
-                sm.close();
-            }catch (SQLException e){
-                e.printStackTrace();
-            }
-            return;
-        }
-    }//v
-
-    @Override
-    public void updateUser(JSONObject data) {
-        PreparedStatement sm =null;
-        String sql = String.format("update members set m_name = ?,m_nickname = ?,m_mail = ? where m_no = ? ");
-
-        System.out.println(sql);
-        try{
-            sm = this.conn.prepareStatement(sql);
-            sm.setObject(1,data.get("name"));
-            sm.setObject(2,data.get("nickname"));
-            sm.setObject(3,data.get("email"));
-            sm.setObject(4,data.get("id"));
-            int rs = sm.executeUpdate();
-            this.conn.commit();
-        }catch(SQLException e){
-            e.printStackTrace();
-            try {
-                if(this.conn!=null)
-                    this.conn.rollback();//復原交易
-            }catch (SQLException ex){
-                ex.printStackTrace();
-            }
-        }finally {
-            try{
-                sm.close();
-            }catch (SQLException e){
-                e.printStackTrace();
-            }
-            return;
-        }
-    }//v
-    @Override
-    public void updateUserHashPW(String pa,int userId) {
-        PreparedStatement sm = null;
-        String sql = String.format("update members set m_hashPW = ? where m_no = ? ");
-        try{
-            sm = this.conn.prepareStatement(sql);
-            sm.setObject(1,pa);
-            sm.setObject(2,userId);
-            sm.executeUpdate();
-            this.conn.commit();
-        }catch (SQLException e){
-            e.printStackTrace();
-            try {
-                if(this.conn!=null)
-                    this.conn.rollback();//復原交易
-            }catch (SQLException ex){
-                ex.printStackTrace();
-            }
-        }finally {
-            try {
-                sm.close();
-            }catch (SQLException e ){
-                e.printStackTrace();
-            }
-        }
-    }//v
-    public static void main(String[] args) {
+//
+//    @Override
+//    public void createUser(HashMap<String,String> user) {
+//        PreparedStatement sm = null;
+//        String sql = String.format("insert into members(m_name,m_nickname,m_phone,m_mail,m_hashPW) values(?,?,?,?,?)");
+//        try{
+//            sm = this.conn.prepareStatement(sql);
+//            sm.setObject(1,user.get("name"));
+//            sm.setObject(2,user.get("nickname"));
+//            sm.setObject(3,user.get("phone"));
+//            sm.setObject(4,user.get("mail"));
+//            sm.setObject(5,user.get("hashPW"));
+//            int rs = sm.executeUpdate();
+//            this.conn.commit();
+//        }catch(SQLException e){
+//            e.printStackTrace();
+//            try {
+//                if(this.conn!=null)
+//                    this.conn.rollback();//復原交易
+//            }catch (SQLException ex){
+//                ex.printStackTrace();
+//            }
+//        }finally {
+//            try{
+//                sm.close();
+//            }catch (SQLException e){
+//                e.printStackTrace();
+//            }
+//            return;
+//        }
+//    }//v
+//
+//    @Override
+//    public void updateUser(JSONObject data) {
+//        PreparedStatement sm =null;
+//        String sql = String.format("update members set m_name = ?,m_nickname = ?,m_mail = ? where m_no = ? ");
+//
+//        System.out.println(sql);
+//        try{
+//            sm = this.conn.prepareStatement(sql);
+//            sm.setObject(1,data.get("name"));
+//            sm.setObject(2,data.get("nickname"));
+//            sm.setObject(3,data.get("email"));
+//            sm.setObject(4,data.get("id"));
+//            int rs = sm.executeUpdate();
+//            this.conn.commit();
+//        }catch(SQLException e){
+//            e.printStackTrace();
+//            try {
+//                if(this.conn!=null)
+//                    this.conn.rollback();//復原交易
+//            }catch (SQLException ex){
+//                ex.printStackTrace();
+//            }
+//        }finally {
+//            try{
+//                sm.close();
+//            }catch (SQLException e){
+//                e.printStackTrace();
+//            }
+//            return;
+//        }
+//    }//v
+//    @Override
+//    public void updateUserHashPW(String pa,int userId) {
+//        PreparedStatement sm = null;
+//        String sql = String.format("update members set m_hashPW = ? where m_no = ? ");
+//        try{
+//            sm = this.conn.prepareStatement(sql);
+//            sm.setObject(1,pa);
+//            sm.setObject(2,userId);
+//            sm.executeUpdate();
+//            this.conn.commit();
+//        }catch (SQLException e){
+//            e.printStackTrace();
+//            try {
+//                if(this.conn!=null)
+//                    this.conn.rollback();//復原交易
+//            }catch (SQLException ex){
+//                ex.printStackTrace();
+//            }
+//        }finally {
+//            try {
+//                sm.close();
+//            }catch (SQLException e ){
+//                e.printStackTrace();
+//            }
+//        }
+//    }//v
+//    public static void main(String[] args) {
 //        System.out.println(MySqlConnect.getMySql().getAllProducts());
 //        System.out.println(MySqlConnect.getMySql().getProduct("1"));
 //        System.out.println(MySqlConnect.getMySql().getNewProductNo());
@@ -419,32 +433,32 @@ public class MySqlConnect implements DatabaseConnect{
 //        JSONObject obj4 = new JSONObject("{\"id\":15,\"name\":\"測試2aaa2\",\"nickname\":\"daaaa\",\"email\":dhj2@askldhjkaj}");
 //        MySqlConnect.getMySql().updateUser(obj4);
 //        MySqlConnect.getMySql().updateUserHashPW("djskhdkj",15);
-    }
-    @Override
-    public String getMemberHashPW(String memberPhone) {
-        String result = null;
-        PreparedStatement sm = null;
-        String sql = String.format("select m_hashPW from members where m_phone = ?");
-        try{
-            sm = this.conn.prepareStatement(sql);
-            sm.setObject(1,memberPhone);
-            ResultSet rs = sm.executeQuery();
-            while(rs.next()){
-                result = rs.getString(1);
-            }
-        }catch (SQLException e ){
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                sm.close();
-            }catch (SQLException e ){
-                e.printStackTrace();
-            }
-        }
-        return result;
-
-    }//v
+//    }
+//    @Override
+//    public String getMemberHashPW(String memberPhone) {
+//        String result = null;
+//        PreparedStatement sm = null;
+//        String sql = String.format("select m_hashPW from members where m_phone = ?");
+//        try{
+//            sm = this.conn.prepareStatement(sql);
+//            sm.setObject(1,memberPhone);
+//            ResultSet rs = sm.executeQuery();
+//            while(rs.next()){
+//                result = rs.getString(1);
+//            }
+//        }catch (SQLException e ){
+//            e.printStackTrace();
+//        }
+//        finally {
+//            try {
+//                sm.close();
+//            }catch (SQLException e ){
+//                e.printStackTrace();
+//            }
+//        }
+//        return result;
+//
+//    }//v
     @Override
     public String getManagerHashPW( String managerId) {
         String result = null;
