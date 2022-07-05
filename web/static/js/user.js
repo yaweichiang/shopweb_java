@@ -43,12 +43,12 @@ export class Member extends User{
       
         let temp =[];
         getMemberOrderList(this.no).then(datas=>{
-            datas.sort((a,b)=>{
-                if(a.no<b.no)
-                    return 1;
-                else
-                    return 0;
-            })
+            // datas.sort((a,b)=>{
+            //     if(a.no<b.no)
+            //         return 1;
+            //     else
+            //         return 0;
+            // })
             datas.forEach(data=>{
                 temp.push(new MemberOrderList(data));
             })

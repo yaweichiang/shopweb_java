@@ -246,7 +246,7 @@ export function getManagerOrderList(type,data){//根據要搜尋的訂單建立�
         }
     })
 }
-export function getOrderListByNo(str){//取得網站公告資料 有傳入參數new時取得最新公告 未傳入參數時取得最近6筆
+export function getOrderListByNo(str){//依照訂單編號取得訂單資料
     return new Promise((resolve,reject)=>{
         let src_url='/order/'+str;
         let xhr = new XMLHttpRequest();

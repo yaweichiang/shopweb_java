@@ -63,10 +63,17 @@ public class OrderAPI extends HttpServlet {
         }else if(subPath.equals("update")){
             if(req.getSession().getAttribute("managerid")!=null) {
                 OrderList orderlist = new OrderList(obj.get("order_no").toString());
-                if(orderlist.getSendDate().equals("尚未出貨")&&obj.get("send_no").toString()=="") {
-
+                if(orderlist.getSendDate().equals("尚未出貨")&&obj.get("send_no").toString()!="") {
+                    System.out.println("寄出");
+                    System.out.println(orderlist.getSendDate().equals("尚未出貨"));
+                    System.out.println(orderlist.getSendDate());
+                    System.out.println(obj.get("send_no").toString()=="");
+                    System.out.println(obj.get("send_no"));
                     orderlist.send(obj.get("send_no").toString(), obj.get("remark").toString());
                 }else {
+                    System.out.println("更新");
+                    System.out.println(orderlist.getSendDate());
+                    System.out.println(obj.get("send_no"));
                     orderlist.update(obj.get("send_no").toString(), obj.get("remark").toString());
                 }
             }else{

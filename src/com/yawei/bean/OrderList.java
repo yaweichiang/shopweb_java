@@ -19,7 +19,7 @@ public class OrderList extends JSONObject implements Serializable {
     private int toteNo; //運送方式編號
     private String recipient; //收件人資訊
     private int total; //訂單總額
-    private List<OrderProduct> productsList = new ArrayList<OrderProduct>(); //訂購商品列表
+    private List<OrderProduct> productsList = new ArrayList<>();
     private  String payNo; //金流編號
     private String type; //訂單狀態
     private String payType; //付款方式名稱
@@ -226,12 +226,13 @@ public class OrderList extends JSONObject implements Serializable {
     //訂單出貨 更新出貨日期 出貨單號 備註
     public void send(String sendNo,String remark){
         if(this.type.equals("order")){ // 訂單狀態為order 才能出貨 send cancel 都不能操作出貨
+            System.out.println("send");
             this.sendNo = sendNo;
             this.remark = remark;//新增貨運單號 及備註
             Connection conn = MySqlConnect.getMySql().getConn();
             PreparedStatement sm = null;
             //更新資料庫中的 出貨時間 貨運單號及備註
-            String sql = String.format("update order_list set o_senddate=current_date ,o_type = 'send' ,o_sendno = ?,o_remark = ? where o_no=?");
+            String sql = String.format("update order_list set o_senddate=current_timestamp ,o_type = 'send' ,o_sendno = ?,o_remark = ? where o_no=?");
             try {
                 sm = conn.prepareStatement(sql);
                 sm.setObject(1,this.sendNo);
@@ -461,6 +462,56 @@ public class OrderList extends JSONObject implements Serializable {
                 ",\"sendDate\":\"" + sendDate + '\"' +
                 ",\"orderDate\":\"" + orderDate + '\"' +
                 '}';
+    }
+
+    private class OrderProduct extends JSONObject{
+        private String name; //商品名稱
+        private int id;//商品邊號
+        private int price;//購買單價
+        private int amount;//購買數量
+        private int capacity;//商品容量
+
+        OrderProduct(String jsonString){
+            super(jsonString);
+            this.name = super.getString("name");
+            this.id = super.getInt("id");
+            this.price = super.getInt("price");
+            this.amount = super.getInt("amount");
+            this.capacity = super.getInt("capacity");
+        }
+        OrderProduct(String name,int id,int price,int amount,int capacity){
+            this.name = name;
+            this.id = id;
+            this.price = price;
+            this.amount = amount;
+            this.capacity = capacity;
+        }
+        public String getName() {
+            return name;
+        }
+        public int getId() {
+            return id;
+        }
+        public int getPrice() {
+            return price;
+        }
+        public int getAmount() {
+            return amount;
+        }
+        public int getCapacity() {
+            return capacity;
+        }
+
+        @Override
+        public String toString() {
+            return "{" +
+                    "\"name\":\"" + name + '\"' +
+                    ",\"id\":" + id +
+                    ",\"price\":" + price +
+                    ",\"amount\":" + amount +
+                    ",\"capacity\":" + capacity +
+                    '}';
+        }
     }
 }
 

@@ -18,7 +18,7 @@ class OrderList{
     }
     updateData(obj){ //
         this.no = obj.no;  //訂單編號
-        this.orderDate = obj.orderDate.substring(0,10);//訂購日期
+        this.orderDate = obj.orderDate;//訂購日期
         this.sendDate = obj.sendDate===null?"尚未出貨":obj.sendDate;//出貨日期
         this.type = obj.type==="order"?"訂購":(obj.type==="send"?"已寄送":"訂單取消");//訂單狀態
         this.payType = obj.payType;//付款方式

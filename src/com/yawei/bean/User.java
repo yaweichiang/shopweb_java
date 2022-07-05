@@ -71,7 +71,7 @@ public class User extends JSONObject implements Serializable {
     }
 
     // 會員常用地址類別
-    public class RecipientAddress extends JSONObject {
+    private class RecipientAddress extends JSONObject {
         private int recipientNo;
         private String recipientName;
         private String recipientAddress;
@@ -173,21 +173,18 @@ public class User extends JSONObject implements Serializable {
                     ",\"phone\":\"" + recipientPhone + '\"' +
                     '}';
         }
-
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(Object o) { // 姓名 電話 地址 相同 視為相同
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             RecipientAddress that = (RecipientAddress) o;
             return Objects.equals(recipientName, that.recipientName) && Objects.equals(recipientAddress, that.recipientAddress) && Objects.equals(recipientPhone, that.recipientPhone);
         }
-
         @Override
         public int hashCode() {
             return Objects.hash(recipientName, recipientAddress, recipientPhone);
         }
     }
-
     //取得新會員編號
     private static int getNewUserNo() {
         Connection conn = MySqlConnect.getMySql().getConn();
@@ -211,6 +208,31 @@ public class User extends JSONObject implements Serializable {
         }
         return id;
     }//v
+    //取得會員所有的地址物件
+    private List<RecipientAddress> getAllRecipientAddress(){
+        List<RecipientAddress> result = new ArrayList<>();
+        Connection conn = MySqlConnect.getMySql().getConn();
+        PreparedStatement sm = null;
+        String sql = String.format("select r_no as no from address  where m_no = ?");
+        try{
+            sm = conn.prepareStatement(sql);
+            sm.setObject(1,this.id);
+            ResultSet rs = sm.executeQuery();
+            while(rs.next()){
+                result.add(new RecipientAddress(rs.getInt("no")));
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+            try {
+                sm.close();
+            }catch (SQLException ex){
+                ex.printStackTrace();
+            }
+        }finally {
+            return result;
+        }
+    }
+
 
     //會員註冊 將會員資料存入資料庫
     public void create(){
@@ -343,7 +365,6 @@ public class User extends JSONObject implements Serializable {
         return user;
     }
 
-
     //查詢會員 回傳List<User>
     public static List<User> search(String keyword){
         List<User> result = new ArrayList<>();
@@ -375,30 +396,6 @@ public class User extends JSONObject implements Serializable {
         }
     }
 
-    //取得會員所有的地址物件
-    private List<RecipientAddress> getAllRecipientAddress(){
-        List<RecipientAddress> result = new ArrayList<>();
-        Connection conn = MySqlConnect.getMySql().getConn();
-        PreparedStatement sm = null;
-        String sql = String.format("select r_no as no from address  where m_no = ?");
-        try{
-            sm = conn.prepareStatement(sql);
-            sm.setObject(1,this.id);
-            ResultSet rs = sm.executeQuery();
-            while(rs.next()){
-                result.add(new RecipientAddress(rs.getInt("no")));
-            }
-        }catch (SQLException e){
-            e.printStackTrace();
-            try {
-                sm.close();
-            }catch (SQLException ex){
-                ex.printStackTrace();
-            }
-        }finally {
-            return result;
-        }
-    }
     //刪除會員指定編號地址
     public void removeRecipientAddress(int addressNo){
         for(RecipientAddress address:this.recipientAddresses){
@@ -429,11 +426,10 @@ public class User extends JSONObject implements Serializable {
                 '}';
     }
 
+    //User 物件屬性getter
     public List<RecipientAddress> getRecipientAddresses() {
         return recipientAddresses;
     }
-
-
     public int getId() {
         return id;
     }

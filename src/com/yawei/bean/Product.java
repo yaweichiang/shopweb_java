@@ -48,6 +48,33 @@ public class Product extends JSONObject implements Serializable {
         }
         return id;
     }
+    //儲存商品照片
+    private void savePic(String picData,String webPath) throws IOException {
+        //取得照片 base64資料
+        String[] urlData =  picData.split(";");
+        //副檔名
+        String filetype = urlData[0].split("/")[1];
+        //檔案字串 ajax傳遞時會將 "+" 替換成" " 將其復原 並將自傳前面的base64去掉
+        String fileStr = urlData[1].replace(" ","+").replace("base64,","");
+        //對檔案字串進行解碼成byte[] 存成圖片
+        BASE64Decoder decoder = new BASE64Decoder();
+        byte[] pic = decoder.decodeBuffer(fileStr);
+        //取得web容器的真實路徑 加上資料夾名稱及商品id 作為檔案儲存的path
+        String savePath = webPath+"static/products/product"+id+"."+filetype;
+        FileOutputStream productPic=null;
+        try{
+            productPic = new FileOutputStream(savePath);
+            productPic.write(pic);
+            //成功儲存圖片設定商品圖片url ,用來存到資料庫供讀取使用
+            this.url = "../static/products/product"+id+"."+filetype;
+        }catch (IOException e){
+            e.printStackTrace();
+//            out.print("error");
+        }finally {
+            productPic.close();
+        }
+    }
+
 
     // 舊有訂單建構 依照商品編號自資料庫取得商品資料建立商品物件
     public Product(int id){
@@ -172,32 +199,6 @@ public class Product extends JSONObject implements Serializable {
 
 
     }
-    //儲存商品照片
-    private void savePic(String picData,String webPath) throws IOException {
-        //取得照片 base64資料
-        String[] urlData =  picData.split(";");
-        //副檔名
-        String filetype = urlData[0].split("/")[1];
-        //檔案字串 ajax傳遞時會將 "+" 替換成" " 將其復原 並將自傳前面的base64去掉
-        String fileStr = urlData[1].replace(" ","+").replace("base64,","");
-        //對檔案字串進行解碼成byte[] 存成圖片
-        BASE64Decoder decoder = new BASE64Decoder();
-        byte[] pic = decoder.decodeBuffer(fileStr);
-        //取得web容器的真實路徑 加上資料夾名稱及商品id 作為檔案儲存的path
-        String savePath = webPath+"static/products/product"+id+"."+filetype;
-        FileOutputStream productPic=null;
-        try{
-            productPic = new FileOutputStream(savePath);
-            productPic.write(pic);
-            //成功儲存圖片設定商品圖片url ,用來存到資料庫供讀取使用
-            this.url = "../static/products/product"+id+"."+filetype;
-        }catch (IOException e){
-            e.printStackTrace();
-//            out.print("error");
-        }finally {
-            productPic.close();
-        }
-    }
     // 取得所有商品
     public static List<Product> getAllProducts(){
         List<Product> result = new ArrayList<>();
@@ -216,7 +217,6 @@ public class Product extends JSONObject implements Serializable {
         System.out.println(result);
         return result;
     }
-
     @Override
     public String toString() {
         return "{" +
@@ -233,4 +233,5 @@ public class Product extends JSONObject implements Serializable {
                 ",\"isFreezing\":\"" + isFreezing + '\"' +
                 '}';
     }
+
 }

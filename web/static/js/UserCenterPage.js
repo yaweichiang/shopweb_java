@@ -1,6 +1,7 @@
 import { Address } from './address.js';
 import { Member } from './user.js';
-import { MYCAR,getMemberinfo,getMemberAddress } from './util.js';
+import {MYCAR, getMemberinfo, getMemberAddress, getMemberOrderList} from './util.js';
+import {MemberOrderList} from "./orderlist.js";
 
 let USER;
    
@@ -130,9 +131,18 @@ function showMyOrderLists(){
         '   </table>';
         document.getElementById("target").removeAttribute("id");
         document.querySelector("ul li:nth-child(2)").setAttribute("id", "target");
-        USER.orderlists.forEach(list=>{
-            document.querySelector(".orderlist").appendChild(list.createTableRowView());
-        });
+        getMemberOrderList(USER.no).then(datas=>{
+            let temp = [];
+            datas.forEach(data=>{
+                let item = new MemberOrderList(data)
+                document.querySelector(".orderlist").appendChild(item.createTableRowView());
+                temp.push(item);
+            })
+            USER.orderlists = temp;
+        })
+        // USER.orderlists.forEach(list=>{
+        //     document.querySelector(".orderlist").appendChild(list.createTableRowView());
+        // });
 }
 function showAddressList(){
 document.querySelector(".main").innerHTML = 
