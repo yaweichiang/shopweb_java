@@ -1,9 +1,6 @@
 package com.yawei.api;
 
-import com.yawei.util.MySqlConnect;
-import org.json.JSONObject;
-
-import javax.json.JsonArray;
+import com.yawei.bean.Anno;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -21,13 +18,10 @@ public class AnnoAPI extends HttpServlet {
         resp.setContentType("application/json;charset=UTF-8");
         PrintWriter out = resp.getWriter();
         String subPath = req.getPathInfo();
-        JsonArray result =null;
         if(subPath == null){
-            result = MySqlConnect.getMySql().getAllAnno();
-            out.print(result);
+            out.print(Anno.getAllAnno());
         }else if(subPath.equals("/new")){
-            result = MySqlConnect.getMySql().getNewAnno();
-            out.print(result);
+            out.print(Anno.getNewAnno());
         }
     }
 
@@ -39,9 +33,9 @@ public class AnnoAPI extends HttpServlet {
             if (br != null) {
                 json = br.readLine();
             }
-            JSONObject obj = new JSONObject(json);
-            System.out.println(obj);
-            MySqlConnect.getMySql().updateAnno(obj);
+            Anno anno = new Anno(json);
+            anno.update();
+
         }
     }
 }

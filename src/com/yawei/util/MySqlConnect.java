@@ -290,107 +290,107 @@ public class MySqlConnect implements DatabaseConnect{
             return array;
         }
     }//v
-    @Override
-    public JsonArray getNewAnno() {
-        JsonArrayBuilder result = createArrayBuilder();
-        PreparedStatement sm = null;
-        String sql = String.format("select  a_no as id ,a_content as content from (select * from announcements order by a_no desc) as sub order by a_time desc limit 1");
-        try {
-            sm = this.conn.prepareStatement(sql);
-            ResultSet rs = sm.executeQuery();
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int columnCount = rs.getMetaData().getColumnCount();
-            while(rs.next()) {
-                JsonObjectBuilder obj = createObjectBuilder();
-                for (int i = 1; i <= columnCount; i++) {
-                    if(this.isInt(rs.getObject(i))){
-                        obj.add(rsmd.getColumnLabel(i),rs.getInt(i) );
-                    }else{
-                        obj.add(rsmd.getColumnLabel(i),rs.getString(i)==null?"null":rs.getString(i) );
-                    }
-                }
-                result.add(obj);
-            }
-        }catch (SQLException e){
-            e.printStackTrace();
-        }finally {
-            try{
-                sm.close();
-            }catch (SQLException e){
-                e.printStackTrace();
-            }
-            JsonArray array = result.build();
-            System.out.println(array);
-            return array;
-        }
-    }//v
-    @Override
-    public JsonArray getAllAnno() {
-        JsonArrayBuilder result = createArrayBuilder();
-        PreparedStatement sm = null;
-        String sql = String.format("select a_no as id , a_content as content , if(a_time=(select Max(a_time) from announcements),'true','false') as target from announcements  order by a_time desc limit 6");
-        try {
-            sm = this.conn.prepareStatement(sql);
-            ResultSet rs = sm.executeQuery();
-            ResultSetMetaData rsmd = rs.getMetaData();
-            int columnCount = rs.getMetaData().getColumnCount();
-            while(rs.next()) {
-                JsonObjectBuilder obj = createObjectBuilder();
-                for (int i = 1; i <= columnCount; i++) {
-                    if(this.isInt(rs.getObject(i))){
-                        obj.add(rsmd.getColumnLabel(i),rs.getInt(i) );
-                    }else{
-                        obj.add(rsmd.getColumnLabel(i),rs.getString(i)==null?"null":rs.getString(i) );
-                    }
-                }
-                result.add(obj);
-            }
-        }catch (SQLException e){
-            e.printStackTrace();
-        }finally {
-            try{
-                sm.close();
-            }catch (SQLException e){
-                e.printStackTrace();
-            }
-            JsonArray array = result.build();
-            System.out.println(array);
-            return array;
-        }
-    }//v
-    @Override
-    public void updateAnno(JSONObject object) {
-        PreparedStatement sm = null;
-        String sql = null;
-        try{
-            if(this.isInt(object.get("id"))){
-                sql = String.format("replace into announcements(a_no,a_content,a_time) values (?,?,current_timestamp)");
-                sm = this.conn.prepareStatement(sql);
-                sm.setObject(1, object.get("id"));
-                sm.setObject(2,object.get("content"));
-            }else{
-                sql = String.format("replace into announcements(a_content,a_time) values (?,current_timestamp)");
-                sm = this.conn.prepareStatement(sql);
-                sm.setObject(1,object.get("content"));
-            }
-            sm.executeUpdate();
-            this.conn.commit();
-        }catch (SQLException e){
-            e.printStackTrace();
-            try {
-                if(this.conn!=null)
-                    this.conn.rollback();//復原交易
-            }catch (SQLException ex){
-                ex.printStackTrace();
-            }
-        }finally {
-            try{
-                sm.close();
-            }catch (SQLException e){
-                e.printStackTrace();
-            }
-        }
-    }//v
+//    @Override
+//    public JsonArray getNewAnno() {
+//        JsonArrayBuilder result = createArrayBuilder();
+//        PreparedStatement sm = null;
+//        String sql = String.format("select  a_no as id ,a_content as content from (select * from announcements order by a_no desc) as sub order by a_time desc limit 1");
+//        try {
+//            sm = this.conn.prepareStatement(sql);
+//            ResultSet rs = sm.executeQuery();
+//            ResultSetMetaData rsmd = rs.getMetaData();
+//            int columnCount = rs.getMetaData().getColumnCount();
+//            while(rs.next()) {
+//                JsonObjectBuilder obj = createObjectBuilder();
+//                for (int i = 1; i <= columnCount; i++) {
+//                    if(this.isInt(rs.getObject(i))){
+//                        obj.add(rsmd.getColumnLabel(i),rs.getInt(i) );
+//                    }else{
+//                        obj.add(rsmd.getColumnLabel(i),rs.getString(i)==null?"null":rs.getString(i) );
+//                    }
+//                }
+//                result.add(obj);
+//            }
+//        }catch (SQLException e){
+//            e.printStackTrace();
+//        }finally {
+//            try{
+//                sm.close();
+//            }catch (SQLException e){
+//                e.printStackTrace();
+//            }
+//            JsonArray array = result.build();
+//            System.out.println(array);
+//            return array;
+//        }
+//    }//v
+//    @Override
+//    public JsonArray getAllAnno() {
+//        JsonArrayBuilder result = createArrayBuilder();
+//        PreparedStatement sm = null;
+//        String sql = String.format("select a_no as id , a_content as content , if(a_time=(select Max(a_time) from announcements),'true','false') as target from announcements  order by a_time desc limit 6");
+//        try {
+//            sm = this.conn.prepareStatement(sql);
+//            ResultSet rs = sm.executeQuery();
+//            ResultSetMetaData rsmd = rs.getMetaData();
+//            int columnCount = rs.getMetaData().getColumnCount();
+//            while(rs.next()) {
+//                JsonObjectBuilder obj = createObjectBuilder();
+//                for (int i = 1; i <= columnCount; i++) {
+//                    if(this.isInt(rs.getObject(i))){
+//                        obj.add(rsmd.getColumnLabel(i),rs.getInt(i) );
+//                    }else{
+//                        obj.add(rsmd.getColumnLabel(i),rs.getString(i)==null?"null":rs.getString(i) );
+//                    }
+//                }
+//                result.add(obj);
+//            }
+//        }catch (SQLException e){
+//            e.printStackTrace();
+//        }finally {
+//            try{
+//                sm.close();
+//            }catch (SQLException e){
+//                e.printStackTrace();
+//            }
+//            JsonArray array = result.build();
+//            System.out.println(array);
+//            return array;
+//        }
+//    }//v
+//    @Override
+//    public void updateAnno(JSONObject object) {
+//        PreparedStatement sm = null;
+//        String sql = null;
+//        try{
+//            if(this.isInt(object.get("id"))){
+//                sql = String.format("replace into announcements(a_no,a_content,a_time) values (?,?,current_timestamp)");
+//                sm = this.conn.prepareStatement(sql);
+//                sm.setObject(1, object.get("id"));
+//                sm.setObject(2,object.get("content"));
+//            }else{
+//                sql = String.format("replace into announcements(a_content,a_time) values (?,current_timestamp)");
+//                sm = this.conn.prepareStatement(sql);
+//                sm.setObject(1,object.get("content"));
+//            }
+//            sm.executeUpdate();
+//            this.conn.commit();
+//        }catch (SQLException e){
+//            e.printStackTrace();
+//            try {
+//                if(this.conn!=null)
+//                    this.conn.rollback();//復原交易
+//            }catch (SQLException ex){
+//                ex.printStackTrace();
+//            }
+//        }finally {
+//            try{
+//                sm.close();
+//            }catch (SQLException e){
+//                e.printStackTrace();
+//            }
+//        }
+//    }//v
 
     @Override
     public boolean checkPhone(String id){

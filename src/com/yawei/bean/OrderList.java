@@ -20,7 +20,7 @@ public class OrderList extends JSONObject implements Serializable {
     private String recipient; //收件人資訊
     private int total; //訂單總額
     private List<OrderProduct> productsList = new ArrayList<>();
-    private  String payNo; //金流編號
+    private String payNo; //金流編號
     private String type; //訂單狀態
     private String payType; //付款方式名稱
     private String phone; //會員電話
@@ -86,7 +86,7 @@ public class OrderList extends JSONObject implements Serializable {
                     this.payType=rs.getString("payType");
                     this.orderDate=rs.getString("orderDate");
                     this.sendNo=rs.getString("sendNo")==null?"":rs.getString("sendNo");
-                    this.sendDate=rs.getDate("sendDate")==null?"尚未出貨":rs.getString("sendDate");
+                    this.sendDate=rs.getString("sendDate")==null?"尚未出貨":rs.getString("sendDate");
                     this.type=rs.getString("type");
                     this.recipient=rs.getString("recipient");
                     this.total=rs.getInt("total");

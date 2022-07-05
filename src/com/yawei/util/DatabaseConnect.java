@@ -29,11 +29,11 @@ public interface DatabaseConnect {
 //    取得所有付款資訊
     public abstract JsonArray getPay();
 //    取得最新公告
-    public abstract JsonArray getNewAnno();
+//    public abstract JsonArray getNewAnno();
 //    取得所有公告
-    public abstract JsonArray getAllAnno();
+//    public abstract JsonArray getAllAnno();
 //    變更公告
-    public abstract void updateAnno(JSONObject object);
+//    public abstract void updateAnno(JSONObject object);
 //    確認會員是否有登記電話
     public boolean checkPhone(String id);
 //    確認電話是否有被註冊
