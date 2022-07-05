@@ -84,7 +84,7 @@ public class User extends JSONObject implements Serializable {
             this.recipientPhone = super.getString("phone");
         }
         //舊有地址建構 依照常用地址編號 從資料庫取得資料建立地址物件
-        public RecipientAddress(int no){
+        private RecipientAddress(int no){
             Connection conn = MySqlConnect.getMySql().getConn();
             PreparedStatement sm = null;
             String sql = String.format("select r_name as name,r_address as address,r_phone as phone from address where r_no = ?");
@@ -109,7 +109,7 @@ public class User extends JSONObject implements Serializable {
             }
 
         }
-        public void create(){
+        private void create(){
             if(this.recipientNo==0) {
                 Connection conn = MySqlConnect.getMySql().getConn();
                 PreparedStatement sm = null;
@@ -139,7 +139,7 @@ public class User extends JSONObject implements Serializable {
                 }
             }
         }
-        public void delete(){
+        private void delete(){
             Connection conn = MySqlConnect.getMySql().getConn();
             PreparedStatement sm = null;
             String sql = String.format("delete from address where r_no = ?");
@@ -173,17 +173,18 @@ public class User extends JSONObject implements Serializable {
                     ",\"phone\":\"" + recipientPhone + '\"' +
                     '}';
         }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             RecipientAddress that = (RecipientAddress) o;
-            return recipientNo == that.recipientNo;
+            return Objects.equals(recipientName, that.recipientName) && Objects.equals(recipientAddress, that.recipientAddress) && Objects.equals(recipientPhone, that.recipientPhone);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(recipientNo);
+            return Objects.hash(recipientName, recipientAddress, recipientPhone);
         }
     }
 
@@ -398,12 +399,21 @@ public class User extends JSONObject implements Serializable {
             return result;
         }
     }
-
     //刪除會員指定編號地址
     public void removeRecipientAddress(int addressNo){
         for(RecipientAddress address:this.recipientAddresses){
             if(address.recipientNo==addressNo)
                 address.delete();
+        }
+    }
+    //新增收件人地址
+    public void addRecipientAddress(String jsonString){
+        RecipientAddress newAddress = new RecipientAddress(jsonString);
+        if(!this.recipientAddresses.contains(newAddress)){
+            System.out.println("新增收件人");
+            newAddress.create();
+        }else{
+            System.out.println("收件人重複");
         }
     }
     @Override

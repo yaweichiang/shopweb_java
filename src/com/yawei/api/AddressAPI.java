@@ -48,12 +48,9 @@ public class AddressAPI extends HttpServlet {
             }
             String id = req.getSession().getAttribute("userid").toString();
             User user = new User(id);
-            User.RecipientAddress address = user.new RecipientAddress(json);
-            address.create();
+            user.addRecipientAddress(json);
         }
-
     }
-
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if(req.getSession().getAttribute("userid")!=null) {
