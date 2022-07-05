@@ -1,5 +1,6 @@
 package com.yawei.api;
 
+import com.yawei.bean.Tote;
 import com.yawei.util.MySqlConnect;
 import org.json.JSONObject;
 
@@ -20,9 +21,7 @@ public class ToteAPI extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json;charset=UTF-8");
         PrintWriter out = resp.getWriter();
-        JsonArray result;
-        result = MySqlConnect.getMySql().getTote();
-        out.print(result);
+        out.print(new Tote());
     }
 
     @Override
@@ -33,10 +32,7 @@ public class ToteAPI extends HttpServlet {
             if(br!=null){
                 json = br.readLine();
             }
-            JSONObject obj = new JSONObject(json);
-
-                MySqlConnect.getMySql().updateTote(obj);
-
+            new Tote(json).update();
         }
     }
 

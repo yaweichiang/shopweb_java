@@ -24,6 +24,7 @@ public class Product extends JSONObject implements Serializable {
     private String capacity; // 容量
     private int tote_no; // 運送編號
     private String isFreezing; // 是否冷凍
+    private String webPath;
 
     //取得新商品編號
     private static int getNewProductNo(){
@@ -107,7 +108,7 @@ public class Product extends JSONObject implements Serializable {
         }
     }
     // 新增商品建構 以前端傳送過來的商品資料建立商品物件
-    public Product(String jsonString,String webPath) throws IOException {
+    public Product(String jsonString,String webPath){
         super(jsonString); //
         this.name = super.getString("name");
         this.price = super.getInt("price");
@@ -116,13 +117,15 @@ public class Product extends JSONObject implements Serializable {
         this.capacity = super.getString("capacity");
         this.tote_no = super.getInt("tote_type");
         this.introduction = super.getString("introduction");
-        savePic(super.getString("url"),webPath); //存圖片 設定this.url
+        this.webPath = webPath;
+
     }
 
     // 新商品建立 存入資料庫
-    public void create(){
+    public void create() throws IOException {
         if(this.id==0){
             this.id = nextProductNo++;
+            savePic(super.getString("url"),this.webPath); //存圖片 設定this.url
             Connection conn = MySqlConnect.getMySql().getConn();
             PreparedStatement sm = null;
             String sql = String.format("insert into products values(null,?,?,?,?,?,?,?,?)");
@@ -234,4 +237,7 @@ public class Product extends JSONObject implements Serializable {
                 '}';
     }
 
+    public int getPrice() {
+        return price;
+    }
 }

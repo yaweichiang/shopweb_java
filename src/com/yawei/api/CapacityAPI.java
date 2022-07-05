@@ -1,8 +1,6 @@
 package com.yawei.api;
 
-import com.yawei.util.MySqlConnect;
-
-import javax.json.JsonArray;
+import com.yawei.bean.Capacity;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,8 +15,7 @@ public class CapacityAPI extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json;charset=UTF-8");
         PrintWriter out = resp.getWriter();
-        JsonArray result;
-        result = MySqlConnect.getMySql().getCapacity();
-        out.print(result);
+
+        out.print(Capacity.all());
     }
 }

@@ -132,12 +132,14 @@ public class OrderList extends JSONObject implements Serializable {
 
     //依照訂單商品資料 計算商品金額 運費 手續費用 合計金額  （建立新訂單時使用）
     private int countTotal() {
-        int[] toteInfo = MySqlConnect.getMySql().getToteInfo(this.toteNo);
-        int payFee = MySqlConnect.getMySql().getPayFee(this.payID);
+//        int[] toteInfo = MySqlConnect.getMySql().getToteInfo(this.toteNo);
+//        List<Tote> toteInfo = null;
+        int[] toteInfo = new Tote(this.toteNo).getInfo();
+        int payFee =new Pay(this.payID).getFee();
         int result = 0;
 
         for (OrderProduct product : this.productsList) {
-            int price = MySqlConnect.getMySql().getProductPrice(product.getId());
+            int price = new Product(product.getId()).getPrice();
             result += price*product.getAmount();
         }
         result += (result>=toteInfo[0]) ? payFee : (toteInfo[1]+payFee);

@@ -1,8 +1,7 @@
 package com.yawei.api;
 
 
-import com.yawei.util.MySqlConnect;
-
+import com.yawei.bean.User;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -21,13 +20,13 @@ public class UtilAPI extends HttpServlet {
         PrintWriter out = resp.getWriter();
         String subPath = req.getPathInfo();
         String idString = "^/09[0-9]{8}$";
-        System.out.println("check = "+subPath);
         if(subPath == null){
             //檢查會員登入狀況 登入 且已有登記電話 回傳true  //登入未登記電話回傳nophone //未登入 回傳false
 
             if(req.getSession().getAttribute("userid")!=null){
                 String id = req.getSession().getAttribute("userid").toString();
-                if(MySqlConnect.getMySql().checkPhone(id)){
+                User user = new User(id);
+                if(user.getPhone()!=null){
                     out.print("true");
                 }else{
                     out.print("nophone");
@@ -37,9 +36,8 @@ public class UtilAPI extends HttpServlet {
             }
         }else if(Pattern.matches(idString, subPath)){
             //  檢查使用者欲註冊電話是否已註冊過
-            System.out.println("查電話："+subPath.substring(1));
             //不存在 false  存在true
-            String result = MySqlConnect.getMySql().checkPhoneExist(subPath.substring(1))?"Exist":"NotExist";
+            String result = User.checkPhone(subPath.substring(1))?"Exist":"NotExist";
             out.print(result);
         }
     }

@@ -171,10 +171,12 @@ export class WebSetting{
         let inputsFare = document.querySelector(".main").children[2].children;
         let obj = {
             "常溫":{
+                "id":2,
                 "fare":inputsFare[0].children[2].value,
                 "threshold":inputsFare[2].children[2].value
             },
             "冷凍":{
+                "id":1,
                 "fare":inputsFare[1].children[2].value,
                 "threshold":inputsFare[3].children[2].value
             }
@@ -247,7 +249,7 @@ export class ProductsEdit{
                     let temp = "";
                     datas.forEach(data=>{
 
-                        temp+="<option value="+data.c_no+">"+data.c_package+"</option>"
+                        temp+="<option value="+data.id+">"+data.productPackage+"</option>"
                     })
                     main.innerHTML = this.createNewProduct(temp);
                     //  監聽上傳圖片 異動時透過filereader取得圖片的dataurl

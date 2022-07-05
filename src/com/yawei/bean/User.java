@@ -335,6 +335,24 @@ public class User extends JSONObject implements Serializable {
             return "會員資料更新成功;舊密碼錯誤，密碼變更失敗！";
         }
     }
+    //刪除會員指定編號地址
+    public void removeRecipientAddress(int addressNo){
+        for(RecipientAddress address:this.recipientAddresses){
+            if(address.recipientNo==addressNo)
+                address.delete();
+        }
+    }
+    //新增收件人地址
+    public void addRecipientAddress(String jsonString){
+        RecipientAddress newAddress = new RecipientAddress(jsonString);
+        if(!this.recipientAddresses.contains(newAddress)){
+            System.out.println("新增收件人");
+            newAddress.create();
+        }else{
+            System.out.println("收件人重複");
+        }
+    }
+
     //會員登入 回傳User 物件
     public static User login(String userPhone,String password){
         Connection conn = MySqlConnect.getMySql().getConn();
@@ -364,7 +382,6 @@ public class User extends JSONObject implements Serializable {
         }
         return user;
     }
-
     //查詢會員 回傳List<User>
     public static List<User> search(String keyword){
         List<User> result = new ArrayList<>();
@@ -395,24 +412,33 @@ public class User extends JSONObject implements Serializable {
             return result;
         }
     }
+    //檢查電話是否已註冊 true 已存在會員 false電話未使用
+    public static boolean checkPhone(String phone){
+        boolean result = false;
+        Connection conn = MySqlConnect.getMySql().getConn();
+        PreparedStatement sm = null;
+        String sql = String.format("select m_phone from members where m_phone = ?");
+        //,id);
+        try{
+            sm = conn.prepareStatement(sql);
+            sm.setObject(1,phone);
+            ResultSet rs = sm.executeQuery();
+            while(rs.next()){
+                result = rs.getString(1)==null?false:true;
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                sm.close();
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return result;
 
-    //刪除會員指定編號地址
-    public void removeRecipientAddress(int addressNo){
-        for(RecipientAddress address:this.recipientAddresses){
-            if(address.recipientNo==addressNo)
-                address.delete();
-        }
     }
-    //新增收件人地址
-    public void addRecipientAddress(String jsonString){
-        RecipientAddress newAddress = new RecipientAddress(jsonString);
-        if(!this.recipientAddresses.contains(newAddress)){
-            System.out.println("新增收件人");
-            newAddress.create();
-        }else{
-            System.out.println("收件人重複");
-        }
-    }
+
     @Override
     public String toString() {
         return "{" +
@@ -432,5 +458,8 @@ public class User extends JSONObject implements Serializable {
     }
     public int getId() {
         return id;
+    }
+    public String getPhone() {
+        return phone;
     }
 }

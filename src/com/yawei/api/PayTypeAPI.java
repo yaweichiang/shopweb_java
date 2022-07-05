@@ -1,5 +1,6 @@
 package com.yawei.api;
 
+import com.yawei.bean.Pay;
 import com.yawei.util.MySqlConnect;
 
 import javax.json.JsonArray;
@@ -17,8 +18,9 @@ public class PayTypeAPI extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json;charset=UTF-8");
         PrintWriter out = resp.getWriter();
-        JsonArray result;
-        result = MySqlConnect.getMySql().getPay();
-        out.print(result);
+//        JsonArray result;
+//        result = MySqlConnect.getMySql().getPay();
+//        out.print(result);
+        out.print(Pay.all());
     }
 }

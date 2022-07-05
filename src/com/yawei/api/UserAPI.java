@@ -1,7 +1,6 @@
 package com.yawei.api;
 
 import com.yawei.bean.User;
-import com.yawei.util.MySqlConnect;
 
 import javax.json.JsonArray;
 import javax.servlet.ServletException;
@@ -80,7 +79,7 @@ public class UserAPI extends HttpServlet {
             String phone = req.getParameter("phone");
             String mail = req.getParameter("mail");
             String password = req.getParameter("password");
-            if(MySqlConnect.getMySql().checkIdByPhone(phone)==0) { // 電話沒有重複 建立會員
+            if(!User.checkPhone(phone)) { // 電話沒有重複 !false 建立會員
                 User member = new User(name, phone, mail, password);
                 member.create();
                 if(req.getSession(false) != null) { // null 表示 session 不存在
