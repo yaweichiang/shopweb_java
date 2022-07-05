@@ -11,7 +11,7 @@ import java.util.List;
 
 public class OrderList extends JSONObject implements Serializable {
 
-    static int nextOrderNo = MySqlConnect.getMySql().getNewOrderListNo();
+    static int nextOrderNo = getNewOrderListNo();
 
     private int no; //訂單編號
     private int id; //會員編號
@@ -103,6 +103,32 @@ public class OrderList extends JSONObject implements Serializable {
             e.printStackTrace();
         }
     }
+
+    //取得新訂單編號
+    private static int getNewOrderListNo(){
+        Connection conn = MySqlConnect.getMySql().getConn();
+        PreparedStatement sm = null;
+        String sql=String.format("select o_no from order_list order by o_no desc limit 1");
+        int id = 1;
+        try{
+            sm = conn.prepareStatement(sql);
+            ResultSet rs = sm.executeQuery();
+            while(rs.next()){
+                id = rs.getInt(1) + 1;
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }finally {
+            try {
+                sm.close();
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return id;
+
+    }
+
 
     //依照訂單商品資料 計算商品金額 運費 手續費用 合計金額  （建立新訂單時使用）
     private int countTotal() {

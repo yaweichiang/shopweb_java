@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Product extends JSONObject implements Serializable {
-    static int nextProductNo = MySqlConnect.getMySql().getNewProductNo();
+    static int nextProductNo = getNewProductNo();
 
     private int id; // 商品編號
     private String name; // 商品名稱
@@ -25,6 +25,29 @@ public class Product extends JSONObject implements Serializable {
     private int tote_no; // 運送編號
     private String isFreezing; // 是否冷凍
 
+    //取得新商品編號
+    private static int getNewProductNo(){
+        Connection conn = MySqlConnect.getMySql().getConn();
+        PreparedStatement sm = null;
+        String sql=String.format("select p_no from products order by p_no desc limit 1");
+        int id = 1;
+        try{
+            sm = conn.prepareStatement(sql);
+            ResultSet rs = sm.executeQuery();
+            while(rs.next()){
+                id = rs.getInt(1) + 1;
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }finally {
+            try{
+                sm.close();
+            }catch (SQLException e){
+                e.printStackTrace();
+            }
+        }
+        return id;
+    }
 
     // 舊有訂單建構 依照商品編號自資料庫取得商品資料建立商品物件
     public Product(int id){
@@ -109,7 +132,6 @@ public class Product extends JSONObject implements Serializable {
             }
         }
     }
-
     // 商品更新 更新商品名稱 單價 庫存 類型 介紹
     public void update(String name,int price,int inventory,String type,String introduction){
         this.name = name;

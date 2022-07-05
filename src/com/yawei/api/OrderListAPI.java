@@ -17,16 +17,11 @@ public class OrderListAPI extends HttpServlet {
         resp.setContentType("application/json;charset=UTF-8");
         PrintWriter out = resp.getWriter();
         String[] subPath = req.getPathInfo().split("/");
-        for(String str : subPath){
-            System.out.println("=>"+str);
-        }
         if(subPath[1].equals("id")){
             //依照會員id 查詢所有訂單
             if(req.getSession().getAttribute("userid")!=null){
                 //會員查詢個人訂單
                 String id = req.getSession().getAttribute("userid").toString();
-                System.out.println("個人查詢全部訂單user=>"+id+","+subPath[2]);
-                System.out.println(id.equals(subPath[2]));
                 if(id.equals(subPath[2])) {
                     //確認查詢人與所查詢id為相同 則回傳查詢訂單資料
                     out.print(OrderList.getOrderListByUserID(id));
@@ -35,7 +30,6 @@ public class OrderListAPI extends HttpServlet {
                 }
             }else if(req.getSession().getAttribute("managerid")!=null){
                 //管理者查詢會員訂單
-                System.out.println("管理者查詢會員訂單user=>"+subPath[2]);
                 out.print(OrderList.getOrderListByUserID(subPath[2]));
 
             }else{

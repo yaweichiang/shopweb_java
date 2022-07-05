@@ -19,7 +19,6 @@ public class ProductsAPI extends HttpServlet {
         resp.setContentType("application/json;charset=UTF-8");
         String subPath = req.getPathInfo();
         PrintWriter out = resp.getWriter();
-        System.out.println(subPath);
         if(subPath == null){
             //取得全部的商品資訊
             List<Product> result = Product.getAllProducts();
@@ -27,7 +26,6 @@ public class ProductsAPI extends HttpServlet {
         }else{
             //取得指定id的商品資訊
             String idString = "^/[1-9]+[0-9]*$";
-            System.out.print("指定商品編號："+idString);
             if(Pattern.matches(idString,subPath)){
                 out.print(new Product(Integer.parseInt(subPath.substring(1))));
 
@@ -71,7 +69,6 @@ public class ProductsAPI extends HttpServlet {
                 json = br.readLine();
             }
             JSONObject obj = new JSONObject(json);
-            System.out.print(obj);
             Product product = new Product(obj.getInt("id"));
             //新資料
             String name = obj.getString("name");

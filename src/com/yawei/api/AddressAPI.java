@@ -1,6 +1,6 @@
 package com.yawei.api;
 
-import com.yawei.util.MySqlConnect;
+import com.yawei.bean.User;
 import org.json.JSONObject;
 
 import javax.json.JsonArray;
@@ -26,15 +26,15 @@ public class AddressAPI extends HttpServlet {
         System.out.println("address subpath"+subPath);
         if(req.getSession().getAttribute("userid")!=null){
             String id = req.getSession().getAttribute("userid").toString();
-            result = MySqlConnect.getMySql().getUserAddress(id);
+            User user = new User(id);
+            out.print(user.getRecipientAddresses());
         }else if(req.getSession().getAttribute("managerid")!=null && subPath!=null) {
-
             String idString = "^/[1-9]+[0-9]*$";
             if (Pattern.matches(idString, subPath)) {
-                result = MySqlConnect.getMySql().getUserAddress(subPath.substring(1));
+                User user = new User(subPath.substring(1));
+                out.print(user.getRecipientAddresses());
             }
         }
-        out.print(result);
     }
 
     @Override
@@ -46,9 +46,10 @@ public class AddressAPI extends HttpServlet {
             if (br != null) {
                 json = br.readLine();
             }
-            JSONObject obj = new JSONObject(json);
-            System.out.println(obj);
-            MySqlConnect.getMySql().createAddress(obj);
+            String id = req.getSession().getAttribute("userid").toString();
+            User user = new User(id);
+            User.RecipientAddress address = user.new RecipientAddress(json);
+            address.create();
         }
 
     }
@@ -63,8 +64,8 @@ public class AddressAPI extends HttpServlet {
                 json = br.readLine();
             }
             JSONObject obj = new JSONObject(json);
-            System.out.println(obj);
-            MySqlConnect.getMySql().deleteAddress(obj);
+            User user = new User(req.getSession().getAttribute("userid").toString());
+            user.removeRecipientAddress(obj.getInt("no"));
         }
     }
 }
