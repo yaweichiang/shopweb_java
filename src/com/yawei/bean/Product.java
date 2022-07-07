@@ -26,6 +26,7 @@ public class Product extends JSONObject implements Serializable {
     private String isFreezing; // 是否冷凍
     private String webPath;
 
+    public Product(){}
     //取得新商品編號
     private static int getNewProductNo(){
         Connection conn = MySqlConnect.getMySql().getConn();

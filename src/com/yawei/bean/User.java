@@ -25,7 +25,7 @@ public class User extends JSONObject implements Serializable {
     private String url;
     private List<RecipientAddress> recipientAddresses;
 
-
+    public User(){}
     // 舊有會員建構 依照會員編號自資料庫取得會員資料建立會員物件
     public User(String idOrPhone){
         Connection conn = MySqlConnect.getMySql().getConn();
@@ -61,6 +61,7 @@ public class User extends JSONObject implements Serializable {
         this.recipientAddresses = this.getAllRecipientAddress();
     }
     // 新增會員建構 以前端傳送過來的註冊資料建立會員物件
+//
     public User(String name,String phone,String mail,String password){
         this.name = name;
         this.nickname = name;

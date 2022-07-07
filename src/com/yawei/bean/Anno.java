@@ -19,10 +19,7 @@ public class Anno extends JSONObject {
     private String content;
     private String time;
     private String target;
-
-    public static void main(String[] args) {
-        System.out.println(new Anno(6));
-    }
+    public Anno (){}
     //依照公告編號 自資料庫取得公告資料 建立公告物件
     Anno(int no){
         Connection conn = MySqlConnect.getMySql().getConn();

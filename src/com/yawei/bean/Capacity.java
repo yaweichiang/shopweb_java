@@ -17,6 +17,7 @@ public class Capacity extends JSONObject {
     private int size;
     private String productPackage;
 
+    public Capacity(){}
     public Capacity(int id, int size,String productPackage){
         this.id = id;
         this.size = size;

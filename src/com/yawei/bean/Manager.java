@@ -14,6 +14,7 @@ public class Manager extends JSONObject {
     private String phone;
     private String hashPW;
 
+    public Manager(){}
     Manager(String phone){
         Connection conn = MySqlConnect.getMySql().getConn();
         PreparedStatement sm = null;

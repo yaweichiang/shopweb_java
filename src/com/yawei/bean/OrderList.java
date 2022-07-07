@@ -31,6 +31,7 @@ public class OrderList extends JSONObject implements Serializable {
     private String orderDate;//訂購日期
 
 
+    public OrderList(){}
     //新增訂單建構 以前端傳送過來的訂單資料建立訂單物件
     public OrderList(String jsonString, String id) {
         super(jsonString);

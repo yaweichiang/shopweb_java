@@ -14,6 +14,7 @@ public class Pay extends JSONObject {
     private int id;
     private String name;
     private int fee;
+    public Pay(){}
     public Pay(int id,String name,int fee){
         this.id = id;
         this.name = name;

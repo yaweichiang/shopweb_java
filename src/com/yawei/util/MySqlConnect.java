@@ -1,23 +1,17 @@
 package com.yawei.util;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import javax.json.*;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.*;
-
-import static javax.json.Json.createArrayBuilder;
-import static javax.json.Json.createObjectBuilder;
 
 
 public class MySqlConnect {
     private static Properties properties = new Properties();
     static{
         try {
-            InputStream in = MySqlConnect.class.getClassLoader().getResourceAsStream("dbconfig.properties");
+//            MySQL
+//            InputStream in = MySqlConnect.class.getClassLoader().getResourceAsStream("dbconfig.properties");
+//            Postgresql
+            InputStream in = MySqlConnect.class.getClassLoader().getResourceAsStream("postgresql.properties");
             properties.load(in);
         }catch (Exception e){
             e.printStackTrace();
@@ -42,8 +36,13 @@ public class MySqlConnect {
     private Connection getConnection() {
         Connection conn = null;
         try{
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(String.format("jdbc:mysql:%s%s?serverTimezone=GMT&user=%s&password=%s",databaseUrl,database,user,password));
+//            MySQL
+//            Class.forName("com.mysql.cj.jdbc.Driver");
+//            conn = DriverManager.getConnection(String.format("jdbc:mysql:%s%s?serverTimezone=GMT&user=%s&password=%s",databaseUrl,database,user,password));
+
+//            Postgresql
+            Class.forName("org.postgresql.Driver");
+            conn = DriverManager.getConnection(String.format("jdbc:postgresql:%s%s",databaseUrl,database),user,password);
             conn.setAutoCommit(false); //開啟交易模式
         } catch (SQLException e) {
             e.printStackTrace();
@@ -53,7 +52,6 @@ public class MySqlConnect {
             return conn;
         }
     }
-
     public Connection getConn() {
         return conn;
     }
