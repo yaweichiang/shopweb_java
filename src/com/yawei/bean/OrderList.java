@@ -94,10 +94,10 @@ public class OrderList extends JSONObject implements Serializable {
                     this.name=rs.getString("name");
                     this.payNo =rs.getString("payNo")==null?"":rs.getString("payNo");
                     this.remark=rs.getString("remark")==null?"":rs.getString("remark");
-
-                    this.productsList.add(new OrderProduct(rs.getString("p_name"),rs.getInt("p_no"),rs.getInt("c_size"),rs.getInt("b_price"),rs.getInt("b_num")));
+//                    OrderProduct(String name,int id,int price,int amount,int capacity){
+                    this.productsList.add(new OrderProduct(rs.getString("p_name"),rs.getInt("p_no"),rs.getInt("b_price"),rs.getInt("b_num"),rs.getInt("c_size")));
                 }else{// 訂單編號 key已存在 插入新品項資料即可
-                    this.productsList.add(new OrderProduct(rs.getString("p_name"),rs.getInt("p_no"),rs.getInt("c_size"),rs.getInt("b_price"),rs.getInt("b_num")));
+                    this.productsList.add(new OrderProduct(rs.getString("p_name"),rs.getInt("p_no"),rs.getInt("b_price"),rs.getInt("b_num"),rs.getInt("c_size")));
                 }
             }
         }catch(SQLException e){

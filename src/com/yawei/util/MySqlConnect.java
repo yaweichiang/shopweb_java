@@ -9,9 +9,9 @@ public class MySqlConnect {
     static{
         try {
 //            MySQL
-//            InputStream in = MySqlConnect.class.getClassLoader().getResourceAsStream("dbconfig.properties");
+            InputStream in = MySqlConnect.class.getClassLoader().getResourceAsStream("dbconfig.properties");
 //            Postgresql
-            InputStream in = MySqlConnect.class.getClassLoader().getResourceAsStream("postgresql.properties");
+//            InputStream in = MySqlConnect.class.getClassLoader().getResourceAsStream("postgresql.properties");
             properties.load(in);
         }catch (Exception e){
             e.printStackTrace();
@@ -37,12 +37,12 @@ public class MySqlConnect {
         Connection conn = null;
         try{
 //            MySQL
-//            Class.forName("com.mysql.cj.jdbc.Driver");
-//            conn = DriverManager.getConnection(String.format("jdbc:mysql:%s%s?serverTimezone=GMT&user=%s&password=%s",databaseUrl,database,user,password));
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(String.format("jdbc:mysql:%s%s?serverTimezone=GMT&user=%s&password=%s",databaseUrl,database,user,password));
 
 //            Postgresql
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection(String.format("jdbc:postgresql:%s%s",databaseUrl,database),user,password);
+//            Class.forName("org.postgresql.Driver");
+//            conn = DriverManager.getConnection(String.format("jdbc:postgresql:%s%s",databaseUrl,database),user,password);
             conn.setAutoCommit(false); //開啟交易模式
         } catch (SQLException e) {
             e.printStackTrace();

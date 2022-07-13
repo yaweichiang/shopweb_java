@@ -2,7 +2,9 @@ package com.yawei.bean;
 
 import com.yawei.util.MySqlConnect;
 import org.json.JSONObject;
-import sun.misc.BASE64Decoder;
+//import sun.misc.BASE64Decoder;
+import java.util.Base64;
+import java.util.Base64.Decoder;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
@@ -59,8 +61,10 @@ public class Product extends JSONObject implements Serializable {
         //檔案字串 ajax傳遞時會將 "+" 替換成" " 將其復原 並將自傳前面的base64去掉
         String fileStr = urlData[1].replace(" ","+").replace("base64,","");
         //對檔案字串進行解碼成byte[] 存成圖片
-        BASE64Decoder decoder = new BASE64Decoder();
-        byte[] pic = decoder.decodeBuffer(fileStr);
+//        BASE64Decoder decoder = new BASE64Decoder();
+//        byte[] pic = decoder.decodeBuffer(fileStr);
+        Decoder decoder = Base64.getDecoder();
+        byte[] pic = decoder.decode(fileStr);
         //取得web容器的真實路徑 加上資料夾名稱及商品id 作為檔案儲存的path
         String savePath = webPath+"static/products/product"+id+"."+filetype;
         FileOutputStream productPic=null;
